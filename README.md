@@ -1,81 +1,73 @@
-# Stitch Agent Skills
+# React + TypeScript + Vite
 
-A library of Agent Skills designed to work with the Stitch MCP server. Each skill follows the Agent Skills open standard, for compatibility with coding agents such as Antigravity, Gemini CLI, Claude Code, Cursor.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## Installation & Discovery
+Currently, two official plugins are available:
 
-Install any skill from this repository using the `skills` CLI. This command will automatically detect your active coding agents and place the skill in the appropriate directory.
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-```bash
-# List all available skills in this repository
-npx skills add google-labs-code/stitch-skills --list
+## React Compiler
 
-# Install a specific skill
-npx skills add google-labs-code/stitch-skills --skill react:components --global
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+
+## Expanding the ESLint configuration
+
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+
+```js
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+
+      // Remove tseslint.configs.recommended and replace with this
+      tseslint.configs.recommendedTypeChecked,
+      // Alternatively, use this for stricter rules
+      tseslint.configs.strictTypeChecked,
+      // Optionally, add this for stylistic rules
+      tseslint.configs.stylisticTypeChecked,
+
+      // Other configs...
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
 ```
 
-## Available Skills
+You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
-### design-md
-Analyzes Stitch projects and generates comprehensive `DESIGN.md` files documenting design systems in natural, semantic language optimized for Stitch screen generation.
+```js
+// eslint.config.js
+import reactX from 'eslint-plugin-react-x'
+import reactDom from 'eslint-plugin-react-dom'
 
-```bash
-npx skills add google-labs-code/stitch-skills --skill design-md --global
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+      // Enable lint rules for React
+      reactX.configs['recommended-typescript'],
+      // Enable lint rules for React DOM
+      reactDom.configs.recommended,
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
 ```
-
-### react-components
-Converts Stitch screens to React component systems with automated validation and design token consistency.
-
-```bash
-npx skills add google-labs-code/stitch-skills --skill react:components --global
-```
-
-### stitch-loop
-Generates a complete multi-page website from a single prompt using Stitch, with automated file organization and validation.
-
-```bash
-npx skills add google-labs-code/stitch-skills --skill stitch-loop --global
-```
-
-### enhance-prompt
-Transforms vague UI ideas into polished, Stitch-optimized prompts. Enhances specificity, adds UI/UX keywords, injects design system context, and structures output for better generation results.
-
-```bash
-npx skills add google-labs-code/stitch-skills --skill enhance-prompt --global
-```
-
-### remotion
-Generates walkthrough videos from Stitch projects using Remotion with smooth transitions, zooming, and text overlays to showcase app screens professionally.
-
-```bash
-npx skills add google-labs-code/stitch-skills --skill remotion --global
-```
-
-### shadcn-ui
-Expert guidance for integrating and building applications with shadcn/ui components. Helps discover, install, customize, and optimize shadcn/ui components with best practices for React applications.
-
-```bash
-npx skills add google-labs-code/stitch-skills --skill shadcn-ui --global
-```
-
-## Repository Structure
-
-Every directory within `skills/` or at the root level follows a standardized structure to ensure the AI agent has everything it needs to perform "few-shot" learning and automated quality checks.
-
-```text
-skills/[category]/
-├── SKILL.md           — The "Mission Control" for the agent
-├── scripts/           — Executable enforcers (Validation & Networking)
-├── resources/         — The knowledge base (Checklists & Style Guides)
-└── examples/          — The "Gold Standard" syntactically valid references
-```
-
-## Adding New Skills
-All new skills need to follow the file structure above to implement the Agent Skills open standard.
-
-### Great candidates for new skills
-* **Validation**: Skills that convert Stitch HTML to other UI frameworks and validate the syntax.
-* **Decoupling Data**: Skills that convert static design content into external mock data files.
-* **Generate Designs**: Skills that generate new design screens in Stitch from a given set of data.
-
-This is not an officially supported Google product. This project is not eligible for the [Google Open Source Software Vulnerability Rewards Program](https://bughunters.google.com/open-source-security).
