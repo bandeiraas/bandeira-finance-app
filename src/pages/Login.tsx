@@ -1,4 +1,3 @@
-import { Button } from "../components/ui/Button";
 import { Link, useNavigate } from "react-router-dom";
 import { Rocket, Mail, Lock, ArrowRight, TrendingUp } from "lucide-react";
 
