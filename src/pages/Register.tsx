@@ -1,17 +1,25 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-// Using Lucide for main icons as requested in plan, but can switch to Material Symbols if strictly needed.
-// However, sticking to the provided HTML structure for layout and classes.
-import { User, Mail, Lock } from "lucide-react";
+import { User, Mail, Lock, Loader2 } from "lucide-react";
+import { useAuth } from "../features/auth/providers/AuthProvider";
 
 export default function Register() {
     const navigate = useNavigate();
+    const { signUp, isAuthenticated } = useAuth();
     const [formData, setFormData] = useState({
         name: "",
         email: "",
         password: "",
         terms: false
     });
+    const [error, setError] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
+
+    // Redirect if already logged in
+    if (isAuthenticated) {
+        navigate("/dashboard", { replace: true });
+        return null;
+    }
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value, type, checked } = e.target;
@@ -21,11 +29,18 @@ export default function Register() {
         }));
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Simulate registration
-        console.log("Registering:", formData);
-        navigate("/dashboard");
+        setError(null);
+        setIsLoading(true);
+        try {
+            await signUp(formData.email, formData.password, formData.name);
+            navigate("/dashboard", { replace: true });
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "Erro ao criar conta.");
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -47,6 +62,11 @@ export default function Register() {
 
                 <div className="bg-white/95 backdrop-blur-[20px] border border-white shadow-[0_20px_40px_-10px_rgba(15,23,42,0.1),0_0_15px_rgba(0,0,0,0.05)] rounded-3xl p-8 sm:p-10 w-full">
                     <form onSubmit={handleSubmit} className="space-y-5">
+                        {error && (
+                            <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
+                                {error}
+                            </div>
+                        )}
                         <div className="space-y-1.5">
                             <label className="block text-sm font-medium text-slate-700 ml-1" htmlFor="name">Nome completo</label>
                             <div className="relative group">
@@ -62,6 +82,7 @@ export default function Register() {
                                     className="block w-full pl-11 pr-3 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent focus:bg-white transition-all sm:text-sm"
                                     placeholder="Seu nome"
                                     required
+                                    disabled={isLoading}
                                 />
                             </div>
                         </div>
@@ -81,6 +102,7 @@ export default function Register() {
                                     className="block w-full pl-11 pr-3 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent focus:bg-white transition-all sm:text-sm"
                                     placeholder="seu@email.com"
                                     required
+                                    disabled={isLoading}
                                 />
                             </div>
                         </div>
@@ -98,8 +120,9 @@ export default function Register() {
                                     value={formData.password}
                                     onChange={handleChange}
                                     className="block w-full pl-11 pr-3 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent focus:bg-white transition-all sm:text-sm"
-                                    placeholder="Mínimo 8 caracteres"
+                                    placeholder="Mínimo 6 caracteres"
                                     required
+                                    disabled={isLoading}
                                 />
                             </div>
                         </div>
@@ -114,6 +137,7 @@ export default function Register() {
                                     onChange={handleChange}
                                     className="w-4 h-4 border-slate-300 rounded text-slate-900 focus:ring-slate-900"
                                     required
+                                    disabled={isLoading}
                                 />
                             </div>
                             <div className="ml-3 text-sm">
@@ -125,9 +149,17 @@ export default function Register() {
 
                         <button
                             type="submit"
-                            className="w-full flex justify-center items-center gap-2 py-3.5 px-4 border border-transparent rounded-xl shadow-lg shadow-slate-900/10 text-sm font-bold text-white bg-slate-900 hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 transition-all transform hover:-translate-y-0.5 active:translate-y-0"
+                            disabled={isLoading}
+                            className="w-full flex justify-center items-center gap-2 py-3.5 px-4 border border-transparent rounded-xl shadow-lg shadow-slate-900/10 text-sm font-bold text-white bg-slate-900 hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 transition-all transform hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                         >
-                            Criar Conta
+                            {isLoading ? (
+                                <>
+                                    <Loader2 size={20} className="animate-spin" />
+                                    Criando conta...
+                                </>
+                            ) : (
+                                "Criar Conta"
+                            )}
                         </button>
                     </form>
 

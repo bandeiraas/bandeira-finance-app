@@ -1,12 +1,37 @@
-import { Link, useNavigate } from "react-router-dom";
-import { Rocket, Mail, Lock, ArrowRight, TrendingUp } from "lucide-react";
+import { useState } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Rocket, Mail, Lock, ArrowRight, TrendingUp, Loader2 } from "lucide-react";
+import { useAuth } from "../features/auth/providers/AuthProvider";
 
 export default function Login() {
     const navigate = useNavigate();
+    const location = useLocation();
+    const { signIn, isAuthenticated } = useAuth();
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
 
-    const handleLogin = (e: React.FormEvent) => {
+    // Redirect if already logged in
+    if (isAuthenticated) {
+        navigate("/dashboard", { replace: true });
+        return null;
+    }
+
+    const from = (location.state as { from?: { pathname: string } })?.from?.pathname || "/dashboard";
+
+    const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
-        navigate("/dashboard");
+        setError(null);
+        setIsLoading(true);
+        try {
+            await signIn(email, password);
+            navigate(from, { replace: true });
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "Erro ao fazer login.");
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -66,6 +91,11 @@ export default function Login() {
                     </div>
 
                     <form onSubmit={handleLogin} className="space-y-5">
+                        {error && (
+                            <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
+                                {error}
+                            </div>
+                        )}
                         <div className="space-y-1">
                             <label className="block text-sm font-medium text-slate-700">E-mail</label>
                             <div className="relative">
@@ -74,9 +104,12 @@ export default function Login() {
                                 </div>
                                 <input
                                     type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
                                     className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-shadow text-sm"
                                     placeholder="seu@email.com"
                                     required
+                                    disabled={isLoading}
                                 />
                             </div>
                         </div>
@@ -94,16 +127,28 @@ export default function Login() {
                                 </div>
                                 <input
                                     type="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
                                     className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-shadow text-sm"
                                     placeholder="••••••••"
                                     required
+                                    disabled={isLoading}
                                 />
                             </div>
                         </div>
 
-                        <button type="submit" className="w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-slate-900 hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 transition-all transform hover:-translate-y-0.5">
-                            Entrar
-                            <ArrowRight size={20} />
+                        <button type="submit" disabled={isLoading} className="w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-slate-900 hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 transition-all transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
+                            {isLoading ? (
+                                <>
+                                    <Loader2 size={20} className="animate-spin" />
+                                    Entrando...
+                                </>
+                            ) : (
+                                <>
+                                    Entrar
+                                    <ArrowRight size={20} />
+                                </>
+                            )}
                         </button>
                     </form>
 

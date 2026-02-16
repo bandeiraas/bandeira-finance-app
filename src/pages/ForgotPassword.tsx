@@ -1,15 +1,38 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { KeyRound, Mail, ArrowRight, ArrowLeft, Send } from "lucide-react";
-
+import { KeyRound, Mail, ArrowRight, ArrowLeft, Send, Loader2 } from "lucide-react";
+import { useAuth } from "../features/auth/providers/AuthProvider";
 
 export default function ForgotPassword() {
+    const { resetPassword } = useAuth();
     const [step, setStep] = useState<1 | 2>(1);
     const [email, setEmail] = useState("");
+    const [error, setError] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setStep(2);
+        setError(null);
+        setIsLoading(true);
+        try {
+            await resetPassword(email);
+            setStep(2);
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "Erro ao enviar email de recuperação.");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleResend = async () => {
+        setIsLoading(true);
+        try {
+            await resetPassword(email);
+        } catch {
+            // Silently handle — user already knows the email was sent
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -43,6 +66,11 @@ export default function ForgotPassword() {
                             </div>
 
                             <form onSubmit={handleSubmit} className="space-y-6">
+                                {error && (
+                                    <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
+                                        {error}
+                                    </div>
+                                )}
                                 <div className="space-y-1.5">
                                     <label htmlFor="email" className="block text-sm font-medium text-slate-700 dark:text-slate-300 ml-1">
                                         E-mail
@@ -60,6 +88,7 @@ export default function ForgotPassword() {
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value)}
                                             placeholder="seu@email.com"
+                                            disabled={isLoading}
                                             className="block w-full pl-11 pr-3 py-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-white focus:border-transparent focus:bg-white dark:focus:bg-slate-800 transition-all sm:text-sm"
                                         />
                                     </div>
@@ -67,10 +96,20 @@ export default function ForgotPassword() {
 
                                 <button
                                     type="submit"
-                                    className="w-full flex justify-center items-center gap-2 py-3.5 px-4 border border-transparent rounded-xl shadow-lg shadow-slate-900/10 text-sm font-bold text-white bg-slate-900 dark:bg-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 transition-all transform hover:-translate-y-0.5 active:translate-y-0"
+                                    disabled={isLoading}
+                                    className="w-full flex justify-center items-center gap-2 py-3.5 px-4 border border-transparent rounded-xl shadow-lg shadow-slate-900/10 text-sm font-bold text-white bg-slate-900 dark:bg-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 transition-all transform hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                                 >
-                                    Continuar
-                                    <ArrowRight size={18} />
+                                    {isLoading ? (
+                                        <>
+                                            <Loader2 size={18} className="animate-spin" />
+                                            Enviando...
+                                        </>
+                                    ) : (
+                                        <>
+                                            Continuar
+                                            <ArrowRight size={18} />
+                                        </>
+                                    )}
                                 </button>
                             </form>
 
@@ -118,10 +157,11 @@ export default function ForgotPassword() {
                                     Não recebeu o e-mail?{" "}
                                     <button
                                         type="button"
-                                        className="font-bold text-slate-900 dark:text-white hover:text-sky-500 dark:hover:text-sky-400 transition-colors focus:outline-none"
-                                        onClick={() => console.log("Resend email logic")}
+                                        className="font-bold text-slate-900 dark:text-white hover:text-sky-500 dark:hover:text-sky-400 transition-colors focus:outline-none disabled:opacity-50"
+                                        onClick={handleResend}
+                                        disabled={isLoading}
                                     >
-                                        Reenviar
+                                        {isLoading ? "Reenviando..." : "Reenviar"}
                                     </button>
                                 </p>
                             </div>
