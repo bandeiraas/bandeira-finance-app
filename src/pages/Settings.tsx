@@ -7,9 +7,13 @@ interface SettingItem {
     desc: string;
     active?: boolean;
     danger?: boolean;
+    onClick?: () => void;
 }
 
+import { useAuth } from "../features/auth/providers/AuthProvider";
+
 export default function Settings() {
+    const { signOut } = useAuth();
     const sections: { title: string; items: SettingItem[] }[] = [
         {
             title: "Conta",
@@ -31,7 +35,7 @@ export default function Settings() {
             title: "Outros",
             items: [
                 { icon: HelpCircle, label: "Ajuda e Suporte", desc: "Fale conosco" },
-                { icon: LogOut, label: "Sair da Conta", desc: "Encerrar sessão atual", danger: true },
+                { icon: LogOut, label: "Sair da Conta", desc: "Encerrar sessão atual", danger: true, onClick: () => signOut() },
             ]
         }
     ];
@@ -49,7 +53,11 @@ export default function Settings() {
                         <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest px-2">{section.title}</h3>
                         <div className="glassmorphism bg-slate-900/40 rounded-3xl overflow-hidden border border-white/5">
                             {section.items.map((item, j) => (
-                                <button key={j} className="w-full text-left p-4 flex items-center gap-4 hover:bg-white/5 transition-colors border-b border-white/5 last:border-0 group">
+                                <button
+                                    key={j}
+                                    onClick={item.onClick}
+                                    className="w-full text-left p-4 flex items-center gap-4 hover:bg-white/5 transition-colors border-b border-white/5 last:border-0 group"
+                                >
                                     <div className={cn(
                                         "w-10 h-10 rounded-xl flex items-center justify-center transition-colors",
                                         item.danger ? "bg-rose-500/10 text-rose-500 group-hover:bg-rose-500 group-hover:text-white" : "bg-slate-800 text-slate-400 group-hover:text-white group-hover:bg-slate-700"

@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { accountService } from '../services/AccountService'
 import { useAuth } from '../../auth/providers/AuthProvider'
 import { QUERY_KEYS } from '../../../core/constants'
@@ -28,3 +28,28 @@ export function useTotalBalance() {
         enabled: !!user,
     })
 }
+
+/**
+ * Hook to create a new account.
+ */
+export function useCreateAccount() {
+    const { user } = useAuth()
+    const queryClient = useQueryClient()
+
+    return useMutation({
+        mutationFn: (data: {
+            bankName: string
+            accountType: string
+            balance?: number
+            color?: string
+            isPrimary?: boolean
+        }) => accountService.createAccount(user!.id, {
+            ...data,
+            isPrimary: data.isPrimary ?? false
+        }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.ACCOUNTS.ALL })
+        },
+    })
+}
+

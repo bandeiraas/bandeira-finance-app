@@ -1,18 +1,51 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { X, Calendar, ChevronDown, Check, Landmark, PiggyBank, CreditCard, Minus, Tag, Repeat } from "lucide-react";
+import { X, Calendar, ChevronDown, Check, Landmark, Minus, Tag, Repeat, Loader2, AlertCircle } from "lucide-react";
+import { useCreateExpense } from "../features/transactions/hooks/useTransactions";
+import { useCategories } from "../features/transactions/hooks/useCategories";
+import { useAccounts } from "../features/accounts/hooks/useAccounts";
+import { parseBRL } from "../shared/utils/parseBRL";
+import { formatCurrency } from "../shared/utils/formatCurrency";
 
 export default function NewExpense() {
     const navigate = useNavigate();
     const [amount, setAmount] = useState("0,00");
     const [description, setDescription] = useState("");
-    const [category, setCategory] = useState("Alimentação");
-    const [paymentMethod, setPaymentMethod] = useState("Santander");
+    const [categoryId, setCategoryId] = useState("");
+    const [accountId, setAccountId] = useState("");
+    const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+    const [error, setError] = useState<string | null>(null);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const { data: categories, isLoading: loadingCategories } = useCategories('expense');
+    const { data: accounts, isLoading: loadingAccounts } = useAccounts();
+    const createExpense = useCreateExpense();
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Here we would typically save data
-        navigate("/dashboard");
+        setError(null);
+
+        const numericAmount = parseBRL(amount);
+        if (numericAmount <= 0) {
+            setError("Informe um valor válido.");
+            return;
+        }
+        if (!accountId) {
+            setError("Selecione uma forma de pagamento.");
+            return;
+        }
+
+        try {
+            await createExpense.mutateAsync({
+                amount: numericAmount,
+                description,
+                categoryId: categoryId || (categories?.[0]?.id ?? ''),
+                accountId,
+                date,
+            });
+            navigate("/dashboard");
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "Erro ao adicionar despesa.");
+        }
     };
 
     return (
@@ -38,6 +71,12 @@ export default function NewExpense() {
 
                 {/* Form */}
                 <form onSubmit={handleSubmit} className="p-6 space-y-5 overflow-y-auto hide-scrollbar">
+                    {error && (
+                        <div className="flex items-center gap-2 p-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 text-sm">
+                            <AlertCircle size={16} />
+                            {error}
+                        </div>
+                    )}
 
                     {/* Amount - Centered Huge */}
                     <div className="space-y-2 text-center">
@@ -50,6 +89,7 @@ export default function NewExpense() {
                                 onChange={(e) => setAmount(e.target.value)}
                                 className="w-full bg-transparent border-none text-center text-5xl font-display font-bold text-rose-500 focus:ring-0 p-0 placeholder-rose-300"
                                 placeholder="0,00"
+                                disabled={createExpense.isPending}
                             />
                         </div>
                     </div>
@@ -63,6 +103,7 @@ export default function NewExpense() {
                             onChange={(e) => setDescription(e.target.value)}
                             className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-slate-700 dark:text-white placeholder-slate-400 focus:border-rose-500 focus:ring-rose-500 transition-all"
                             placeholder="Ex: Aluguel, Supermercado..."
+                            disabled={createExpense.isPending}
                         />
                     </div>
 
@@ -71,15 +112,18 @@ export default function NewExpense() {
                         <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider ml-1">Categoria</label>
                         <div className="relative">
                             <select
-                                value={category}
-                                onChange={(e) => setCategory(e.target.value)}
-                                className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 pl-10 text-slate-700 dark:text-white focus:border-rose-500 focus:ring-rose-500 appearance-none transition-all cursor-pointer"
+                                value={categoryId}
+                                onChange={(e) => setCategoryId(e.target.value)}
+                                disabled={loadingCategories || createExpense.isPending}
+                                className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 pl-10 text-slate-700 dark:text-white focus:border-rose-500 focus:ring-rose-500 appearance-none transition-all cursor-pointer disabled:opacity-50"
                             >
-                                <option>Alimentação</option>
-                                <option>Saúde</option>
-                                <option>Lazer</option>
-                                <option>Transporte</option>
-                                <option>Moradia</option>
+                                {loadingCategories ? (
+                                    <option>Carregando...</option>
+                                ) : (
+                                    categories?.map((cat) => (
+                                        <option key={cat.id} value={cat.id}>{cat.name}</option>
+                                    ))
+                                )}
                             </select>
                             <Tag size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                             <ChevronDown size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
@@ -93,6 +137,9 @@ export default function NewExpense() {
                             <div className="relative">
                                 <input
                                     type="date"
+                                    value={date}
+                                    onChange={(e) => setDate(e.target.value)}
+                                    disabled={createExpense.isPending}
                                     className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 pl-10 text-xs text-slate-700 dark:text-white focus:border-rose-500 focus:ring-rose-500 transition-all cursor-pointer"
                                 />
                                 <Calendar size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
@@ -102,6 +149,7 @@ export default function NewExpense() {
                             <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider ml-1">Frequência</label>
                             <div className="relative">
                                 <select
+                                    disabled={createExpense.isPending}
                                     className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 pl-10 text-xs text-slate-700 dark:text-white focus:border-rose-500 focus:ring-rose-500 appearance-none transition-all cursor-pointer"
                                 >
                                     <option>Única</option>
@@ -114,104 +162,64 @@ export default function NewExpense() {
                         </div>
                     </div>
 
-                    {/* Payment Method - Cards */}
+                    {/* Payment Method - Dynamic Accounts */}
                     <div className="space-y-3">
                         <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider ml-1">Forma de Pagamento</label>
-                        <div className="grid grid-cols-2 gap-3">
-                            {/* Santander */}
-                            <label className="cursor-pointer relative group">
-                                <input
-                                    type="radio"
-                                    name="payment_method"
-                                    checked={paymentMethod === 'Santander'}
-                                    onChange={() => setPaymentMethod('Santander')}
-                                    className="peer sr-only"
-                                />
-                                <div className={`p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 transition-all flex items-center gap-3 ${paymentMethod === 'Santander' ? '!border-rose-500 !bg-rose-50 dark:!bg-rose-900/20' : ''}`}>
-                                    <div className="w-8 h-8 rounded-lg bg-red-600 flex items-center justify-center text-white shadow-sm shrink-0">
-                                        <Landmark size={14} />
-                                    </div>
-                                    <div className="overflow-hidden">
-                                        <p className="text-[11px] font-bold text-slate-700 dark:text-white truncate">Santander</p>
-                                        <p className="text-[9px] text-slate-400 truncate">Saldo: R$ 12k</p>
-                                    </div>
-                                </div>
-                                <div className={`absolute top-2 right-2 w-2 h-2 rounded-full bg-rose-500 transition-opacity ${paymentMethod === 'Santander' ? 'opacity-100' : 'opacity-0'}`}></div>
-                            </label>
-
-                            {/* Itaú */}
-                            <label className="cursor-pointer relative group">
-                                <input
-                                    type="radio"
-                                    name="payment_method"
-                                    checked={paymentMethod === 'Itaú'}
-                                    onChange={() => setPaymentMethod('Itaú')}
-                                    className="peer sr-only"
-                                />
-                                <div className={`p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 transition-all flex items-center gap-3 ${paymentMethod === 'Itaú' ? '!border-rose-500 !bg-rose-50 dark:!bg-rose-900/20' : ''}`}>
-                                    <div className="w-8 h-8 rounded-lg bg-orange-500 flex items-center justify-center text-white shadow-sm shrink-0">
-                                        <PiggyBank size={14} />
-                                    </div>
-                                    <div className="overflow-hidden">
-                                        <p className="text-[11px] font-bold text-slate-700 dark:text-white truncate">Itaú</p>
-                                        <p className="text-[9px] text-slate-400 truncate">Saldo: R$ 2.9k</p>
-                                    </div>
-                                </div>
-                                <div className={`absolute top-2 right-2 w-2 h-2 rounded-full bg-rose-500 transition-opacity ${paymentMethod === 'Itaú' ? 'opacity-100' : 'opacity-0'}`}></div>
-                            </label>
-
-                            {/* Fintrack Black */}
-                            <label className="cursor-pointer relative group">
-                                <input
-                                    type="radio"
-                                    name="payment_method"
-                                    checked={paymentMethod === 'Fintrack'}
-                                    onChange={() => setPaymentMethod('Fintrack')}
-                                    className="peer sr-only"
-                                />
-                                <div className={`p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 transition-all flex items-center gap-3 ${paymentMethod === 'Fintrack' ? '!border-rose-500 !bg-rose-50 dark:!bg-rose-900/20' : ''}`}>
-                                    <div className="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center text-white shadow-sm shrink-0">
-                                        <CreditCard size={14} />
-                                    </div>
-                                    <div className="overflow-hidden">
-                                        <p className="text-[11px] font-bold text-slate-700 dark:text-white truncate">Fintrack Black</p>
-                                        <p className="text-[9px] text-rose-400 font-semibold truncate">Crédito</p>
-                                    </div>
-                                </div>
-                                <div className={`absolute top-2 right-2 w-2 h-2 rounded-full bg-rose-500 transition-opacity ${paymentMethod === 'Fintrack' ? 'opacity-100' : 'opacity-0'}`}></div>
-                            </label>
-
-                            {/* Nubank */}
-                            <label className="cursor-pointer relative group">
-                                <input
-                                    type="radio"
-                                    name="payment_method"
-                                    checked={paymentMethod === 'Nubank'}
-                                    onChange={() => setPaymentMethod('Nubank')}
-                                    className="peer sr-only"
-                                />
-                                <div className={`p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 transition-all flex items-center gap-3 ${paymentMethod === 'Nubank' ? '!border-rose-500 !bg-rose-50 dark:!bg-rose-900/20' : ''}`}>
-                                    <div className="w-8 h-8 rounded-lg bg-purple-600 flex items-center justify-center text-white shadow-sm shrink-0">
-                                        <CreditCard size={14} />
-                                    </div>
-                                    <div className="overflow-hidden">
-                                        <p className="text-[11px] font-bold text-slate-700 dark:text-white truncate">Nubank</p>
-                                        <p className="text-[9px] text-rose-400 font-semibold truncate">Crédito</p>
-                                    </div>
-                                </div>
-                                <div className={`absolute top-2 right-2 w-2 h-2 rounded-full bg-rose-500 transition-opacity ${paymentMethod === 'Nubank' ? 'opacity-100' : 'opacity-0'}`}></div>
-                            </label>
-                        </div>
+                        {loadingAccounts ? (
+                            <div className="flex items-center gap-2 p-4 text-slate-400 text-sm">
+                                <Loader2 size={16} className="animate-spin" /> Carregando contas...
+                            </div>
+                        ) : accounts && accounts.length > 0 ? (
+                            <div className="grid grid-cols-2 gap-3">
+                                {accounts.map((acc) => (
+                                    <label key={acc.id} className="cursor-pointer relative group">
+                                        <input
+                                            type="radio"
+                                            name="payment_method"
+                                            checked={accountId === acc.id}
+                                            onChange={() => setAccountId(acc.id)}
+                                            className="peer sr-only"
+                                            disabled={createExpense.isPending}
+                                        />
+                                        <div className={`p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 transition-all flex items-center gap-3 ${accountId === acc.id ? '!border-rose-500 !bg-rose-50 dark:!bg-rose-900/20' : ''}`}>
+                                            <div
+                                                className="w-8 h-8 rounded-lg flex items-center justify-center text-white shadow-sm shrink-0"
+                                                style={{ backgroundColor: acc.color || '#64748b' }}
+                                            >
+                                                <Landmark size={14} />
+                                            </div>
+                                            <div className="overflow-hidden">
+                                                <p className="text-[11px] font-bold text-slate-700 dark:text-white truncate">{acc.bank_name}</p>
+                                                <p className="text-[9px] text-slate-400 truncate">Saldo: {formatCurrency(Number(acc.balance))}</p>
+                                            </div>
+                                        </div>
+                                        <div className={`absolute top-2 right-2 w-2 h-2 rounded-full bg-rose-500 transition-opacity ${accountId === acc.id ? 'opacity-100' : 'opacity-0'}`}></div>
+                                    </label>
+                                ))}
+                            </div>
+                        ) : (
+                            <p className="text-sm text-slate-400 p-4 text-center">Nenhuma conta cadastrada. <a href="/accounts/add" className="text-rose-500 hover:underline">Adicionar conta</a></p>
+                        )}
                     </div>
 
                     {/* Submit Button */}
                     <div className="pt-4 border-t border-slate-100 dark:border-slate-700">
                         <button
                             type="submit"
-                            className="w-full py-4 bg-rose-500 hover:bg-rose-600 text-white rounded-xl font-bold shadow-lg shadow-rose-500/30 transition-all transform active:scale-[0.98] flex items-center justify-center gap-2"
+                            disabled={createExpense.isPending}
+                            className="w-full py-4 bg-rose-500 hover:bg-rose-600 text-white rounded-xl font-bold shadow-lg shadow-rose-500/30 transition-all transform active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            <Check size={20} />
-                            Adicionar Despesa
+                            {createExpense.isPending ? (
+                                <>
+                                    <Loader2 size={20} className="animate-spin" />
+                                    Salvando...
+                                </>
+                            ) : (
+                                <>
+                                    <Check size={20} />
+                                    Adicionar Despesa
+                                </>
+                            )}
                         </button>
                     </div>
                 </form>

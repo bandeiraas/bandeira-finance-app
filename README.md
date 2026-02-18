@@ -1,73 +1,46 @@
-# React + TypeScript + Vite
+# Bandeira Finance App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicativo de finanças pessoais moderno e responsivo.
 
-Currently, two official plugins are available:
+## Pré-requisitos
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Node.js (versão 18 ou superior)
+- NPM ou Yarn
 
-## React Compiler
+## Configuração
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+1. Clone o repositório ou baixe os arquivos.
+2. Crie um arquivo `.env.local` na raiz do projeto com as chaves do Supabase:
+   ```env
+   VITE_SUPABASE_URL=seu_supabase_url
+   VITE_SUPABASE_ANON_KEY=sua_supabase_anon_key
+   ```
+3. Instale as dependências:
+   ```bash
+   npm install
+   ```
 
-## Expanding the ESLint configuration
+## Como Rodar
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Para iniciar o servidor de desenvolvimento:
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+O aplicativo estará disponível em `http://localhost:5173`.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Estrutura do Projeto
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- `/src`
+  - `/core`: Configurações, tipos e constantes globais.
+  - `/features`: Módulos funcionais (Auth, Transactions, Accounts, etc.).
+  - `/pages`: Componentes de página.
+  - `/shared`: Componentes e utilitários compartilhados.
+
+## Scripts Disponíveis
+
+- `npm run dev`: Inicia o servidor de desenvolvimento.
+- `npm run build`: Compila o projeto para produção.
+- `npm run preview`: Visualiza o build de produção localmente.
+- `npm run lint`: Executa a verificação de linting.

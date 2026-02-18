@@ -115,6 +115,8 @@ export class AuthService {
             'Password should be at least 6 characters':
                 'A senha deve ter pelo menos 6 caracteres.',
             'Email not confirmed': 'Confirme seu email antes de fazer login.',
+            'Too many requests': 'Muitas tentativas. Aguarde alguns minutos e tente novamente.',
+            'Over quota': 'Muitas tentativas. Aguarde 1 hora.',
         }
 
         const message = messages[error.message] ?? error.message

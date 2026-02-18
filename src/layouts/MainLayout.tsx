@@ -1,10 +1,12 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
-import { LayoutDashboard, CreditCard, Receipt, User, Bell, Rocket, Sun, Moon, Plus, TrendingUp } from "lucide-react";
+import { LayoutDashboard, CreditCard, Receipt, User, Bell, Rocket, Sun, Moon, Plus, TrendingUp, LogOut } from "lucide-react";
 import { cn } from "../lib/utils";
 import { useState } from "react";
+import { useAuth } from "../features/auth/providers/AuthProvider";
 
 export default function Layout() {
     const location = useLocation();
+    const auth = useAuth();
     const [isDark, setIsDark] = useState(true);
 
     const toggleTheme = () => {
@@ -53,13 +55,20 @@ export default function Layout() {
                     </nav>
                 </div>
 
-                <div className="mt-auto p-6 border-t border-white/5">
+                <div className="mt-auto p-6 border-t border-white/5 space-y-2">
                     <button
                         onClick={toggleTheme}
                         className="flex items-center gap-3 p-3 w-full text-slate-400 hover:bg-white/5 hover:text-white rounded-xl transition-all"
                     >
                         {isDark ? <Sun size={22} /> : <Moon size={22} />}
                         <span className="font-medium hidden lg:block">Mudar Tema</span>
+                    </button>
+                    <button
+                        onClick={() => auth.signOut()}
+                        className="flex items-center gap-3 p-3 w-full text-rose-400 hover:bg-rose-500/10 hover:text-rose-500 rounded-xl transition-all"
+                    >
+                        <LogOut size={22} />
+                        <span className="font-medium hidden lg:block">Sair</span>
                     </button>
                 </div>
             </aside>

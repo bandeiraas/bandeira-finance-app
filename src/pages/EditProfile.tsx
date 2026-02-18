@@ -1,36 +1,93 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
     CheckCircle,
-    Verified,
-    Eye,
-    EyeOff,
     Save,
     LogOut,
     Camera,
-    ChevronLeft
+    ChevronLeft,
+    Loader2
 } from "lucide-react";
+import { useAuth } from "../features/auth/providers/AuthProvider";
+import { useProfile, useUpdateProfile, useUploadAvatar } from "../features/profile/hooks/useProfile";
 
 export default function EditProfile() {
     const navigate = useNavigate();
-    const [showPassword, setShowPassword] = useState(false);
+    const { signOut } = useAuth();
+    const { data: profile, isLoading: loadingProfile } = useProfile();
+    const updateProfile = useUpdateProfile();
+    const uploadAvatar = useUploadAvatar();
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    // UI toggle only, we don't update password here yet
     const [formData, setFormData] = useState({
-        firstName: "Alex",
-        lastName: "Silva",
-        email: "alex.silva@email.com",
-        password: "password123"
+        full_name: "",
+        username: "",
+        website: "",
     });
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+    // Populate form when profile loads
+    useEffect(() => {
+        if (profile) {
+            setFormData({
+                full_name: profile.full_name || "",
+                username: profile.username || "",
+                website: profile.website || "",
+            });
+        }
+    }, [profile]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        console.log("Saving profile:", formData);
-        navigate("/profile");
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        try {
+            await uploadAvatar.mutateAsync(file);
+            setSuccessMessage("Foto de perfil atualizada!");
+            setTimeout(() => setSuccessMessage(null), 3000);
+        } catch (error) {
+            console.error("Error uploading avatar:", error);
+        }
     };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setSuccessMessage(null);
+
+        try {
+            await updateProfile.mutateAsync({
+                full_name: formData.full_name,
+                username: formData.username,
+                website: formData.website,
+                updated_at: new Date().toISOString(),
+            });
+            setSuccessMessage("Perfil atualizado com sucesso!");
+            setTimeout(() => {
+                navigate("/profile");
+            }, 1000);
+        } catch (error) {
+            console.error("Error updating profile:", error);
+        }
+    };
+
+    const handleSignOut = async () => {
+        await signOut();
+        navigate("/login");
+    };
+
+    if (loadingProfile) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <Loader2 size={32} className="animate-spin text-primary" />
+            </div>
+        );
+    }
 
     return (
         <div className="max-w-3xl mx-auto space-y-8 animate-fade-in-up">
@@ -50,106 +107,98 @@ export default function EditProfile() {
                 <div className="absolute -top-20 -right-20 w-64 h-64 bg-sky-500/10 rounded-full blur-3xl pointer-events-none"></div>
                 <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
+                {successMessage && (
+                    <div className="mb-6 p-4 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-xl flex items-center gap-2">
+                        <CheckCircle size={20} />
+                        {successMessage}
+                    </div>
+                )}
+
                 <div className="text-center mb-10 relative z-10">
-                    <div className="relative inline-block mb-4 group cursor-pointer">
-                        <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-white dark:border-slate-700 shadow-lg mx-auto">
-                            {/* Placeholder Avatar */}
-                            {/* In a real app, this src would probably come from state/context/auth */}
-                            <div className="w-full h-full bg-gradient-to-br from-slate-200 to-slate-300 dark:from-slate-700 dark:to-slate-800 flex items-center justify-center text-3xl font-bold text-slate-500 dark:text-slate-400">
-                                {formData.firstName[0]}{formData.lastName[0]}
-                            </div>
+                    <div className="relative inline-block mb-4 group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
+                        <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-white dark:border-slate-700 shadow-lg mx-auto bg-slate-200 dark:bg-slate-800">
+                            {profile?.avatar_url ? (
+                                <img
+                                    src={profile.avatar_url}
+                                    alt="Avatar"
+                                    className="w-full h-full object-cover"
+                                />
+                            ) : (
+                                <div className="w-full h-full flex items-center justify-center text-3xl font-bold text-slate-500 dark:text-slate-400">
+                                    {formData.full_name?.[0] || "?"}
+                                </div>
+                            )}
                         </div>
                         <div className="absolute bottom-0 right-0 w-8 h-8 bg-sky-500 rounded-full flex items-center justify-center text-white border-2 border-white dark:border-slate-800 shadow-sm transition-transform group-hover:scale-110">
-                            <Camera size={14} />
+                            {uploadAvatar.isPending ? <Loader2 size={14} className="animate-spin" /> : <Camera size={14} />}
                         </div>
+                        <input
+                            type="file"
+                            ref={fileInputRef}
+                            className="hidden"
+                            accept="image/*"
+                            onChange={handleFileChange}
+                        />
                     </div>
+                    <p className="text-xs text-slate-400">Clique para alterar a foto</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-8 relative z-10">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div className="group relative">
-                            <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1 group-focus-within:text-sky-500 transition-colors" htmlFor="firstName">
-                                Nome
-                            </label>
-                            <div className="relative flex items-center">
-                                <input
-                                    className="w-full bg-transparent border-b-2 border-slate-200 dark:border-slate-700 px-0 py-3 text-lg focus:border-sky-500 focus:outline-none transition-colors placeholder:text-slate-400 dark:text-white dark:placeholder:text-slate-600"
-                                    id="firstName"
-                                    name="firstName"
-                                    placeholder="Seu nome"
-                                    type="text"
-                                    value={formData.firstName}
-                                    onChange={handleChange}
-                                />
-                                {formData.firstName && (
-                                    <CheckCircle className="text-emerald-500 absolute right-0" size={20} />
-                                )}
-                            </div>
-                        </div>
-                        <div className="group relative">
-                            <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1 group-focus-within:text-sky-500 transition-colors" htmlFor="lastName">
-                                Sobrenome
-                            </label>
-                            <div className="relative flex items-center">
-                                <input
-                                    className="w-full bg-transparent border-b-2 border-slate-200 dark:border-slate-700 px-0 py-3 text-lg focus:border-sky-500 focus:outline-none transition-colors placeholder:text-slate-400 dark:text-white dark:placeholder:text-slate-600"
-                                    id="lastName"
-                                    name="lastName"
-                                    placeholder="Seu sobrenome"
-                                    type="text"
-                                    value={formData.lastName}
-                                    onChange={handleChange}
-                                />
-                                {formData.lastName && (
-                                    <CheckCircle className="text-emerald-500 absolute right-0" size={20} />
-                                )}
-                            </div>
-                        </div>
-                    </div>
-
                     <div className="group relative">
-                        <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1 group-focus-within:text-sky-500 transition-colors" htmlFor="email">
-                            Email
+                        <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1 group-focus-within:text-sky-500 transition-colors" htmlFor="full_name">
+                            Nome Completo
                         </label>
                         <div className="relative flex items-center">
                             <input
                                 className="w-full bg-transparent border-b-2 border-slate-200 dark:border-slate-700 px-0 py-3 text-lg focus:border-sky-500 focus:outline-none transition-colors placeholder:text-slate-400 dark:text-white dark:placeholder:text-slate-600"
-                                id="email"
-                                name="email"
-                                placeholder="seu.email@exemplo.com"
-                                type="email"
-                                value={formData.email}
+                                id="full_name"
+                                name="full_name"
+                                placeholder="Seu nome completo"
+                                type="text"
+                                value={formData.full_name}
                                 onChange={handleChange}
+                                disabled={updateProfile.isPending}
                             />
-                            <Verified className="text-emerald-500 absolute right-0" size={20} />
+                            {formData.full_name && (
+                                <CheckCircle className="text-emerald-500 absolute right-0" size={20} />
+                            )}
                         </div>
                     </div>
 
                     <div className="group relative">
-                        <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1 group-focus-within:text-sky-500 transition-colors" htmlFor="password">
-                            Senha Atual
+                        <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1 group-focus-within:text-sky-500 transition-colors" htmlFor="username">
+                            Nome de Usuário (@)
                         </label>
                         <div className="relative flex items-center">
                             <input
-                                className="w-full bg-transparent border-b-2 border-slate-200 dark:border-slate-700 px-0 py-3 text-lg focus:border-sky-500 focus:outline-none transition-colors placeholder:text-slate-400 dark:text-white dark:placeholder:text-slate-600 pr-10"
-                                id="password"
-                                name="password"
-                                placeholder="••••••••"
-                                type={showPassword ? "text" : "password"}
-                                value={formData.password}
+                                className="w-full bg-transparent border-b-2 border-slate-200 dark:border-slate-700 px-0 py-3 text-lg focus:border-sky-500 focus:outline-none transition-colors placeholder:text-slate-400 dark:text-white dark:placeholder:text-slate-600"
+                                id="username"
+                                name="username"
+                                placeholder="username"
+                                type="text"
+                                value={formData.username}
                                 onChange={handleChange}
+                                disabled={updateProfile.isPending}
                             />
-                            <button
-                                type="button"
-                                onClick={() => setShowPassword(!showPassword)}
-                                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 absolute right-0"
-                            >
-                                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                            </button>
                         </div>
-                        <p className="mt-2 text-[10px] text-slate-400 flex items-center gap-1">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Última alteração há 3 meses
-                        </p>
+                    </div>
+
+                    <div className="group relative">
+                        <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1 group-focus-within:text-sky-500 transition-colors" htmlFor="website">
+                            Website / Link
+                        </label>
+                        <div className="relative flex items-center">
+                            <input
+                                className="w-full bg-transparent border-b-2 border-slate-200 dark:border-slate-700 px-0 py-3 text-lg focus:border-sky-500 focus:outline-none transition-colors placeholder:text-slate-400 dark:text-white dark:placeholder:text-slate-600"
+                                id="website"
+                                name="website"
+                                placeholder="https://..."
+                                type="text"
+                                value={formData.website}
+                                onChange={handleChange}
+                                disabled={updateProfile.isPending}
+                            />
+                        </div>
                     </div>
 
                     <div className="pt-6 flex items-center justify-between gap-4">
@@ -162,16 +211,24 @@ export default function EditProfile() {
                         </button>
                         <button
                             type="submit"
-                            className="flex-1 bg-slate-800 dark:bg-white text-white dark:text-slate-900 py-3.5 px-6 rounded-xl font-bold shadow-lg shadow-slate-300 dark:shadow-slate-900/50 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center gap-2"
+                            disabled={updateProfile.isPending}
+                            className="flex-1 bg-slate-800 dark:bg-white text-white dark:text-slate-900 py-3.5 px-6 rounded-xl font-bold shadow-lg shadow-slate-300 dark:shadow-slate-900/50 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            <Save size={18} />
+                            {updateProfile.isPending ? (
+                                <Loader2 size={18} className="animate-spin" />
+                            ) : (
+                                <Save size={18} />
+                            )}
                             Salvar Alterações
                         </button>
                     </div>
                 </form>
 
                 <div className="mt-8 pt-6 border-t border-slate-200/50 dark:border-slate-700/50 text-center relative z-10">
-                    <button className="text-xs font-medium text-rose-500 hover:text-rose-600 dark:text-rose-400 dark:hover:text-rose-300 flex items-center justify-center gap-2 mx-auto transition-colors">
+                    <button
+                        onClick={handleSignOut}
+                        className="text-xs font-medium text-rose-500 hover:text-rose-600 dark:text-rose-400 dark:hover:text-rose-300 flex items-center justify-center gap-2 mx-auto transition-colors"
+                    >
                         <LogOut size={16} />
                         Sair da conta
                     </button>

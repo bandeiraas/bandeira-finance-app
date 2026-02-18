@@ -1,15 +1,38 @@
-import { ArrowDownRight, TrendingUp, TrendingDown, ShoppingBag, Plus, Minus, FileText, Lightbulb, CreditCard } from "lucide-react";
+import { ArrowDownRight, TrendingUp, TrendingDown, ShoppingBag, Plus, Minus, FileText, Lightbulb, CreditCard, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { cn } from "../lib/utils";
 import UserMenu from "../components/UserMenu";
+import { useAuth } from "../features/auth/providers/AuthProvider";
+import { useMonthlySummary, useTransactions } from "../features/transactions/hooks/useTransactions";
+import { useAccounts } from "../features/accounts/hooks/useAccounts";
+import { useCards } from "../features/cards/hooks/useCards";
+import { formatCurrency } from "../shared/utils/formatCurrency";
 
 export default function Dashboard() {
+    const { user } = useAuth();
+    const currentMonth = new Date().getMonth() + 1;
+    const currentYear = new Date().getFullYear();
+
+    const { data: summary, isLoading: loadingSummary } = useMonthlySummary(currentMonth, currentYear);
+    const { data: recentTransactions, isLoading: loadingTransactions } = useTransactions(3); // Limit 3
+    const { data: accounts, isLoading: loadingAccounts } = useAccounts();
+    const { data: cards, isLoading: loadingCards } = useCards();
+
+    const primaryCard = cards?.[0];
+
+    // Dummy data for financial tip in this phase
+    const financialTip = {
+        category: "Alimentação",
+        savingsPercent: 12,
+        goalPercent: 82
+    };
+
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 animate-fade-in">
             <header className="mb-8 flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-display font-bold text-white">Resumo Financeiro</h1>
-                    <p className="text-slate-400 text-sm">Sua história financeira de Setembro</p>
+                    <h1 className="text-3xl font-display font-bold text-slate-800 dark:text-white">Resumo Financeiro</h1>
+                    <p className="text-slate-500 dark:text-slate-400 text-sm">Olá, {user?.fullName?.split(' ')[0] || user?.email}</p>
                 </div>
                 <div className="flex items-center gap-3">
                     <UserMenu />
@@ -19,23 +42,28 @@ export default function Dashboard() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 {/* Main Chart Section */}
                 <div className="lg:col-span-8 flex flex-col gap-5">
-                    <div className="glassmorphism bg-slate-900/50 p-8 rounded-3xl relative overflow-hidden">
+                    <div className="glassmorphism bg-white/60 dark:bg-slate-900/50 p-8 rounded-3xl relative overflow-hidden border border-white/40 dark:border-slate-700/40 shadow-xl">
                         <div className="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-primary/5 blur-3xl rounded-full"></div>
 
                         <div className="flex flex-col md:flex-row items-center gap-10">
-                            {/* SVG Chart */}
+                            {/* SVG Chart Placeholder - Dynamic later */}
                             <div className="relative w-64 h-64 shrink-0">
                                 <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                                    <circle className="text-slate-800" cx="50" cy="50" fill="transparent" r="45" stroke="currentColor" strokeWidth="8"></circle>
-                                    {/* Detailed segments would require complex calculation, using simplified representation */}
-                                    <circle className="transition-all duration-1000 origin-center" cx="50" cy="50" fill="transparent" r="45" stroke="#f59e0b" strokeDasharray="283" strokeDashoffset="180" strokeLinecap="round" strokeWidth="9"></circle>
-                                    <circle className="transition-all duration-1000 origin-center" cx="50" cy="50" fill="transparent" r="45" stroke="#0ea5e9" strokeDasharray="283" strokeDashoffset="240" strokeLinecap="round" strokeWidth="9"></circle>
-                                    <circle className="transition-all duration-1000 origin-center" cx="50" cy="50" fill="transparent" r="45" stroke="#8b5cf6" strokeDasharray="283" strokeDashoffset="260" strokeLinecap="round" strokeWidth="9"></circle>
+                                    <circle className="text-slate-200 dark:text-slate-800" cx="50" cy="50" fill="transparent" r="45" stroke="currentColor" strokeWidth="8"></circle>
+                                    {/* Simplified implementation for now */}
+                                    <circle className="transition-all duration-1000 origin-center" cx="50" cy="50" fill="transparent" r="45" stroke="#f59e0b" strokeDasharray="283" strokeDashoffset={loadingSummary ? 283 : 180} strokeLinecap="round" strokeWidth="9"></circle>
+                                    <circle className="transition-all duration-1000 origin-center" cx="50" cy="50" fill="transparent" r="45" stroke="#0ea5e9" strokeDasharray="283" strokeDashoffset={loadingSummary ? 283 : 240} strokeLinecap="round" strokeWidth="9"></circle>
                                 </svg>
                                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total Gasto</span>
-                                    <span className="text-2xl font-display font-bold text-white">R$ 5.731</span>
-                                    <span className="text-[10px] font-medium text-emerald-500">+4% vs. mês ant.</span>
+                                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Saldo Mensal</span>
+                                    {loadingSummary ? (
+                                        <Loader2 className="animate-spin text-slate-400" />
+                                    ) : (
+                                        <span className="text-2xl font-display font-bold text-slate-800 dark:text-white">
+                                            {formatCurrency(summary?.balance || 0)}
+                                        </span>
+                                    )}
+                                    <span className="text-[10px] font-medium text-emerald-500">Mês Atual</span>
                                 </div>
                             </div>
 
@@ -45,44 +73,49 @@ export default function Dashboard() {
                                     <div className="p-4 bg-emerald-500/10 rounded-2xl border border-emerald-500/20">
                                         <div className="flex items-center gap-2 mb-1">
                                             <TrendingUp className="text-emerald-500" size={18} />
-                                            <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">Receitas</span>
+                                            <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Receitas</span>
                                         </div>
-                                        <p className="text-xl font-display font-bold text-white">R$ 12.450,00</p>
+                                        {loadingSummary ? (
+                                            <div className="h-6 w-24 bg-emerald-500/20 rounded animate-pulse"></div>
+                                        ) : (
+                                            <p className="text-xl font-display font-bold text-slate-800 dark:text-white">{formatCurrency(summary?.totalIncome || 0)}</p>
+                                        )}
                                     </div>
-                                    <div className="p-4 bg-danger/10 rounded-2xl border border-danger/20">
+                                    <div className="p-4 bg-red-500/10 rounded-2xl border border-red-500/20">
                                         <div className="flex items-center gap-2 mb-1">
-                                            <TrendingDown className="text-danger" size={18} />
-                                            <span className="text-[10px] font-bold text-danger uppercase tracking-wider">Despesas</span>
+                                            <TrendingDown className="text-red-500" size={18} />
+                                            <span className="text-[10px] font-bold text-red-600 dark:text-red-400 uppercase tracking-wider">Despesas</span>
                                         </div>
-                                        <p className="text-xl font-display font-bold text-white">R$ 5.731,30</p>
+                                        {loadingSummary ? (
+                                            <div className="h-6 w-24 bg-red-500/20 rounded animate-pulse"></div>
+                                        ) : (
+                                            <p className="text-xl font-display font-bold text-slate-800 dark:text-white">{formatCurrency(summary?.totalExpenses || 0)}</p>
+                                        )}
                                     </div>
                                 </div>
 
                                 <div className="space-y-3">
                                     <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Maiores Gastos por Categoria</h4>
-                                    <div className="space-y-2">
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-2">
-                                                <div className="w-2 h-2 rounded-full bg-warning"></div>
-                                                <span className="text-sm font-medium text-slate-300">Alimentação</span>
+                                    {loadingSummary ? (
+                                        <div className="space-y-2">
+                                            <div className="h-4 w-full bg-slate-100 dark:bg-slate-800 rounded animate-pulse"></div>
+                                            <div className="h-4 w-2/3 bg-slate-100 dark:bg-slate-800 rounded animate-pulse"></div>
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-2">
+                                            {/* Placeholder for category breakdown, real data would come from summary if implemented */}
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="w-2 h-2 rounded-full bg-amber-500"></div>
+                                                    <span className="text-sm font-medium text-slate-600 dark:text-slate-300">Gasto Geral</span>
+                                                </div>
+                                                <span className="text-sm font-bold text-slate-800 dark:text-white">{formatCurrency(summary?.totalExpenses || 0)}</span>
                                             </div>
-                                            <span className="text-sm font-bold text-white">R$ 2.400,00</span>
-                                        </div>
-                                        <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                                            <div className="bg-warning h-full w-[42%]"></div>
-                                        </div>
-
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-2">
-                                                <div className="w-2 h-2 rounded-full bg-primary"></div>
-                                                <span className="text-sm font-medium text-slate-300">Transporte</span>
+                                            <div className="w-full h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                                                <div className="bg-amber-500 h-full w-[100%]"></div>
                                             </div>
-                                            <span className="text-sm font-bold text-white">R$ 1.250,00</span>
                                         </div>
-                                        <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                                            <div className="bg-primary h-full w-[22%]"></div>
-                                        </div>
-                                    </div>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -92,64 +125,75 @@ export default function Dashboard() {
                     <div>
                         <div className="flex items-center justify-between mb-4 px-2">
                             <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Saldo de Contas</h3>
-                            <button className="text-[10px] font-bold text-primary uppercase hover:underline">Ver Detalhes</button>
+                            <Link to="/accounts" className="text-[10px] font-bold text-primary uppercase hover:underline">Ver Detalhes</Link>
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-                            <div className="glass-card p-5 rounded-2xl group hover:border-danger/50 cursor-pointer">
-                                <div className="flex justify-between items-start mb-4">
-                                    <div className="w-10 h-10 rounded-xl bg-red-600 flex items-center justify-center shadow-lg shadow-red-500/20 font-bold text-white">S</div>
-                                    <span className="text-[9px] font-bold px-2 py-0.5 bg-primary/10 text-primary rounded-full">PRINCIPAL</span>
-                                </div>
-                                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Santander</p>
-                                <p className="text-xl font-bold text-white mt-0.5">R$ 12.450,00</p>
-                                <p className="text-[10px] text-slate-400 mt-1">Conta Corrente</p>
-                            </div>
-
-                            <div className="glass-card p-5 rounded-2xl group hover:border-warning/50 cursor-pointer">
-                                <div className="flex justify-between items-start mb-4">
-                                    <div className="w-10 h-10 rounded-xl bg-orange-500 flex items-center justify-center shadow-lg shadow-orange-500/20 font-bold text-white">I</div>
-                                </div>
-                                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Itaú</p>
-                                <p className="text-xl font-bold text-white mt-0.5">R$ 2.970,50</p>
-                                <p className="text-[10px] text-slate-400 mt-1">Reserva Emergência</p>
-                            </div>
-
-                            <div className="glass-card p-5 rounded-2xl group hover:border-purple-500/50 cursor-pointer">
-                                <div className="flex justify-between items-start mb-4">
-                                    <div className="w-10 h-10 rounded-xl bg-purple-600 flex items-center justify-center shadow-lg shadow-purple-500/20 font-bold text-white">N</div>
-                                </div>
-                                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Nubank</p>
-                                <p className="text-xl font-bold text-white mt-0.5">R$ 4.210,00</p>
-                                <p className="text-[10px] text-slate-400 mt-1">Investimentos</p>
-                            </div>
+                            {loadingAccounts ? (
+                                [1, 2, 3].map(i => (
+                                    <div key={i} className="glass-card p-5 rounded-2xl h-32 animate-pulse bg-slate-100 dark:bg-slate-800/50"></div>
+                                ))
+                            ) : accounts && accounts.length > 0 ? (
+                                accounts.map(acc => (
+                                    <Link key={acc.id} to={`/accounts/${acc.id}`} className="glass-card p-5 rounded-2xl group hover:border-primary/50 cursor-pointer transition-all hover:-translate-y-1 block">
+                                        <div className="flex justify-between items-start mb-4">
+                                            <div
+                                                className="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg font-bold text-white"
+                                                style={{ backgroundColor: acc.color || '#64748b' }}
+                                            >
+                                                {acc.bank_name[0]}
+                                            </div>
+                                            {acc.is_primary && (
+                                                <span className="text-[9px] font-bold px-2 py-0.5 bg-primary/10 text-primary rounded-full">PRINCIPAL</span>
+                                            )}
+                                        </div>
+                                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">{acc.bank_name}</p>
+                                        <p className="text-xl font-bold text-slate-800 dark:text-white mt-0.5">{formatCurrency(Number(acc.balance))}</p>
+                                        <p className="text-[10px] text-slate-400 mt-1">{acc.account_type}</p>
+                                    </Link>
+                                ))
+                            ) : (
+                                <Link to="/accounts/add" className="glass-card p-5 rounded-2xl flex flex-col items-center justify-center text-slate-400 hover:text-primary hover:bg-primary/5 transition-all h-32 border-dashed">
+                                    <Plus size={24} className="mb-2" />
+                                    <span className="text-xs font-bold">Adicionar Conta</span>
+                                </Link>
+                            )}
                         </div>
                     </div>
 
                     {/* Recent Transactions List */}
-                    <div className="glassmorphism bg-slate-900/40 p-5 rounded-3xl">
+                    <div className="glassmorphism bg-white/60 dark:bg-slate-900/40 p-5 rounded-3xl border border-white/40 dark:border-slate-700/40 backdrop-blur-md">
                         <div className="flex items-center justify-between mb-4 px-1">
                             <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Últimas Transações</h3>
-                            <button className="text-[10px] font-bold text-slate-500 uppercase hover:text-primary transition-colors">Ver Tudo</button>
+                            <Link to="/transactions" className="text-[10px] font-bold text-slate-500 uppercase hover:text-primary transition-colors">Ver Tudo</Link>
                         </div>
                         <div className="space-y-1">
-                            {[
-                                { name: "Supermercado Pão de Açúcar", date: "Hoje, 14:20", amount: "- R$ 342,50", type: "expense", color: "rose", bg: "bg-rose-500/10", text: "text-rose-500" },
-                                { name: "Transferência Recebida", date: "Ontem, 09:15", amount: "+ R$ 1.200,00", type: "income", color: "emerald", bg: "bg-emerald-500/10", text: "text-emerald-500" },
-                                { name: "Uber Trip", date: "15 Set, 18:45", amount: "- R$ 24,90", type: "expense", color: "amber", bg: "bg-amber-500/10", text: "text-amber-500" }
-                            ].map((t, i) => (
-                                <div key={i} className="flex items-center justify-between p-2 rounded-xl hover:bg-slate-800/40 transition-colors">
-                                    <div className="flex items-center gap-3">
-                                        <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center", t.bg, t.text)}>
-                                            {t.type === 'expense' ? <ShoppingBag size={18} /> : <ArrowDownRight size={18} />}
+                            {loadingTransactions ? (
+                                [1, 2, 3].map(i => (
+                                    <div key={i} className="h-16 bg-slate-100 dark:bg-slate-800/50 rounded-xl animate-pulse"></div>
+                                ))
+                            ) : recentTransactions && recentTransactions.length > 0 ? (
+                                recentTransactions.map((t) => (
+                                    <div key={t.id} className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/40 transition-colors">
+                                        <div className="flex items-center gap-3">
+                                            <div className={cn(
+                                                "w-10 h-10 rounded-xl flex items-center justify-center",
+                                                t.type === 'expense' ? "bg-rose-500/10 text-rose-500" : "bg-emerald-500/10 text-emerald-500"
+                                            )}>
+                                                {t.type === 'expense' ? <ShoppingBag size={18} /> : <ArrowDownRight size={18} />}
+                                            </div>
+                                            <div>
+                                                <p className="text-sm font-bold text-slate-700 dark:text-slate-200">{t.description}</p>
+                                                <p className="text-[10px] text-slate-400">{new Date(t.date).toLocaleDateString('pt-BR')}</p>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <p className="text-xs font-semibold text-slate-200">{t.name}</p>
-                                            <p className="text-[10px] text-slate-400">{t.date}</p>
-                                        </div>
+                                        <span className={cn("text-sm font-bold", t.type === 'income' ? "text-emerald-500" : "text-rose-500")}>
+                                            {t.type === 'expense' ? '- ' : '+ '}{formatCurrency(Number(t.amount))}
+                                        </span>
                                     </div>
-                                    <span className={cn("text-xs font-bold", t.name.includes("Recebida") ? "text-emerald-500" : "text-danger")}>{t.amount}</span>
-                                </div>
-                            ))}
+                                ))
+                            ) : (
+                                <p className="text-sm text-slate-400 text-center py-6">Nenhuma transação recente.</p>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -163,41 +207,66 @@ export default function Dashboard() {
                         </div>
                         <div className="flex justify-between items-center mb-4 relative z-10">
                             <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Meus Cartões</h3>
-                            <button className="text-primary hover:bg-primary/10 p-1 rounded-lg transition-colors">
+                            <Link to="/cards/new" className="text-primary hover:bg-primary/10 p-1 rounded-lg transition-colors">
                                 <Plus size={16} />
-                            </button>
+                            </Link>
                         </div>
 
-                        <div className="relative aspect-[1.586/1] rounded-2xl p-5 text-white shadow-xl bg-gradient-to-br from-slate-900 via-slate-800 to-black overflow-hidden mb-4 group-hover:scale-[1.02] transition-transform duration-500">
-                            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20 mix-blend-overlay"></div>
-                            <div className="relative z-10 h-full flex flex-col justify-between">
-                                <div className="flex justify-between items-start">
-                                    <span className="text-[9px] font-bold bg-white/20 px-2 py-0.5 rounded-full border border-white/20 backdrop-blur-sm">BLACK EDITION</span>
-                                    {/* Mastercard Logo Placeholder */}
-                                    <div className="flex -space-x-1.5 opacity-80">
-                                        <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                                        <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                        {loadingCards ? (
+                            <div className="w-full aspect-[1.586/1] bg-slate-200 dark:bg-slate-800 rounded-2xl animate-pulse"></div>
+                        ) : primaryCard ? (
+                            <div className="relative aspect-[1.586/1] rounded-2xl p-5 text-white shadow-xl bg-gradient-to-br from-slate-900 via-slate-800 to-black overflow-hidden mb-4 group-hover:scale-[1.02] transition-transform duration-500">
+                                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20 mix-blend-overlay"></div>
+                                <div className="relative z-10 h-full flex flex-col justify-between">
+                                    <div className="flex justify-between items-start">
+                                        <span className="text-[9px] font-bold bg-white/20 px-2 py-0.5 rounded-full border border-white/20 backdrop-blur-sm">
+                                            {primaryCard.brand || 'CARTÃO'}
+                                        </span>
+                                        <div className="flex -space-x-1.5 opacity-80">
+                                            <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                                            <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                                        </div>
                                     </div>
-                                </div>
-                                <div>
-                                    <div className="text-[10px] text-white/50 font-mono mb-0.5 tracking-widest">•••• 3796</div>
-                                    <div className="flex justify-between items-end">
-                                        <div className="text-[11px] text-white/80 font-semibold uppercase tracking-wider">Alex Silva</div>
-                                        <div className="text-[9px] text-white/50 uppercase tracking-widest">12/29</div>
+                                    <div>
+                                        <div className="text-[10px] text-white/50 font-mono mb-0.5 tracking-widest">
+                                            •••• {primaryCard.last_four}
+                                        </div>
+                                        <div className="flex justify-between items-end">
+                                            <div className="text-[11px] text-white/80 font-semibold uppercase tracking-wider">
+                                                {user?.fullName || "Usuário"}
+                                            </div>
+                                            <div className="text-[9px] text-white/50 uppercase tracking-widest">
+                                                {primaryCard.expiry ? new Date(primaryCard.expiry).toLocaleDateString('pt-BR', { month: '2-digit', year: '2-digit' }) : 'N/A'}
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        ) : (
+                            <div className="aspect-[1.586/1] rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center text-slate-400 mb-4">
+                                <CreditCard size={32} className="mb-2 opacity-50" />
+                                <span className="text-xs">Nenhum cartão</span>
+                            </div>
+                        )}
 
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                                 <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
-                                <span className="text-xs font-medium text-slate-600 dark:text-slate-300">Fatura Aberta</span>
+                                <span className="text-xs font-medium text-slate-600 dark:text-slate-300">Limite Disp.</span>
                             </div>
-                            <span className="text-sm font-bold text-slate-800 dark:text-white">R$ 4.210,50</span>
+                            <span className="text-sm font-bold text-slate-800 dark:text-white">
+                                {primaryCard ? formatCurrency(Number(primaryCard.credit_limit) - 0) : 'R$ 0,00'}
+                            </span>
                         </div>
                         <div className="w-full h-1 bg-slate-100 dark:bg-slate-700 rounded-full mt-2 overflow-hidden">
-                            <div className="h-full bg-emerald-500 w-[35%]"></div>
+                            <div
+                                className="h-full bg-emerald-500 transition-all duration-500"
+                                style={{
+                                    width: primaryCard
+                                        ? `${Math.min(((Number(primaryCard.credit_limit) - 0) / Number(primaryCard.credit_limit)) * 100, 100)}%`
+                                        : '0%'
+                                }}
+                            ></div>
                         </div>
                     </div>
 
@@ -209,19 +278,19 @@ export default function Dashboard() {
                                 <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center text-emerald-500 group-hover:bg-emerald-500 group-hover:text-white transition-all shadow-sm">
                                     <Plus size={20} />
                                 </div>
-                                <span className="text-[9px] font-bold text-slate-300 text-center leading-tight">Receita</span>
+                                <span className="text-[9px] font-bold text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 text-center leading-tight transition-colors">Receita</span>
                             </Link>
                             <Link to="/new-expense" className="flex flex-col items-center justify-center gap-1.5 p-3 glass-card rounded-2xl group w-full hover:scale-105 transition-transform active:scale-95">
                                 <div className="w-10 h-10 bg-rose-500/10 rounded-xl flex items-center justify-center text-rose-500 group-hover:bg-rose-500 group-hover:text-white transition-all shadow-sm">
                                     <Minus size={20} />
                                 </div>
-                                <span className="text-[9px] font-bold text-slate-300 text-center leading-tight">Despesa</span>
+                                <span className="text-[9px] font-bold text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 text-center leading-tight transition-colors">Despesa</span>
                             </Link>
                             <Link to="/invoices" className="flex flex-col items-center justify-center gap-1.5 p-3 glass-card rounded-2xl group w-full hover:scale-105 transition-transform active:scale-95">
                                 <div className="w-10 h-10 bg-amber-500/10 rounded-xl flex items-center justify-center text-amber-500 group-hover:bg-amber-500 group-hover:text-white transition-all shadow-sm">
                                     <FileText size={20} />
                                 </div>
-                                <span className="text-[9px] font-bold text-slate-300 text-center leading-tight">Faturas</span>
+                                <span className="text-[9px] font-bold text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 text-center leading-tight transition-colors">Faturas</span>
                             </Link>
                         </div>
                     </div>
@@ -233,18 +302,18 @@ export default function Dashboard() {
                                 <Lightbulb size={20} />
                             </div>
                             <div>
-                                <h4 className="font-bold text-white text-sm">Dica Financeira</h4>
+                                <h4 className="font-bold text-slate-700 dark:text-white text-sm">Dica Financeira</h4>
                                 <p className="text-[10px] text-slate-400">Personalizado para você</p>
                             </div>
                         </div>
-                        <p className="text-xs text-slate-300 leading-relaxed">
-                            Você economizou 12% a mais em <b>Alimentação</b> esta semana. Continue assim para bater sua meta mensal!
+                        <p className="text-xs text-slate-500 dark:text-slate-300 leading-relaxed">
+                            Você economizou {financialTip.savingsPercent}% a mais em <b>{financialTip.category}</b> esta semana. Continue assim para bater sua meta mensal!
                         </p>
-                        <div className="mt-4 pt-4 border-t border-slate-700/50 flex justify-between items-center">
+                        <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700/50 flex justify-between items-center">
                             <span className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest">Meta de Economia</span>
-                            <span className="text-sm font-bold text-white">82%</span>
+                            <span className="text-sm font-bold text-slate-700 dark:text-white">{financialTip.goalPercent}%</span>
                         </div>
-                        <div className="w-full h-1.5 bg-slate-800 rounded-full mt-2 overflow-hidden">
+                        <div className="w-full h-1.5 bg-slate-200 dark:bg-slate-800 rounded-full mt-2 overflow-hidden">
                             <div className="h-full bg-indigo-500 w-[82%]"></div>
                         </div>
                     </div>

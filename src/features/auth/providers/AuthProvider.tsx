@@ -38,6 +38,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         // Listen for auth changes
         const { data: { subscription } } = authService.onAuthStateChange(
             (_event, session) => {
+                console.log('[AuthProvider] Auth state changed:', _event, session?.user?.email)
                 setSession(session)
                 if (session?.user) {
                     setUser(AuthService.toAuthUser(session.user))

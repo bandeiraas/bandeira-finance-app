@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Rocket, Mail, Lock, ArrowRight, TrendingUp, Loader2 } from "lucide-react";
 import { useAuth } from "../features/auth/providers/AuthProvider";
@@ -13,10 +13,13 @@ export default function Login() {
     const [isLoading, setIsLoading] = useState(false);
 
     // Redirect if already logged in
-    if (isAuthenticated) {
-        navigate("/dashboard", { replace: true });
-        return null;
-    }
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate("/dashboard", { replace: true });
+        }
+    }, [isAuthenticated, navigate]);
+
+    if (isAuthenticated) return null;
 
     const from = (location.state as { from?: { pathname: string } })?.from?.pathname || "/dashboard";
 
