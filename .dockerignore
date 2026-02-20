@@ -1,0 +1,36 @@
+# Dependencies
+node_modules
+**/node_modules
+
+# Build outputs
+dist
+**/dist
+.turbo
+
+# Git
+.git
+.gitignore
+
+# IDE
+.vscode
+.idea
+.gemini
+
+# Env (pass via docker-compose, never bake secrets)
+.env
+.env.*
+!.env.example
+
+# Tests & docs (not needed for build)
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.ts
+**/__tests__
+**/__mocks__
+docs
+*.md
+!README.md
+
+# Misc
+*.log
+.DS_Store

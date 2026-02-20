@@ -1,0 +1,36 @@
+{
+  "name": "@bandeira/api",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/app.ts"
+  },
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc --noEmit",
+    "start": "tsx src/index.ts",
+    "lint": "eslint .",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@bandeira/database": "*",
+    "@bandeira/shared": "*",
+    "@hono/node-server": "^1.13.7",
+    "@supabase/supabase-js": "^2.95.3",
+    "dotenv": "^16.4.5",
+    "hono": "^4.6.12",
+    "hono-rate-limiter": "^0.5.3",
+    "unstorage": "^1.17.4"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@types/node": "^24.10.1",
+    "eslint": "^9.39.1",
+    "globals": "^16.5.0",
+    "tsx": "^4.19.2",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.48.0",
+    "vitest": "^4.0.18"
+  }
+}

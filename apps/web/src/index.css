@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  /* Stitch: glassmorphism - modo claro bg-white/40, escuro bg-slate-900/40 */
+  .glassmorphism {
+    @apply bg-white/40 dark:bg-slate-900/40 backdrop-blur-md border border-white/20 dark:border-slate-700/30;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+  }
+
+  .dark .glassmorphism {
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+  }
+
+  .glass-card {
+    @apply glassmorphism hover:bg-white/50 dark:hover:bg-slate-900/50 transition-all duration-300;
+  }
+
+  /* Stitch: bg-mesh #f8fafc modo claro */
+  .bg-mesh {
+    background-color: #f8fafc;
+    background-image:
+      radial-gradient(at 0% 0%, hsla(210, 100%, 98%, 1) 0, transparent 50%),
+      radial-gradient(at 50% 0%, hsla(210, 100%, 96%, 1) 0, transparent 50%),
+      radial-gradient(at 100% 0%, hsla(210, 100%, 94%, 1) 0, transparent 50%);
+  }
+
+  .dark .bg-mesh {
+    background-color: #0f172a;
+    background-image:
+      radial-gradient(at 0% 0%, hsla(222, 47%, 12%, 1) 0, transparent 50%),
+      radial-gradient(at 100% 0%, hsla(222, 47%, 8%, 1) 0, transparent 50%);
+  }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+body {
+  @apply bg-mesh antialiased font-sans min-h-screen selection:bg-primary/30 transition-colors duration-300;
+}
+
+/* Garante texto escuro no modo claro - evita fontes brancas */
+body {
+  color: #1e293b; /* slate-800 */
+}
+
+.dark body {
+  color: #cbd5e1; /* slate-300 */
+}

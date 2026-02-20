@@ -241,7 +241,7 @@ Check your `tsconfig.json` includes path aliases:
 
 ## Contributing
 
-Contributions to improve this skill are welcome! See the root [CONTRIBUTING.md](../../CONTRIBUTING.md) for guidelines.
+Contributions to improve this skill are welcome! See [CONTRIBUTING.md](../../.github/CONTRIBUTING.md) for guidelines.
 
 ## License
 
