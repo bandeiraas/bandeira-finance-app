@@ -1,0 +1,69 @@
+---
+description: Boas práticas e convenções do Bandeira Finance (monorepo, arquitetura, API, validação, testes)
+alwaysApply: true
+---
+
+# Bandeira Finance — Boas Práticas
+
+## Arquitetura do Monorepo
+
+- **apps/web**: React + Vite. UI, hooks, API client. Depende apenas de `@bandeira/shared`.
+- **apps/api**: Hono + Node. Rotas → Services → Repositories. Depende de `@bandeira/shared` e `@bandeira/database`.
+- **packages/shared**: Types, interfaces, errors, schemas Zod, Result.
+- **packages/database**: Client Supabase, migrations.
+
+**Regra crítica**: `apps/web` NUNCA importa de `apps/api`, `packages/database` ou Supabase direto (exceto Auth SDK). Comunicação é via HTTP (API client em `lib/api.ts`).
+
+## API (Hono)
+
+1. **Rotas** recebem requisição, validam, chamam service, retornam JSON.
+2. **Validação Zod** obrigatória em POST/PUT/PATCH: use `validate(schema, body)` do `@bandeira/shared`. Retorne 400 com `{ error: 'ValidationError', message, fields }` se falhar.
+3. **Validação de query params**: use schemas em `packages/shared/src/validation/querySchemas.ts` (`transactionsListQuerySchema`, `transactionsSummaryQuerySchema`, `categoriesListQuerySchema`). Ex.: `limit` 1–100, `month` 1–12, `year` 2020–2030.
+4. **CORS**: use variável `CORS_ORIGINS` (split por vírgula). Em produção, liste apenas origens permitidas. Fallback: localhost:5173–5176.
+5. **Rate limiting**: aplicado em `/api/*` (ex.: 100 req/min por IP). Usa `x-forwarded-for` ou `x-real-ip` quando disponível.
+6. **Services** retornam `Result<T, E>`. Use `if (!result.success) throw result.error` para deixar o errorHandler tratar.
+7. **Normalização**: se o frontend envia labels (ex: "Conta Corrente"), mapeie para valores do DB na rota antes de validar (ex: `normalizeAccountType`).
+
+## Services e Repositories
+
+- Services recebem interfaces (`IAccountRepository`, etc.), não implementações concretas.
+- Repositories implementam interfaces e acessam Supabase.
+- Use `ResultUtil.ok(data)` e `ResultUtil.fail(AppError.fromUnknown(err))`.
+- Evite `throw`; erros explícitos via `Result`.
+- **Factories**: criação de entidades com invariantes em `packages/shared/src/domain/factories/`. Use `TransactionFactory`, `AccountFactory`, `CardFactory` nos services em vez de montar objetos manualmente.
+
+## Frontend
+
+- Hooks chamam `api.accounts.list(token)`, `api.transactions.createIncome(token, data)`, etc. API client em `lib/api.ts` usa fetch com tipos explícitos do `@bandeira/shared`.
+- Token vem de `session.accessToken` (Supabase Auth). Supabase é usado apenas para Auth.
+- Types vêm de `@bandeira/shared` (Account, Transaction, etc.).
+- **Error Boundary**: app envolvido por `ErrorBoundary` (react-error-boundary). Fallback em `@components/ErrorBoundaryFallback`.
+- **Tratamento de erros em queries**: `ApiErrorBanner` inscreve-se no query cache e exibe erros. Mensagens amigáveis em PT-BR em `lib/errorMessages.ts`.
+
+## Testes
+
+- **Vitest** para unit e schema tests.
+- Testes de services: mock da interface do repository, verifique chamadas e retornos.
+- Schemas: `packages/shared/src/validation/__tests__/`.
+- Rode `npx turbo run test` para todos os pacotes.
+
+## CI e Pipeline
+
+- `npx turbo run lint test build` executa em todos os pacotes.
+- Lint: ESLint flat config (`eslint.config.js`). Ignore `dist/`, `node_modules/`.
+- Build web: `tsc -b && vite build`. Build API: `tsc --noEmit`.
+
+## Environment
+
+- API: `loadEnv.ts` carrega `.env.local` antes de qualquer import. Variáveis: `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `CORS_ORIGINS` (origens permitidas, separadas por vírgula).
+- Web: variáveis `VITE_*` no build. `.env.local` na raiz.
+- Docker: use `npm run docker:up` (usa `--env-file .env.local`).
+
+## TypeScript
+
+- Use `type` para unions/aliases; `interface` só quando precisar de extensão ou declaração de membros.
+- Evite `any`. Prefira `unknown` e refine.
+
+## ESLint
+
+- Resolva erros antes de commitar. Use `// eslint-disable-next-line regra -- motivo` só quando necessário e documente o motivo.
