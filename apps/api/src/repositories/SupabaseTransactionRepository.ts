@@ -4,7 +4,7 @@ import { SupabaseErrorMapper } from '@bandeira/shared'
 
 export class SupabaseTransactionRepository implements ITransactionRepository {
     private client: SupabaseClient<Database>
-    private readonly TRANSACTION_SELECT = 'id, user_id, account_id, category_id, amount, type, description, date, created_at, categories(id, name, color)'
+    private static readonly TRANSACTION_SELECT = 'id, user_id, account_id, category_id, amount, type, description, date, created_at, categories(id, name, color)'
 
     constructor(client: SupabaseClient<Database>) {
         this.client = client
