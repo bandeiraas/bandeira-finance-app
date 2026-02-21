@@ -129,7 +129,7 @@ export default function AddCard() {
                                             Titular do Cartão
                                         </p>
                                         <p className="text-lg font-medium tracking-wide uppercase">
-                                            {(cardName || user?.fullName || "Alex Silva").toUpperCase()}
+                                            {(cardName || user?.fullName || "Usuário").toUpperCase()}
                                         </p>
                                     </div>
                                     <div className="flex -space-x-3">
@@ -278,7 +278,7 @@ export default function AddCard() {
                                         type="text"
                                         value={cardName}
                                         onChange={(e) => setCardName(e.target.value)}
-                                        placeholder="ALEX SILVA"
+                                        placeholder={user?.fullName?.toUpperCase() || "SEU NOME"}
                                         maxLength={50}
                                         className="w-full bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all"
                                     />

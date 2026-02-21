@@ -7,6 +7,7 @@ import type {
     SignInData,
     AuthStateCallback,
     AuthSubscription,
+    OAuthProvider,
     Result,
 } from '@bandeira/shared'
 import { ResultUtil as R, AuthenticationError } from '@bandeira/shared'
@@ -41,6 +42,19 @@ export class FakeAuthService implements IAuthService {
         this.currentSession = this.makeSession(this.currentUser)
         this.notify('SIGNED_IN', this.currentSession)
         return R.ok({ user: this.currentUser, session: this.currentSession })
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- interface requires param
+    async signInWithOAuth(_provider: OAuthProvider): Promise<Result<void>> {
+        this.currentUser = {
+            id: crypto.randomUUID(),
+            email: 'oauth@example.com',
+            fullName: 'OAuth User',
+            avatarUrl: null,
+        }
+        this.currentSession = this.makeSession(this.currentUser)
+        this.notify('SIGNED_IN', this.currentSession)
+        return R.ok(undefined)
     }
 
     async signOut(): Promise<Result<void>> {

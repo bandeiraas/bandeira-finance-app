@@ -53,11 +53,11 @@ export default function Profile() {
                 <div className="absolute -bottom-16 left-4 md:left-8 flex items-end gap-6">
                     <div className="relative group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
                         <div className="w-32 h-32 rounded-3xl bg-slate-200 dark:bg-slate-900 border-4 border-white dark:border-slate-950 flex items-center justify-center text-slate-700 overflow-hidden relative shadow-xl">
-                            {profile?.avatar_url ? (
-                                <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
+                            {(profile?.avatar_url || user?.avatarUrl) ? (
+                                <img src={profile?.avatar_url || user?.avatarUrl || ""} alt="Avatar" className="w-full h-full object-cover" />
                             ) : (
                                 <span className="relative text-4xl font-bold text-slate-400">
-                                    {profile?.full_name?.[0] || user?.email?.[0]?.toUpperCase() || "?"}
+                                    {(profile?.full_name || user?.fullName)?.[0] || user?.email?.[0]?.toUpperCase() || "?"}
                                 </span>
                             )}
                             {uploadAvatar.isPending && (
@@ -79,9 +79,9 @@ export default function Profile() {
                     </div>
                     <div className="mb-4">
                         <h1 className="text-3xl font-display font-bold text-slate-800 dark:text-white capitalize">
-                            {profile?.full_name || "Usuário"}
+                            {profile?.full_name || user?.fullName || "Usuário"}
                         </h1>
-                        <p className="text-slate-500 dark:text-slate-400 text-sm">@{profile?.username || user?.email?.split('@')[0] || "usuario"} • Membro desde {new Date().getFullYear()}</p>
+                        <p className="text-slate-500 dark:text-slate-400 text-sm">@{profile?.username || user?.email?.split("@")[0] || "usuario"} • Membro desde {new Date().getFullYear()}</p>
                     </div>
                 </div>
 

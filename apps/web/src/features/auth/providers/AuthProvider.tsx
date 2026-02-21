@@ -11,6 +11,7 @@ interface AuthContextType {
     isLoading: boolean
     isAuthenticated: boolean
     signIn: (email: string, password: string) => Promise<void>
+    signInWithOAuth: (provider: 'google') => Promise<void>
     signUp: (email: string, password: string, fullName: string) => Promise<void>
     signOut: () => Promise<void>
     resetPassword: (email: string) => Promise<void>
@@ -50,6 +51,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
         if (!result.success) throw result.error
     }, [])
 
+    const signInWithOAuth = useCallback(async (provider: 'google') => {
+        const result = await authService.signInWithOAuth(provider)
+        if (!result.success) throw result.error
+    }, [])
+
     const signUp = useCallback(async (email: string, password: string, fullName: string) => {
         const result = await authService.signUp({ email, password, fullName })
         if (!result.success) throw result.error
@@ -73,6 +79,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         isLoading,
         isAuthenticated: !!user,
         signIn,
+        signInWithOAuth,
         signUp,
         signOut,
         resetPassword,

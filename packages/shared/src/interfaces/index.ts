@@ -1,4 +1,4 @@
-export type { IAuthService } from './auth/IAuthService'
+export type { IAuthService, OAuthProvider } from './auth/IAuthService'
 export type { IAccountRepository } from './repositories/IAccountRepository'
 export type { ITransactionRepository } from './repositories/ITransactionRepository'
 export type { ICategoryRepository } from './repositories/ICategoryRepository'
