@@ -1,127 +1,178 @@
 import { Link } from "react-router-dom";
-import { Rocket, TrendingUp, ArrowRight, CheckCircle2, ShieldCheck, Zap } from "lucide-react";
+import {
+  ArrowRight,
+  PlayCircle,
+  CheckCircle2,
+  TrendingUp,
+  Shield,
+  Brain,
+} from "lucide-react";
 
 export default function Landing() {
-    return (
-        <div className="flex min-h-screen flex-row font-body bg-slate-900 text-slate-700 overflow-hidden">
-            {/* Background Gradients (Global) */}
-            <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 z-0"></div>
-            <div className="absolute top-0 right-0 -mt-20 -mr-20 w-96 h-96 bg-primary/20 blur-3xl rounded-full z-0 pointer-events-none animate-pulse"></div>
-            <div className="absolute bottom-0 left-0 -mb-20 -ml-20 w-80 h-80 bg-blue-600/20 blur-3xl rounded-full z-0 pointer-events-none animate-pulse delay-1000"></div>
+  return (
+    <div className="font-sans text-slate-700 dark:text-slate-300 min-h-screen flex flex-col relative overflow-x-hidden bg-[linear-gradient(180deg,#ffffff_0%,#f8fafc_100%)] dark:bg-[linear-gradient(180deg,#0f172a_0%,#020617_100%)]">
+      {/* Mesh gradient background */}
+      <div
+        className="fixed inset-0 overflow-hidden pointer-events-none z-0"
+        style={{
+          background:
+            "radial-gradient(at 0% 0%, rgba(14, 165, 233, 0.15) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(30, 41, 59, 0.1) 0px, transparent 50%)",
+        }}
+      >
+        <div className="absolute top-[-10%] left-[20%] w-[500px] h-[500px] bg-blue-100/40 dark:bg-primary/10 blur-[100px] rounded-full mix-blend-multiply" />
+        <div className="absolute top-[10%] right-[10%] w-[400px] h-[400px] bg-slate-100/60 dark:bg-slate-800/40 blur-[80px] rounded-full mix-blend-multiply" />
+      </div>
 
-            {/* Main Content Container */}
-            <div className="relative z-10 w-full max-w-7xl mx-auto px-6 py-12 flex flex-col justify-between min-h-screen">
-
-                {/* Header / Nav */}
-                <nav className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-slate-900 shrink-0 shadow-lg shadow-white/10">
-                            <Rocket size={24} fill="currentColor" />
-                        </div>
-                        <span className="font-display font-bold text-2xl tracking-tight text-white">FinTrack</span>
-                    </div>
-                    <div className="hidden md:flex items-center gap-6">
-                        <Link to="/login" className="text-slate-300 hover:text-white font-medium transition-colors">Entrar</Link>
-                        <Link to="/register" className="bg-white text-slate-900 px-5 py-2.5 rounded-xl font-bold hover:bg-slate-100 transition-colors shadow-lg shadow-white/10">
-                            Criar Conta
-                        </Link>
-                    </div>
-                </nav>
-
-                {/* Hero Section */}
-                <div className="flex flex-col lg:flex-row items-center gap-16 lg:gap-24 mt-12 lg:mt-0 flex-1">
-
-                    {/* Text Content */}
-                    <div className="flex-1 space-y-8 text-center lg:text-left">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-primary text-xs font-bold uppercase tracking-wider mb-2">
-                            <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-                            Gestão Inteligente v2.0
-                        </div>
-                        <h1 className="font-display font-bold text-5xl sm:text-6xl lg:text-7xl leading-tight text-white">
-                            Seu dinheiro, <br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-500">sob controle.</span>
-                        </h1>
-                        <p className="text-slate-400 text-lg sm:text-xl font-light leading-relaxed max-w-2xl mx-auto lg:mx-0">
-                            Acompanhe gastos, planeje metas e multiplique seu patrimônio com a plataforma financeira mais intuitiva do mercado.
-                        </p>
-
-                        <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
-                            <Link to="/register" className="w-full sm:w-auto flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-slate-900 px-8 py-4 rounded-2xl font-bold text-lg transition-all transform hover:-translate-y-1 shadow-xl shadow-primary/20">
-                                Começar Agora
-                                <ArrowRight size={20} />
-                            </Link>
-                            <Link to="/login" className="w-full sm:w-auto flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 text-white px-8 py-4 rounded-2xl font-bold text-lg transition-all backdrop-blur-md">
-                                Fazer Login
-                            </Link>
-                        </div>
-
-                        <div className="pt-8 flex items-center justify-center lg:justify-start gap-8 text-slate-500 text-sm font-medium">
-                            <div className="flex items-center gap-2">
-                                <CheckCircle2 size={16} className="text-emerald-500" />
-                                <span>Sem cartão necessário</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <CheckCircle2 size={16} className="text-emerald-500" />
-                                <span>Plano Gratuito disponível</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Hero Visual / Features */}
-                    <div className="flex-1 w-full max-w-md lg:max-w-full">
-                        <div className="relative">
-                            {/* Decorative Blobs behind cards */}
-                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-gradient-to-tr from-primary/10 to-blue-500/10 blur-3xl rounded-full"></div>
-
-                            {/* Cards Grid */}
-                            <div className="grid gap-6 relative z-10">
-                                {/* Card 1 */}
-                                <div className="glassmorphism bg-white/5 border-white/10 p-6 rounded-3xl flex items-center gap-4 transform rotate-2 hover:rotate-0 transition-transform duration-500">
-                                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-white shadow-lg shadow-emerald-500/20">
-                                        <TrendingUp size={24} />
-                                    </div>
-                                    <div>
-                                        <h3 className="font-bold text-white text-lg">Crescimento Real</h3>
-                                        <p className="text-slate-400 text-sm">Organize suas receitas e despesas</p>
-                                    </div>
-                                </div>
-
-                                {/* Card 2 (Offset) */}
-                                <div className="glassmorphism bg-white/5 border-white/10 p-6 rounded-3xl flex items-center gap-4 ml-8 sm:ml-12 transform -rotate-1 hover:rotate-0 transition-transform duration-500">
-                                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
-                                        <ShieldCheck size={24} />
-                                    </div>
-                                    <div>
-                                        <h3 className="font-bold text-white text-lg">Segurança Total</h3>
-                                        <p className="text-slate-400 text-sm">Seus dados criptografados</p>
-                                    </div>
-                                </div>
-
-                                {/* Card 3 */}
-                                <div className="glassmorphism bg-white/5 border-white/10 p-6 rounded-3xl flex items-center gap-4 transform rotate-1 hover:rotate-0 transition-transform duration-500">
-                                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white shadow-lg shadow-amber-500/20">
-                                        <Zap size={24} />
-                                    </div>
-                                    <div>
-                                        <h3 className="font-bold text-white text-lg">Automação IA</h3>
-                                        <p className="text-slate-400 text-sm">Insights automáticos inteligentes</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Footer */}
-                <div className="py-6 border-t border-white/5 text-center md:text-left flex flex-col md:flex-row justify-between items-center text-slate-500 text-sm gap-4">
-                    <p>© 2026 FinTrack Inc. Todos os direitos reservados.</p>
-                    <div className="flex gap-6">
-                        <a href="#" className="hover:text-white transition-colors">Termos</a>
-                        <a href="#" className="hover:text-white transition-colors">Privacidade</a>
-                        <a href="#" className="hover:text-white transition-colors">Ajuda</a>
-                    </div>
-                </div>
-            </div>
+      {/* Nav */}
+      <nav className="w-full flex justify-between items-center px-6 py-5 max-w-7xl mx-auto z-20 relative">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-lg bg-slate-900 dark:bg-white flex items-center justify-center text-white dark:text-slate-900 font-display font-bold text-lg">
+            F
+          </div>
+          <span className="font-display font-bold text-slate-900 dark:text-white text-lg tracking-tight">
+            FinTrack
+          </span>
         </div>
-    );
+        <div className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-500 dark:text-slate-400">
+          <a
+            href="#features"
+            className="hover:text-slate-900 dark:hover:text-white transition-colors"
+          >
+            Produtos
+          </a>
+          <a
+            href="#features"
+            className="hover:text-slate-900 dark:hover:text-white transition-colors"
+          >
+            Soluções
+          </a>
+          <a
+            href="#features"
+            className="hover:text-slate-900 dark:hover:text-white transition-colors"
+          >
+            Preços
+          </a>
+        </div>
+        <div className="flex items-center gap-4">
+          <Link
+            to="/login"
+            className="text-sm font-medium text-slate-900 dark:text-white hidden sm:block hover:opacity-80 transition-opacity"
+          >
+            Login
+          </Link>
+          <Link
+            to="/register"
+            className="text-sm font-medium bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-5 py-2.5 rounded-full hover:bg-slate-800 dark:hover:bg-slate-100 transition-all shadow-lg shadow-slate-900/10 dark:shadow-white/10"
+          >
+            Começar
+          </Link>
+        </div>
+      </nav>
+
+      {/* Main */}
+      <main className="flex-grow flex flex-col items-center justify-center relative z-10 px-4 pt-10 pb-20">
+        <div className="max-w-4xl mx-auto text-center space-y-8 mb-16">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/60 dark:bg-slate-900/40 backdrop-blur-md border border-slate-200/60 dark:border-slate-700/30 text-xs font-semibold text-primary uppercase tracking-wider shadow-sm">
+            <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+            Gestão Inteligente v2.0
+          </div>
+
+          <h1 className="font-display font-bold text-5xl md:text-7xl text-slate-900 dark:text-white tracking-tight leading-[1.1]">
+            Controle financeiro <br className="hidden md:block" />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-300">
+              simplificado ao extremo.
+            </span>
+          </h1>
+
+          <p className="text-lg md:text-xl text-slate-500 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed">
+            Reunimos todas as suas contas, investimentos e metas em um único
+            painel minimalista alimentado por inteligência artificial.
+          </p>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+            <Link
+              to="/register"
+              className="w-full sm:w-auto px-8 py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl font-semibold hover:bg-slate-800 dark:hover:bg-slate-100 transition-all shadow-xl shadow-slate-900/10 dark:shadow-white/10 hover:-translate-y-1 flex items-center justify-center gap-2 group"
+            >
+              Criar conta grátis
+              <ArrowRight
+                size={18}
+                className="group-hover:translate-x-1 transition-transform"
+              />
+            </Link>
+            <a
+              href="#features"
+              className="w-full sm:w-auto px-8 py-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-2xl font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition-all hover:-translate-y-1 flex items-center justify-center gap-2"
+            >
+              <PlayCircle size={20} className="text-slate-900 dark:text-white" />
+              Ver demonstração
+            </a>
+          </div>
+
+          <div className="pt-8 flex items-center justify-center gap-2 text-sm text-slate-400 dark:text-slate-500">
+            <span className="flex items-center gap-1">
+              <CheckCircle2 size={16} className="text-emerald-500 shrink-0" />
+              Sem cartão de crédito
+            </span>
+            <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600" />
+            <span className="flex items-center gap-1">
+              <CheckCircle2 size={16} className="text-emerald-500 shrink-0" />
+              14 dias grátis
+            </span>
+          </div>
+        </div>
+
+        <div className="w-full max-w-xs mx-auto h-px bg-gradient-to-r from-transparent via-slate-200 dark:via-slate-700 to-transparent mb-16" />
+
+        {/* Features */}
+        <section
+          id="features"
+          className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 max-w-6xl mx-auto w-full px-4"
+        >
+          <div className="flex flex-col items-center text-center group cursor-default">
+            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-sky-50 to-sky-100 dark:from-sky-900/30 dark:to-sky-800/30 flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform duration-300 border border-white dark:border-slate-700/50">
+              <TrendingUp size={32} className="text-primary" />
+            </div>
+            <h3 className="font-display font-bold text-lg text-slate-900 dark:text-white mb-2">
+              Crescimento Real
+            </h3>
+            <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed max-w-xs">
+              Analise a evolução do seu patrimônio com gráficos limpos e
+              projeções automáticas baseadas no seu histórico.
+            </p>
+          </div>
+
+          <div className="flex flex-col items-center text-center group cursor-default">
+            <div className="w-20 h-20 rounded-full bg-slate-900 dark:bg-white flex items-center justify-center mb-6 shadow-lg shadow-slate-900/20 dark:shadow-white/20 group-hover:scale-110 transition-transform duration-300 border border-slate-800 dark:border-slate-200">
+              <Shield size={32} className="text-white dark:text-slate-900" />
+            </div>
+            <h3 className="font-display font-bold text-lg text-slate-900 dark:text-white mb-2">
+              Segurança Total
+            </h3>
+            <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed max-w-xs">
+              Criptografia de ponta a ponta e conformidade bancária para
+              garantir que seus dados permaneçam seus.
+            </p>
+          </div>
+
+          <div className="flex flex-col items-center text-center group cursor-default">
+            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-sky-50 to-sky-100 dark:from-sky-900/30 dark:to-sky-800/30 flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform duration-300 border border-white dark:border-slate-700/50">
+              <Brain size={32} className="text-primary" />
+            </div>
+            <h3 className="font-display font-bold text-lg text-slate-900 dark:text-white mb-2">
+              Inteligência Artificial
+            </h3>
+            <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed max-w-xs">
+              Insights personalizados sobre seus gastos e sugestões de economia
+              geradas por nossa IA exclusiva.
+            </p>
+          </div>
+        </section>
+      </main>
+
+      <footer className="w-full py-6 text-center text-slate-400 dark:text-slate-500 text-sm relative z-10">
+        <p>© 2026 FinTrack. Todos os direitos reservados.</p>
+      </footer>
+    </div>
+  );
 }
