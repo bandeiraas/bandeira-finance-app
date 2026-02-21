@@ -8,6 +8,7 @@ import { ApiErrorBanner } from "@components/ApiErrorBanner.tsx"
 import Layout from "@layouts/MainLayout.tsx"
 
 import Landing from "@pages/Landing.tsx"
+import OnboardingDemo from "@pages/OnboardingDemo.tsx"
 import Login from "@pages/Login.tsx"
 import Register from "@pages/Register.tsx"
 import ForgotPassword from "@pages/ForgotPassword.tsx"
@@ -36,6 +37,7 @@ function App() {
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Landing />} />
+              <Route path="/demo" element={<OnboardingDemo />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />

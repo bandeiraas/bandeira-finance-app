@@ -100,13 +100,13 @@ export default function Landing() {
                 className="group-hover:translate-x-1 transition-transform"
               />
             </Link>
-            <a
-              href="#features"
+            <Link
+              to="/demo"
               className="w-full sm:w-auto px-8 py-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-2xl font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition-all hover:-translate-y-1 flex items-center justify-center gap-2"
             >
               <PlayCircle size={20} className="text-slate-900 dark:text-white" />
               Ver demonstração
-            </a>
+            </Link>
           </div>
 
           <div className="pt-8 flex items-center justify-center gap-2 text-sm text-slate-400 dark:text-slate-500">
