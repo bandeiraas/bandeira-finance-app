@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import type { AuthUser, AuthSession } from '@bandeira/shared'
 import { SupabaseAuthService } from '@infrastructure/supabase/SupabaseAuthService'
 import { supabase } from '@core/config/supabase'
@@ -24,6 +25,7 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
+    const queryClient = useQueryClient()
     const [user, setUser] = useState<AuthUser | null>(null)
     const [session, setSession] = useState<AuthSession | null>(null)
     const [isLoading, setIsLoading] = useState(true)
@@ -66,7 +68,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
         if (!result.success) throw result.error
         setUser(null)
         setSession(null)
-    }, [])
+        queryClient.clear() // Evita vazamento de dados do usuário anterior
+    }, [queryClient])
 
     const resetPassword = useCallback(async (email: string) => {
         const result = await authService.resetPassword(email)

@@ -61,6 +61,9 @@ export class SupabaseAuthService implements IAuthService {
                 provider,
                 options: {
                     redirectTo: `${window.location.origin}/login`,
+                    queryParams: {
+                        prompt: 'select_account', // Google: sempre exibe seletor de contas
+                    },
                 },
             })
             if (error) return R.fail(this.mapAuthError(error.message))
