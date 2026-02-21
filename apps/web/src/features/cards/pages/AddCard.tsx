@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ChevronLeft, Loader2, AlertCircle, Palette, Info, SmartphoneNfc } from "lucide-react";
-import { useCreateCard } from "../features/cards/hooks/useCards";
-import { useAuth } from "../features/auth/providers/AuthProvider";
-import UserMenu from "../components/UserMenu";
+import { useCreateCard } from "@features/cards/hooks/useCards";
+import { useAuth } from "@features/auth/providers/AuthProvider";
+import UserMenu from "@components/UserMenu";
+import { cn } from "@lib/utils";
 
 const CARD_STYLES = [
     { id: "black", label: "Preto", class: "from-[#1a1a1a] via-[#333] to-[#000]" },
@@ -96,11 +97,13 @@ export default function AddCard() {
             </header>
 
             <div className="flex flex-col xl:flex-row gap-8 flex-1">
-                {/* Left Column: Card Preview + Summary */}
                 <div className="flex-1 flex flex-col items-center justify-center min-h-[400px]">
                     <div className="w-full max-w-md">
                         <div
-                            className={`relative aspect-[1.58/1] w-full rounded-2xl overflow-hidden shadow-2xl bg-gradient-to-br ${styleClass} p-8 text-white flex flex-col justify-between`}
+                            className={cn(
+                                "relative aspect-[1.58/1] w-full rounded-2xl overflow-hidden shadow-2xl bg-gradient-to-br p-8 text-white flex flex-col justify-between",
+                                styleClass
+                            )}
                         >
                             <div className="flex justify-between items-start">
                                 <div className="space-y-1">
@@ -142,7 +145,12 @@ export default function AddCard() {
                                     Limite Inicial
                                 </p>
                                 <p className="text-xl font-bold text-slate-800 dark:text-white">
-                                    {creditLimit.toLocaleString("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                                    {creditLimit.toLocaleString("pt-BR", {
+                                        style: "currency",
+                                        currency: "BRL",
+                                        minimumFractionDigits: 0,
+                                        maximumFractionDigits: 0,
+                                    })}
                                 </p>
                             </div>
                             <div className="h-8 w-px bg-slate-200 dark:bg-slate-700" />
@@ -156,7 +164,6 @@ export default function AddCard() {
                     </div>
                 </div>
 
-                {/* Right Column: Form */}
                 <div className="w-full xl:w-[450px] space-y-6">
                     <form onSubmit={handleSubmit} className="glassmorphism rounded-3xl p-6 lg:p-8 space-y-8">
                         {error && (
@@ -182,11 +189,13 @@ export default function AddCard() {
                                                 key={s.id}
                                                 type="button"
                                                 onClick={() => setCardStyle(s.id)}
-                                                className={`aspect-square rounded-xl bg-gradient-to-br ${s.class} border-2 transition-all ${
+                                                className={cn(
+                                                    "aspect-square rounded-xl bg-gradient-to-br border-2 transition-all",
+                                                    s.class,
                                                     cardStyle === s.id
                                                         ? "border-primary shadow-lg"
                                                         : "border-transparent hover:border-slate-300"
-                                                }`}
+                                                )}
                                             />
                                         ))}
                                     </div>
@@ -197,7 +206,12 @@ export default function AddCard() {
                                             Limite de Crédito
                                         </label>
                                         <span className="text-xs font-bold text-primary">
-                                            {creditLimit.toLocaleString("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                                            {creditLimit.toLocaleString("pt-BR", {
+                                                style: "currency",
+                                                currency: "BRL",
+                                                minimumFractionDigits: 0,
+                                                maximumFractionDigits: 0,
+                                            })}
                                         </span>
                                     </div>
                                     <input
@@ -232,9 +246,10 @@ export default function AddCard() {
                                             key={b.id}
                                             type="button"
                                             onClick={() => setBrand(b.id)}
-                                            className={`flex-1 p-2 rounded-xl glass-card flex justify-center items-center border-2 transition-all min-h-[44px] ${
+                                            className={cn(
+                                                "flex-1 p-2 rounded-xl glass-card flex justify-center items-center border-2 transition-all min-h-[44px]",
                                                 brand === b.id ? "border-primary" : "border-transparent hover:border-slate-300"
-                                            }`}
+                                            )}
                                         >
                                             {b.type === "mastercard" ? (
                                                 <div className="flex -space-x-2">
@@ -278,7 +293,9 @@ export default function AddCard() {
                                             inputMode="numeric"
                                             maxLength={4}
                                             value={lastFour}
-                                            onChange={(e) => setLastFour(e.target.value.replace(/\D/g, "").slice(0, 4))}
+                                            onChange={(e) =>
+                                                setLastFour(e.target.value.replace(/\D/g, "").slice(0, 4))
+                                            }
                                             placeholder="0000"
                                             className="w-full bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-800 dark:text-white font-mono placeholder-slate-400 focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all"
                                         />
@@ -317,7 +334,8 @@ export default function AddCard() {
                                 )}
                             </button>
                             <p className="text-[10px] text-center text-slate-400 mt-4 px-8">
-                                Ao cadastrar, você declara que as informações acima são verdadeiras e pertencem a você.
+                                Ao cadastrar, você declara que as informações acima são verdadeiras e pertencem a
+                                você.
                             </p>
                         </div>
                     </form>

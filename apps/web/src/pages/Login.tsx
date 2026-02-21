@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Rocket, Mail, Lock, ArrowRight, TrendingUp, Loader2 } from "lucide-react";
-import { useAuth } from "../features/auth/providers/AuthProvider";
+import { useAuth } from "@features/auth/providers/AuthProvider";
 
 export default function Login() {
     const navigate = useNavigate();
@@ -38,7 +38,7 @@ export default function Login() {
     };
 
     return (
-        <div className="flex min-h-screen flex-row font-body bg-white text-slate-700">
+        <div className="flex min-h-screen flex-row font-body bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-300">
             {/* Left Side - Dark Gradient & Content */}
             <div className="hidden lg:flex lg:w-1/2 bg-slate-900 relative overflow-hidden flex-col justify-between p-12 text-white">
                 {/* Gradients */}
@@ -78,38 +78,38 @@ export default function Login() {
                 </div>
             </div>
 
-            {/* Right Side - Login Form (White Background) */}
-            <div className="w-full lg:w-1/2 bg-white flex flex-col justify-center items-center p-6 sm:p-12 lg:p-24 relative z-10">
+            {/* Right Side - Login Form */}
+            <div className="w-full lg:w-1/2 bg-white dark:bg-slate-950 flex flex-col justify-center items-center p-6 sm:p-12 lg:p-24 relative z-10">
                 <div className="w-full max-w-md space-y-8">
                     <div className="lg:hidden flex items-center gap-2 mb-8">
-                        <div className="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center text-white shrink-0">
+                        <div className="w-8 h-8 bg-slate-900 dark:bg-white rounded-lg flex items-center justify-center text-white dark:text-slate-900 shrink-0">
                             <Rocket size={20} fill="currentColor" />
                         </div>
-                        <span className="font-display font-bold text-xl text-slate-900">FinTrack</span>
+                        <span className="font-display font-bold text-xl text-slate-900 dark:text-white">FinTrack</span>
                     </div>
 
                     <div className="space-y-2">
-                        <h2 className="text-3xl font-display font-bold text-slate-900">Bem-vindo de volta</h2>
-                        <p className="text-slate-500">Por favor, insira seus dados para acessar sua conta.</p>
+                        <h2 className="text-3xl font-display font-bold text-slate-900 dark:text-white">Bem-vindo de volta</h2>
+                        <p className="text-slate-500 dark:text-slate-400">Por favor, insira seus dados para acessar sua conta.</p>
                     </div>
 
                     <form onSubmit={handleLogin} className="space-y-5">
                         {error && (
-                            <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
+                            <div className="p-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-200 text-sm">
                                 {error}
                             </div>
                         )}
                         <div className="space-y-1">
-                            <label className="block text-sm font-medium text-slate-700">E-mail</label>
+                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">E-mail</label>
                             <div className="relative">
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <Mail className="text-slate-400" size={20} />
+                                    <Mail className="text-slate-400 dark:text-slate-500" size={20} />
                                 </div>
                                 <input
                                     type="email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-shadow text-sm"
+                                    className="block w-full pl-10 pr-3 py-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-white focus:border-transparent transition-shadow text-sm"
                                     placeholder="seu@email.com"
                                     required
                                     disabled={isLoading}
@@ -119,20 +119,20 @@ export default function Login() {
 
                         <div className="space-y-1">
                             <div className="flex items-center justify-between">
-                                <label className="block text-sm font-medium text-slate-700">Senha</label>
-                                <Link to="/forgot-password" className="text-sm font-medium text-slate-900 hover:text-primary transition-colors">
+                                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Senha</label>
+                                <Link to="/forgot-password" className="text-sm font-medium text-slate-900 dark:text-white hover:text-primary transition-colors">
                                     Esqueci minha senha
                                 </Link>
                             </div>
                             <div className="relative">
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <Lock className="text-slate-400" size={20} />
+                                    <Lock className="text-slate-400 dark:text-slate-500" size={20} />
                                 </div>
                                 <input
                                     type="password"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-shadow text-sm"
+                                    className="block w-full pl-10 pr-3 py-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-white focus:border-transparent transition-shadow text-sm"
                                     placeholder="••••••••"
                                     required
                                     disabled={isLoading}
@@ -140,7 +140,7 @@ export default function Login() {
                             </div>
                         </div>
 
-                        <button type="submit" disabled={isLoading} className="w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-slate-900 hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 transition-all transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
+                        <button type="submit" disabled={isLoading} className="w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-slate-900 dark:bg-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 dark:focus:ring-white transition-all transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
                             {isLoading ? (
                                 <>
                                     <Loader2 size={20} className="animate-spin" />
@@ -157,15 +157,15 @@ export default function Login() {
 
                     <div className="relative">
                         <div className="absolute inset-0 flex items-center">
-                            <div className="w-full border-t border-slate-200"></div>
+                            <div className="w-full border-t border-slate-200 dark:border-slate-700"></div>
                         </div>
                         <div className="relative flex justify-center text-sm">
-                            <span className="px-2 bg-white text-slate-500">ou continue com</span>
+                            <span className="px-2 bg-white dark:bg-slate-950 text-slate-500 dark:text-slate-400">ou continue com</span>
                         </div>
                     </div>
 
                     <div className="grid grid-cols-1 gap-3">
-                        <button type="button" className="w-full flex justify-center items-center gap-3 px-4 py-3 border border-slate-200 rounded-xl shadow-sm bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors">
+                        <button type="button" className="w-full flex justify-center items-center gap-3 px-4 py-3 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm bg-white dark:bg-slate-900 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
                             {/* Google Icon SVG */}
                             <svg className="h-5 w-5" viewBox="0 0 24 24">
                                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
@@ -177,9 +177,9 @@ export default function Login() {
                         </button>
                     </div>
 
-                    <p className="text-center text-sm text-slate-500 mt-6">
+                    <p className="text-center text-sm text-slate-500 dark:text-slate-400 mt-6">
                         Não tem uma conta?
-                        <Link to="/register" className="font-bold text-slate-900 hover:text-primary transition-colors ml-1">Criar conta</Link>
+                        <Link to="/register" className="font-bold text-slate-900 dark:text-white hover:text-primary transition-colors ml-1">Criar conta</Link>
                     </p>
                 </div>
             </div>

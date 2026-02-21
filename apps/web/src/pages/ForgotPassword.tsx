@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { KeyRound, Mail, ArrowRight, ArrowLeft, Send, Loader2 } from "lucide-react";
-import { useAuth } from "../features/auth/providers/AuthProvider";
+import { useAuth } from "@features/auth/providers/AuthProvider";
 
 export default function ForgotPassword() {
     const { resetPassword } = useAuth();

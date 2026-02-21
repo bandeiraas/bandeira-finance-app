@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Plus, Minus, FileText, ChevronLeft, ChevronRight, Search, Download, Trash2, ArrowDownRight, ShoppingBag, Loader2, TrendingUp, TrendingDown } from "lucide-react";
 import { Link } from "react-router-dom";
-import { cn } from "../lib/utils";
-import { useTransactions, useDeleteTransaction, useMonthlySummary } from "../features/transactions/hooks/useTransactions";
-import { formatCurrency } from "../shared/utils/formatCurrency";
+import { cn } from "@lib/utils";
+import { useTransactions, useDeleteTransaction, useMonthlySummary } from "@features/transactions/hooks/useTransactions";
+import { formatCurrency } from "@shared/utils/formatCurrency";
 
 export default function Transactions() {
     const [currentDate, setCurrentDate] = useState(new Date());

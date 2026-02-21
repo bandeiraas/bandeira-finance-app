@@ -1,11 +1,11 @@
 import { Mail, MapPin, Camera, Loader2, Calendar } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useProfile, useUploadAvatar } from "../features/profile/hooks/useProfile";
-import { useAuth } from "../features/auth/providers/AuthProvider";
-import { useTotalBalance } from "../features/accounts/hooks/useAccounts";
-import { useMonthlySummary } from "../features/transactions/hooks/useTransactions";
-import { formatCurrency } from "../shared/utils/formatCurrency";
-import { cn } from "../lib/utils";
+import { useProfile, useUploadAvatar } from "@features/profile/hooks/useProfile";
+import { useAuth } from "@features/auth/providers/AuthProvider";
+import { useTotalBalance } from "@features/accounts/hooks/useAccounts";
+import { useMonthlySummary } from "@features/transactions/hooks/useTransactions";
+import { formatCurrency } from "@shared/utils/formatCurrency";
+import { cn } from "@lib/utils";
 import { useRef } from "react";
 
 export default function Profile() {

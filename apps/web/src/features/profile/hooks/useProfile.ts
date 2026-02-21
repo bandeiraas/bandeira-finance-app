@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useAuth } from '../../auth/providers/AuthProvider.tsx'
+import { useAuth } from '@features/auth/providers/AuthProvider'
 import { api } from '@lib/api.ts'
 import { QUERY_KEYS, type UpdateTables } from '@bandeira/shared'
 

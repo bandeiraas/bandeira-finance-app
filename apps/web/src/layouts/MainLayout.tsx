@@ -1,8 +1,8 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { LayoutDashboard, CreditCard, Receipt, User, Bell, Rocket, Sun, Moon, Plus, TrendingUp, LogOut } from "lucide-react";
-import { cn } from "../lib/utils";
+import { cn } from "@lib/utils";
 import { useState, useEffect } from "react";
-import { useAuth } from "../features/auth/providers/AuthProvider";
+import { useAuth } from "@features/auth/providers/AuthProvider";
 
 const THEME_KEY = "fin-track-theme";
 

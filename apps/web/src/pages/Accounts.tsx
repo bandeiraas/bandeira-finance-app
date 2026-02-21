@@ -1,109 +1,16 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
+import { Plus, Loader2, Search, Filter, ChevronDown, Download, ChevronLeft, ChevronRight } from "lucide-react";
+import { useAccounts } from "@features/accounts/hooks/useAccounts";
+import { useMonthlySummary, useTransactions } from "@features/transactions/hooks/useTransactions";
+import { formatCurrency } from "@shared/utils/formatCurrency";
+import { cn } from "@lib/utils";
 import {
-    Plus,
-    Loader2,
-    Eye,
-    EyeOff,
-    Search,
-    Filter,
-    ChevronDown,
-    Download,
-    ChevronLeft,
-    ChevronRight,
-    TrendingUp,
-    ShoppingCart,
-    Zap,
-    Banknote,
-    Car,
-    UtensilsCrossed,
-} from "lucide-react";
-import { useAccounts } from "../features/accounts/hooks/useAccounts";
-import { useMonthlySummary, useTransactions } from "../features/transactions/hooks/useTransactions";
-import { formatCurrency } from "../shared/utils/formatCurrency";
-
-const ACCOUNT_TYPE_LABELS: Record<string, string> = {
-    corrente: "Corrente",
-    poupanca: "Poupança",
-    investimento: "Investimentos",
-    carteira: "Carteira",
-};
-
-const BAR_HEIGHTS = [30, 45, 40, 65, 55, 85, 95];
-
-const BANK_COLORS: Record<string, { bg: string; text: "white" | "black"; label: string }> = {
-    nubank: { bg: "bg-[#820ad1] shadow-[#820ad1]/30", text: "white", label: "Nu" },
-    itaú: { bg: "bg-orange-500 shadow-orange-500/30", text: "white", label: "It" },
-    itau: { bg: "bg-orange-500 shadow-orange-500/30", text: "white", label: "It" },
-    bradesco: { bg: "bg-red-600 shadow-red-500/30", text: "white", label: "Br" },
-    santander: { bg: "bg-red-600 shadow-red-500/30", text: "white", label: "Sa" },
-    "banco do brasil": { bg: "bg-yellow-400 shadow-yellow-400/30", text: "black", label: "BB" },
-    inter: { bg: "bg-orange-500 shadow-orange-500/30", text: "white", label: "In" },
-    "c6 bank": { bg: "bg-slate-900 shadow-slate-900/30", text: "white", label: "C6" },
-    c6: { bg: "bg-slate-900 shadow-slate-900/30", text: "white", label: "C6" },
-    caixa: { bg: "bg-blue-600 shadow-blue-500/30", text: "white", label: "Ca" },
-};
-
-function AccountIcon({ name }: { name: string }) {
-    const lower = name.toLowerCase().trim();
-    const key = Object.keys(BANK_COLORS).find((k) => lower.includes(k));
-    const config = key ? BANK_COLORS[key] : { bg: "bg-slate-600 shadow-slate-500/30", text: "white" as const, label: name.slice(0, 2).toUpperCase() };
-    const { bg, text, label } = config;
-
-    return (
-        <div
-            className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-lg font-display font-bold text-xs uppercase ${bg} ${
-                text === "black" ? "text-slate-900" : "text-white"
-            }`}
-        >
-            {label}
-        </div>
-    );
-}
-
-function TransactionIcon({ categoryName, type }: { categoryName?: string | null; type: string }) {
-    const cat = (categoryName ?? "").toLowerCase();
-    const isIncome = type === "income";
-
-    if (isIncome) {
-        return (
-            <div className="w-11 h-11 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-xl flex items-center justify-center shadow-sm">
-                <Banknote size={22} />
-            </div>
-        );
-    }
-
-    if (cat.includes("aliment") || cat.includes("supermercado"))
-        return (
-            <div className="w-11 h-11 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-xl flex items-center justify-center shadow-sm">
-                <ShoppingCart size={22} />
-            </div>
-        );
-    if (cat.includes("energia") || cat.includes("conta"))
-        return (
-            <div className="w-11 h-11 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center shadow-sm">
-                <Zap size={22} />
-            </div>
-        );
-    if (cat.includes("transporte") || cat.includes("uber") || cat.includes("carro"))
-        return (
-            <div className="w-11 h-11 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-xl flex items-center justify-center shadow-sm">
-                <Car size={22} />
-            </div>
-        );
-    if (cat.includes("lazer") || cat.includes("restaurant"))
-        return (
-            <div className="w-11 h-11 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-xl flex items-center justify-center shadow-sm">
-                <UtensilsCrossed size={22} />
-            </div>
-        );
-
-    return (
-        <div className="w-11 h-11 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-xl flex items-center justify-center shadow-sm">
-            <Banknote size={22} />
-        </div>
-    );
-}
+    AccountIcon,
+    TransactionIcon,
+    BalanceSummaryCard,
+} from "@features/accounts/components";
+import { ACCOUNT_TYPE_LABELS } from "@features/accounts/constants";
 
 export default function Accounts() {
     const [searchTerm, setSearchTerm] = useState("");
@@ -216,66 +123,14 @@ export default function Accounts() {
                     </div>
 
                     <div className="space-y-3">
-                        {/* Saldo Total Card */}
-                        <div className="p-5 bg-slate-900 dark:bg-slate-800 rounded-2xl text-white shadow-xl relative overflow-hidden group">
-                            <div className="relative z-10">
-                                <div className="flex items-center justify-between mb-2">
-                                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                                        Saldo Total
-                                    </span>
-                                    <button
-                                        onClick={() => setShowBalance(!showBalance)}
-                                        className="text-slate-400 hover:text-slate-200 transition-colors"
-                                    >
-                                        {showBalance ? <Eye size={18} /> : <EyeOff size={18} />}
-                                    </button>
-                                </div>
-                                <h4 className="text-2xl font-display font-bold mb-3">
-                                    {showBalance ? formatCurrency(totalBalance) : "••••••"}
-                                </h4>
-                                <div className="flex items-center gap-4">
-                                    <div className="flex items-center gap-1.5 px-2 py-0.5 bg-emerald-500/10 rounded-lg">
-                                        <TrendingUp size={14} className="text-emerald-400" />
-                                        <span className="text-emerald-400 text-[11px] font-bold">
-                                            +12.5%
-                                        </span>
-                                    </div>
-                                    <div className="h-8 flex-1 flex items-end gap-[2px] pb-1">
-                                        {BAR_HEIGHTS.map((h, i) => (
-                                            <div
-                                                key={i}
-                                                className={`flex-1 rounded-full ${
-                                                    i >= 5 ? "bg-primary" : "bg-slate-700/50"
-                                                }`}
-                                                style={{ height: `${h}%` }}
-                                            />
-                                        ))}
-                                    </div>
-                                </div>
-                                <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between">
-                                    <div className="flex flex-col">
-                                        <span className="text-[9px] text-slate-500 uppercase font-medium">
-                                            Entradas
-                                        </span>
-                                        <span className="text-[11px] font-bold text-emerald-400">
-                                            {loadingSummary
-                                                ? "—"
-                                                : formatCurrency(summary?.totalIncome ?? 0)}
-                                        </span>
-                                    </div>
-                                    <div className="flex flex-col text-right">
-                                        <span className="text-[9px] text-slate-500 uppercase font-medium">
-                                            Saídas
-                                        </span>
-                                        <span className="text-[11px] font-bold text-rose-400">
-                                            {loadingSummary
-                                                ? "—"
-                                                : formatCurrency(summary?.totalExpenses ?? 0)}
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <BalanceSummaryCard
+                            totalBalance={totalBalance}
+                            showBalance={showBalance}
+                            onToggleBalance={() => setShowBalance(!showBalance)}
+                            totalIncome={summary?.totalIncome ?? 0}
+                            totalExpenses={summary?.totalExpenses ?? 0}
+                            isLoadingSummary={loadingSummary}
+                        />
 
                         {/* Account List */}
                         {accounts && accounts.length > 0 ? (
@@ -286,11 +141,7 @@ export default function Accounts() {
                                         <Link
                                             key={acc.id}
                                             to={`/accounts/${acc.id}`}
-                                            className={`w-full text-left p-4 rounded-2xl flex items-center gap-4 group transition-all ${
-                                                isSelected
-                                                    ? "glass-card bg-white/80 dark:bg-slate-800/80 border-l-4 border-l-primary"
-                                                    : "glass-card bg-white/40 dark:bg-slate-900/40"
-                                            }`}
+                                            className={cn("w-full text-left p-4 rounded-2xl flex items-center gap-4 group transition-all", isSelected ? "glass-card bg-white/80 dark:bg-slate-800/80 border-l-4 border-l-primary" : "glass-card bg-white/40 dark:bg-slate-900/40")}
                                         >
                                             <AccountIcon name={acc.bank_name} />
                                             <div className="flex-1 min-w-0">
@@ -429,11 +280,7 @@ export default function Accounts() {
                                                         </div>
                                                         <div className="text-right">
                                                             <p
-                                                                className={`text-sm font-bold ${
-                                                                    t.type === "income"
-                                                                        ? "text-emerald-500"
-                                                                        : "text-rose-500"
-                                                                }`}
+                                                                className={cn("text-sm font-bold", t.type === "income" ? "text-emerald-500" : "text-rose-500")}
                                                             >
                                                                 {t.type === "income" ? "+" : "-"} {formatCurrency(Number(t.amount))}
                                                             </p>

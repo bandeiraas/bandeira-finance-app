@@ -1,134 +1,14 @@
 import { useState, useMemo } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import {
-    ChevronLeft,
-    ChevronRight,
-    Loader2,
-    FileText,
-    ArrowRightLeft,
-    Search,
-    Filter,
-    Download,
-    ShoppingBag,
-    Zap,
-    Droplets,
-    Building2,
-    Wifi,
-    TrendingUp,
-    PiggyBank,
-    LineChart,
-    SmartphoneNfc,
-} from "lucide-react";
-import { useAccounts } from "../features/accounts/hooks/useAccounts";
-import { useTransactions } from "../features/transactions/hooks/useTransactions";
-import { useCards } from "../features/cards/hooks/useCards";
-import { formatCurrency } from "../shared/utils/formatCurrency";
-
-const BANK_KEYS = ["nubank", "itau", "bradesco", "santander", "bb", "inter", "c6", "caixa"] as const;
-
-const BANK_HEX: Record<string, string> = {
-    nubank: "#820ad1",
-    itau: "#ec7000",
-    bradesco: "#cc092f",
-    santander: "#ec0000",
-    bb: "#ffc629",
-    inter: "#ff7a00",
-    c6: "#6366f1",
-    caixa: "#0066b3",
-    default: "#0ea5e9",
-};
-
-function getBankKey(bankName: string): (typeof BANK_KEYS)[number] | "default" {
-    const lower = bankName.toLowerCase().trim();
-    if (lower.includes("nubank")) return "nubank";
-    if (lower.includes("itaú") || lower.includes("itau")) return "itau";
-    if (lower.includes("bradesco")) return "bradesco";
-    if (lower.includes("santander")) return "santander";
-    if (lower.includes("banco do brasil") || lower.includes("bb ")) return "bb";
-    if (lower.includes("inter")) return "inter";
-    if (lower.includes("c6")) return "c6";
-    if (lower.includes("caixa")) return "caixa";
-    return "default";
-}
-
-const BANK_COLORS: Record<string, { bg: string; label: string; italic?: boolean }> = {
-    nubank: { bg: "bg-bank-nubank shadow-bank-nubank/40", label: "Nu" },
-    itaú: { bg: "bg-bank-itau shadow-bank-itau/40", label: "i", italic: true },
-    itau: { bg: "bg-bank-itau shadow-bank-itau/40", label: "i", italic: true },
-    bradesco: { bg: "bg-bank-bradesco shadow-bank-bradesco/40", label: "Br" },
-    santander: { bg: "bg-bank-santander shadow-bank-santander/40", label: "Sa" },
-    "banco do brasil": { bg: "bg-bank-bb shadow-bank-bb/40", label: "BB" },
-    inter: { bg: "bg-bank-inter shadow-bank-inter/40", label: "In" },
-    "c6 bank": { bg: "bg-bank-c6 shadow-bank-c6/40", label: "C6" },
-    c6: { bg: "bg-bank-c6 shadow-bank-c6/40", label: "C6" },
-    caixa: { bg: "bg-bank-caixa shadow-bank-caixa/40", label: "Ca" },
-};
-
-const ACCOUNT_TYPE_LABELS: Record<string, string> = {
-    corrente: "Corrente",
-    poupanca: "Poupança",
-    investimento: "Investimentos",
-    carteira: "Carteira",
-};
-
-const MOCK_BILLS = [
-    { name: "Energia Elétrica", due: "2", date: "26 Out", amount: 245, icon: Zap, color: "red" },
-    { name: "Saneamento", due: "5", date: "29 Out", amount: 82.4, icon: Droplets, color: "blue" },
-    { name: "Condomínio", due: "10", date: "03 Nov", amount: 850, icon: Building2, color: "green" },
-    { name: "Internet Fibra", due: "12", date: "05 Nov", amount: 119.9, icon: Wifi, color: "slate" },
-];
-
-const MOCK_INVESTMENTS = [
-    { name: "CDB Pós-fixado", return: "+1.2%", value: 5430, icon: PiggyBank, color: "purple" },
-    { name: "Fundo DI", return: "+0.8%", value: 2150, icon: LineChart, color: "blue" },
-];
-
-const CHART_COLOR_CLASSES = ["stroke-blue-500", "stroke-purple-500"];
-
-function BankIcon({ name, size = "md", bankHex }: { name: string; size?: "md" | "lg"; bankHex?: string }) {
-    const lower = name.toLowerCase().trim();
-    const key = Object.keys(BANK_COLORS).find((k) => lower.includes(k));
-    const config = key ? BANK_COLORS[key] : { label: name.slice(0, 2).toUpperCase(), italic: false };
-    const isLg = size === "lg";
-    const hex = bankHex ?? "#64748b";
-    return (
-        <div
-            className={`${isLg ? "w-12 h-12 rounded-2xl text-2xl" : "w-10 h-10 rounded-xl text-xs"} flex items-center justify-center text-white shadow-lg font-display font-bold ${
-                config.italic ? "italic" : "uppercase"
-            }`}
-            style={{ backgroundColor: hex, boxShadow: `0 10px 40px ${hex}40` }}
-        >
-            {config.label}
-        </div>
-    );
-}
-
-function TransactionIcon({ categoryName, type }: { categoryName?: string | null; type: string }) {
-    const cat = (categoryName ?? "").toLowerCase();
-    const isIncome = type === "income";
-
-    if (isIncome) {
-        return (
-            <div className="w-12 h-12 rounded-2xl bg-green-50 dark:bg-green-900/20 flex items-center justify-center text-green-600 dark:text-green-400">
-                <ArrowRightLeft size={22} className="-rotate-90" />
-            </div>
-        );
-    }
-
-    const iconClass =
-        "w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300 group-hover:bg-[var(--bank-accent)] group-hover:text-white transition-colors";
-
-    if (cat.includes("aliment") || cat.includes("supermercado") || cat.includes("compras"))
-        return <div className={iconClass}><ShoppingBag size={22} /></div>;
-    if (cat.includes("energia") || cat.includes("conta"))
-        return <div className={iconClass}><Zap size={22} /></div>;
-    if (cat.includes("transporte") || cat.includes("uber") || cat.includes("carro"))
-        return <div className={iconClass}><Zap size={22} /></div>;
-    if (cat.includes("lazer") || cat.includes("restaurant"))
-        return <div className={iconClass}><ShoppingBag size={22} /></div>;
-
-    return <div className={iconClass}><ShoppingBag size={22} /></div>;
-}
+import { ChevronLeft, ChevronRight, Loader2, FileText, ArrowRightLeft, Search, Filter, Download, TrendingUp, SmartphoneNfc } from "lucide-react";
+import { useAccounts } from "@features/accounts/hooks/useAccounts";
+import { useTransactions } from "@features/transactions/hooks/useTransactions";
+import { useCards } from "@features/cards/hooks/useCards";
+import { formatCurrency } from "@shared/utils/formatCurrency";
+import { cn } from "@lib/utils";
+import { BankIcon, TransactionIcon } from "@features/accounts/components";
+import { getBankKey, BANK_HEX, ACCOUNT_TYPE_LABELS } from "@features/accounts/constants";
+import { MOCK_BILLS, MOCK_INVESTMENTS, CHART_COLOR_CLASSES } from "@features/accounts/mockData";
 
 export default function AccountDetail() {
     const { id } = useParams<{ id: string }>();
@@ -420,23 +300,11 @@ export default function AccountDetail() {
                             {MOCK_BILLS.map((bill, i) => (
                                 <div
                                     key={bill.name}
-                                    className={`flex items-center justify-between p-2.5 rounded-xl transition-colors ${
-                                        i === 0
-                                            ? "bg-white/40 dark:bg-slate-800/40 border border-white/20 dark:border-slate-700/50"
-                                            : "hover:bg-white/40 dark:hover:bg-slate-800/40 border border-transparent hover:border-white/20 dark:hover:border-slate-700/50"
-                                    }`}
+                                    className={cn("flex items-center justify-between p-2.5 rounded-xl transition-colors", i === 0 ? "bg-white/40 dark:bg-slate-800/40 border border-white/20 dark:border-slate-700/50" : "hover:bg-white/40 dark:hover:bg-slate-800/40 border border-transparent hover:border-white/20 dark:hover:border-slate-700/50")}
                                 >
                                     <div className="flex items-center gap-3">
                                         <div
-                                            className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                                                bill.color === "red"
-                                                    ? "bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400"
-                                                    : bill.color === "blue"
-                                                    ? "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"
-                                                    : bill.color === "green"
-                                                    ? "bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400"
-                                                    : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
-                                            }`}
+                                            className={cn("w-8 h-8 rounded-lg flex items-center justify-center", bill.color === "red" ? "bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400" : bill.color === "blue" ? "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400" : bill.color === "green" ? "bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400")}
                                         >
                                             <bill.icon size={16} />
                                         </div>
@@ -540,7 +408,7 @@ export default function AccountDetail() {
                                             className="flex items-center justify-between p-4 hover:bg-white/50 dark:hover:bg-slate-800/50 rounded-2xl transition-all cursor-pointer group"
                                         >
                                             <div className="flex items-center gap-4">
-                                                <TransactionIcon categoryName={t.categories?.name} type={t.type} />
+                                                <TransactionIcon categoryName={t.categories?.name} type={t.type} variant="detail" />
                                                 <div>
                                                     <p className="font-semibold text-slate-800 dark:text-white text-sm">{t.description ?? "Transação"}</p>
                                                     <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -553,11 +421,7 @@ export default function AccountDetail() {
                                                 </div>
                                             </div>
                                             <span
-                                                className={`font-bold ${
-                                                    t.type === "income"
-                                                        ? "text-green-600 dark:text-green-400"
-                                                        : "text-slate-800 dark:text-white"
-                                                }`}
+                                                className={cn("font-bold", t.type === "income" ? "text-green-600 dark:text-green-400" : "text-slate-800 dark:text-white")}
                                             >
                                                 {t.type === "income" ? "+" : "-"} {formatCurrency(Number(t.amount))}
                                             </span>

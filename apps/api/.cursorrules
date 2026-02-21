@@ -1,0 +1,42 @@
+# Bandeira Finance — Backend (apps/api)
+
+## Stack
+
+- Node.js, Hono (framework HTTP), Supabase (banco de dados).
+- Validação: Zod. Schemas em `@bandeira/shared`.
+
+## Arquitetura de Camadas
+
+- Respeite rigorosamente o fluxo: **Rotas → Services → Repositories**.
+- Rotas recebem requisição, validam (Zod), chamam service, retornam JSON.
+- Services contêm regras de negócio e recebem interfaces de repositório (ex: `IAccountRepository`), não implementações concretas.
+- Repositories implementam interfaces e acessam Supabase. O acesso ao banco ocorre única e exclusivamente dentro de Repositories.
+
+## Validação
+
+- Todas as requisições (body, query params) DEVEM ser validadas utilizando Zod.
+- Importe schemas de `@bandeira/shared`. Use `validate(schema, body)` para POST/PUT/PATCH.
+- Validação de query params: use `transactionsListQuerySchema`, `transactionsSummaryQuerySchema`, `categoriesListQuerySchema` em `packages/shared/src/validation/querySchemas.ts`.
+- Restrições: `limit` 1–100, `month` 1–12, `year` 2020–2030, etc.
+- Retorne 400 com `{ error: 'ValidationError', message, fields }` quando a validação falhar.
+- Se o frontend envia labels (ex: "Conta Corrente"), normalize para valores do DB antes de validar (ex: `normalizeAccountType`).
+
+## Tratamento de Retornos (Result Pattern)
+
+- Services NUNCA devem usar `throw` genéricos para controle de fluxo.
+- Services retornam SEMPRE o padrão `Result<T, E>`.
+- Use `ResultUtil.ok(data)` e `ResultUtil.fail(AppError.fromUnknown(err))`.
+- Nas rotas, use `if (!result.success) throw result.error` para deixar o Error Handler do Hono converter em respostas HTTP.
+- Deixe o Error Handler tratar `AppError`, `ValidationError` e retornar status e payload adequados.
+
+## Segurança e Infraestrutura
+
+- Aplique Rate Limiting nas rotas `/api/*` (ex.: 100 req/min por IP).
+- Use `x-forwarded-for` ou `x-real-ip` quando disponível para identificar IP.
+- CORS restrito: use variável `CORS_ORIGINS` (split por vírgula). Em produção, liste apenas origens permitidas.
+- Variáveis de ambiente: `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `CORS_ORIGINS`. Carregue via `loadEnv.ts` antes de imports.
+
+## Factories e Domain
+
+- Crie entidades via factories em `packages/shared/src/domain/factories/` (`TransactionFactory`, `AccountFactory`, `CardFactory`).
+- Evite montar objetos manualmente; use factories para garantir invariantes.

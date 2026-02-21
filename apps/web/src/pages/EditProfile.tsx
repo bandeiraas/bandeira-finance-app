@@ -8,8 +8,8 @@ import {
     ChevronLeft,
     Loader2
 } from "lucide-react";
-import { useAuth } from "../features/auth/providers/AuthProvider";
-import { useProfile, useUpdateProfile, useUploadAvatar } from "../features/profile/hooks/useProfile";
+import { useAuth } from "@features/auth/providers/AuthProvider";
+import { useProfile, useUpdateProfile, useUploadAvatar } from "@features/profile/hooks/useProfile";
 
 export default function EditProfile() {
     const navigate = useNavigate();

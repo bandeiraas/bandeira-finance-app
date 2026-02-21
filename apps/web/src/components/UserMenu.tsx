@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ChevronDown, Settings, LogOut, UserPen } from "lucide-react";
-import { cn } from "../lib/utils";
+import { cn } from "@lib/utils";
 
 export default function UserMenu() {
     const [isOpen, setIsOpen] = useState(false);

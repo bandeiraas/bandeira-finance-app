@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { AlertCircle, X } from 'lucide-react'
-import { getErrorMessage } from '../lib/errorMessages'
+import { getErrorMessage } from '@lib/errorMessages'
 
 export function ApiErrorBanner() {
     const queryClient = useQueryClient()
