@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Loader2, Mail, Lock } from "lucide-react";
 import { useAuth } from "@features/auth/providers/AuthProvider";
+import { Logo } from "@components/ui/Logo";
 
 export default function Login() {
     const navigate = useNavigate();
@@ -57,11 +58,8 @@ export default function Login() {
                 <div className="absolute top-0 right-0 -mt-20 -mr-20 w-96 h-96 bg-primary/20 blur-3xl rounded-full pointer-events-none" />
                 <div className="absolute bottom-0 left-0 -mb-20 -ml-20 w-80 h-80 bg-blue-600/20 blur-3xl rounded-full pointer-events-none" />
 
-                <div className="flex items-center gap-3 relative z-10">
-                    <div className="w-10 h-10 bg-white/10 backdrop-blur-sm border border-white/10 rounded-xl flex items-center justify-center text-white shrink-0">
-                        <span className="material-symbols-outlined text-xl">paid</span>
-                    </div>
-                    <span className="font-display font-bold text-2xl text-white tracking-tight">FinTrack</span>
+                <div className="relative z-10">
+                    <Logo size="md" className="[&_span]:text-white" />
                 </div>
 
                 <div className="relative z-10 max-w-lg">
@@ -74,18 +72,15 @@ export default function Login() {
                 </div>
 
                 <div className="relative z-10 text-slate-500 text-sm">
-                    © 2026 FinTrack Inc. Todos os direitos reservados.
+                    © 2026 FinFlow. Todos os direitos reservados.
                 </div>
             </div>
 
             {/* Right Side - Formulário (respeita tema claro/escuro) */}
             <div className="w-full lg:w-1/2 flex flex-col justify-center items-center p-6 sm:p-12 lg:p-24 bg-white dark:bg-slate-950 relative z-10">
                 <div className="w-full max-w-md space-y-8">
-                    <div className="lg:hidden flex items-center gap-2 mb-8">
-                        <div className="w-10 h-10 bg-slate-900 dark:bg-white rounded-xl flex items-center justify-center text-white dark:text-slate-900 shrink-0">
-                            <span className="material-symbols-outlined text-xl">paid</span>
-                        </div>
-                        <span className="font-display font-bold text-2xl text-slate-900 dark:text-white">FinTrack</span>
+                    <div className="lg:hidden mb-8">
+                        <Logo size="md" />
                     </div>
 
                     <div className="space-y-2">

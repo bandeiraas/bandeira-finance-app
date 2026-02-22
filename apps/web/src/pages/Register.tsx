@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { User, Mail, Lock, Loader2 } from "lucide-react";
 import { useAuth } from "@features/auth/providers/AuthProvider";
+import { Logo } from "@components/ui/Logo";
 
 export default function Register() {
     const navigate = useNavigate();
@@ -70,9 +71,7 @@ export default function Register() {
 
             <div className="w-full max-w-md relative z-10">
                 <div className="flex flex-col items-center mb-8">
-                    <div className="w-12 h-12 bg-slate-900 dark:bg-white rounded-xl flex items-center justify-center text-white dark:text-slate-900 shrink-0 mb-4 shadow-lg shadow-slate-900/20 dark:shadow-white/10">
-                        <span className="material-symbols-outlined text-2xl">paid</span>
-                    </div>
+                    <Logo size="lg" className="mb-4 shrink-0" />
                     <h1 className="font-display font-bold text-2xl text-slate-900 dark:text-white">Crie sua conta</h1>
                     <p className="text-slate-500 dark:text-slate-400 mt-2 text-center">Comece a gerenciar suas finanças hoje mesmo</p>
                 </div>

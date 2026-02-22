@@ -1,6 +1,7 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
-import { LayoutDashboard, CreditCard, Receipt, User, Bell, Rocket, Sun, Moon, Plus, TrendingUp, LogOut } from "lucide-react";
+import { LayoutDashboard, CreditCard, Receipt, User, Bell, Sun, Moon, Plus, TrendingUp, LogOut } from "lucide-react";
 import { cn } from "@lib/utils";
+import { Logo } from "@components/ui/Logo";
 import { useState, useEffect } from "react";
 import { useAuth } from "@features/auth/providers/AuthProvider";
 
@@ -43,11 +44,8 @@ export default function Layout() {
             {/* Floating Glass Sidebar - branco sólido no modo claro, glass no escuro */}
             <aside className="hidden sm:flex w-20 lg:w-64 glassmorphism flex-col m-4 rounded-3xl border-r-0 z-20">
                 <div className="p-6">
-                    <div className="flex items-center gap-3 mb-10 overflow-hidden">
-                        <div className="w-10 h-10 bg-slate-900 dark:bg-white rounded-xl flex items-center justify-center text-white dark:text-slate-900 shrink-0 shadow-md">
-                            <Rocket size={24} fill="currentColor" />
-                        </div>
-                        <span className="font-display font-bold text-xl text-slate-900 dark:text-white truncate hidden lg:block">FinTrack</span>
+                    <div className="mb-10 overflow-hidden">
+                        <Logo size="md" className="shrink-0 [&_span]:hidden lg:[&_span]:inline" />
                     </div>
 
                     <nav className="space-y-2">
@@ -94,12 +92,7 @@ export default function Layout() {
             <main className="flex-1 flex flex-col relative overflow-hidden">
                 {/* Mobile Header (Visible only on small screens) */}
                 <header className="sm:hidden flex items-center justify-between p-4 glassmorphism m-4 rounded-2xl z-20">
-                    <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 bg-slate-900 dark:bg-white rounded-lg flex items-center justify-center text-white dark:text-slate-900">
-                            <Rocket size={18} fill="currentColor" />
-                        </div>
-                        <span className="font-display font-bold text-lg text-slate-900 dark:text-white">FinTrack</span>
-                    </div>
+                    <Logo size="sm" className="shrink-0" />
                     <button onClick={toggleTheme} className="text-slate-500 dark:text-slate-400 hover:bg-white/40 dark:hover:bg-slate-800/40 p-2 rounded-lg transition-all">
                         {isDark ? <Sun size={20} /> : <Moon size={20} />}
                     </button>
