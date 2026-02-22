@@ -14,6 +14,7 @@ export const CardFactory = {
             expiry: dto.expiry,
             card_name: dto.card_name,
             credit_limit: dto.credit_limit,
+            style: dto.style ?? 'black',
         }
     },
 }

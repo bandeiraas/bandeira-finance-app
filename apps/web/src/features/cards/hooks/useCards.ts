@@ -24,6 +24,7 @@ export function useCreateCard() {
             expiry: string
             card_name: string
             credit_limit: number
+            style?: string
         }) => api.cards.create(session!.accessToken, data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.CARDS.ALL })

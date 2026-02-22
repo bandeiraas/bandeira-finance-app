@@ -63,7 +63,7 @@ export const api = {
     },
     cards: {
         list: (token: string): Promise<Card[]> => fetch(`${baseUrl}/api/cards`, { headers: headers(token) }).then((r) => parse<Card[]>(r)),
-        create: (token: string, data: { brand: string; last_four: string; expiry: string; card_name: string; credit_limit: number }) =>
+        create: (token: string, data: { brand: string; last_four: string; expiry: string; card_name: string; credit_limit: number; style?: string }) =>
             fetch(`${baseUrl}/api/cards`, { method: 'POST', headers: headers(token), body: JSON.stringify(data) }).then((r) => parse<Card>(r)),
         delete: (token: string, id: string) =>
             fetch(`${baseUrl}/api/cards/${id}`, { method: 'DELETE', headers: headers(token) }).then((r) => (r.ok ? undefined : parse(r).then(() => { throw new Error('Delete failed') }))),

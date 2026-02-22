@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Plus, Copy, Receipt, CreditCard, Shield, Trash2, Loader2, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useCards, useDeleteCard } from "@features/cards/hooks/useCards";
+import { getCardGradientClass } from "@features/cards/constants";
 import { formatCurrency } from "@shared/utils/formatCurrency";
 import { cn } from "@lib/utils";
 import { useAuth } from "@features/auth/providers/AuthProvider";
@@ -58,7 +59,7 @@ export default function Cards() {
                                             ${isSelected ? 'z-50 scale-100 opacity-100 border-2 border-primary' : 'z-40 scale-[0.94] opacity-80 hover:scale-[0.96] hover:opacity-100 hover:z-45'}
                                         `}
                                     >
-                                        <div className={cn("absolute inset-0 bg-gradient-to-br", index % 2 === 0 ? "from-[#1a1a1a] via-[#333] to-[#000]" : "from-[#820ad1] to-[#5a0792]")}></div>
+                                        <div className={cn("absolute inset-0 bg-gradient-to-br", getCardGradientClass(card.style))}></div>
                                         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20 mix-blend-overlay"></div>
 
                                         <div className="relative z-10 h-full flex flex-col justify-between p-5 text-white">

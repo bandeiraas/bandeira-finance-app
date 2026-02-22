@@ -170,6 +170,7 @@ export interface Database {
                     expiry: string | null
                     card_name: string | null
                     credit_limit: number | null
+                    style: string | null
                     created_at: string
                 }
                 Insert: {
@@ -180,6 +181,7 @@ export interface Database {
                     expiry?: string | null
                     card_name?: string | null
                     credit_limit?: number | null
+                    style?: string | null
                     created_at?: string
                 }
                 Update: {
@@ -188,6 +190,7 @@ export interface Database {
                     expiry?: string | null
                     card_name?: string | null
                     credit_limit?: number | null
+                    style?: string | null
                 }
                 Relationships: [
                     {

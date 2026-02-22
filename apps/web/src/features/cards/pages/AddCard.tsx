@@ -67,6 +67,7 @@ export default function AddCard() {
                 expiry,
                 card_name: cardName.trim(),
                 credit_limit: creditLimit,
+                style: cardStyle,
             });
             navigate("/cards");
         } catch {

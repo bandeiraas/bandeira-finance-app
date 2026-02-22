@@ -41,6 +41,10 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+
+  .card-ratio {
+    aspect-ratio: 1.586 / 1;
+  }
 }
 
 body {
