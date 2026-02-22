@@ -189,12 +189,12 @@ export default function Register() {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3">
+                    <div>
                         <button
                             type="button"
                             onClick={handleGoogleRegister}
                             disabled={isLoading || isGoogleLoading}
-                            className="flex justify-center items-center gap-2 px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm bg-white dark:bg-slate-800/50 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 dark:focus:ring-white disabled:opacity-50 disabled:cursor-not-allowed group"
+                            className="w-full flex justify-center items-center gap-2 px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm bg-white dark:bg-slate-800/50 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 dark:focus:ring-white disabled:opacity-50 disabled:cursor-not-allowed group"
                         >
                             {isGoogleLoading ? (
                                 <>
@@ -214,15 +214,6 @@ export default function Register() {
                                     Google
                                 </>
                             )}
-                        </button>
-                        <button
-                            type="button"
-                            className="flex justify-center items-center gap-2 px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm bg-white dark:bg-slate-800/50 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 dark:focus:ring-white"
-                        >
-                            <svg className="h-5 w-5 text-slate-900 dark:text-white" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.74 1.18 0 2.45-1.05 4.09-.73 1.68.33 2.87 1.25 3.52 2.15-2.91 1.76-2.34 5.92.59 7.15-.58 1.55-1.55 3.01-3.28 3.66zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"></path>
-                            </svg>
-                            Apple
                         </button>
                     </div>
 
