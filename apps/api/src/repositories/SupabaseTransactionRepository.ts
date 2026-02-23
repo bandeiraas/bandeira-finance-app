@@ -77,11 +77,12 @@ export class SupabaseTransactionRepository implements ITransactionRepository {
         return data as Transaction
     }
 
-    async delete(id: string): Promise<void> {
+    async delete(id: string, userId: string): Promise<void> {
         const { error } = await this.client
             .from('transactions')
             .delete()
             .eq('id', id)
+            .eq('user_id', userId)
 
         if (error) throw SupabaseErrorMapper.toAppError(error, 'Transaction')
     }
