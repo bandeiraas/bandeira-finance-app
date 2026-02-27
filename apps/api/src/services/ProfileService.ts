@@ -1,5 +1,8 @@
 import type { IProfileRepository, Profile, UpdateTables, Result } from '@bandeira/shared'
-import { ResultUtil as R, AppError } from '@bandeira/shared'
+import { ResultUtil as R, AppError, ValidationError } from '@bandeira/shared'
+
+const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp']
+const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
 
 export class ProfileService {
     private repository: IProfileRepository
@@ -27,6 +30,14 @@ export class ProfileService {
 
     async uploadAvatar(userId: string, file: File): Promise<Result<string>> {
         try {
+            if (!ALLOWED_MIME_TYPES.includes(file.type)) {
+                return R.fail(new ValidationError('Tipo de arquivo inválido. Permitido: JPG, PNG, WebP'))
+            }
+
+            if (file.size > MAX_FILE_SIZE) {
+                return R.fail(new ValidationError('Arquivo muito grande. Máximo permitido: 5MB'))
+            }
+
             const url = await this.repository.uploadAvatar(userId, file)
             return R.ok(url)
         } catch (err) {
