@@ -63,7 +63,13 @@ export class SupabaseAccountRepository implements IAccountRepository {
     }
 
     async getTotalBalance(userId: string): Promise<number> {
-        const accounts = await this.findByUser(userId)
-        return accounts.reduce((sum, a) => sum + Number(a.balance), 0)
+        const { data, error } = await this.client
+            .from('accounts')
+            .select('balance')
+            .eq('user_id', userId)
+
+        if (error) throw SupabaseErrorMapper.toAppError(error, 'Account')
+
+        return (data || []).reduce((sum, a) => sum + Number(a.balance), 0)
     }
 }
