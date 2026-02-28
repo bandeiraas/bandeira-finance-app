@@ -9,7 +9,7 @@ export function formatCurrency(value: number): string {
 }
 
 /**
- * Format a number as BRL without the "R$" prefix.
+ * Format a number as BRL without the "R$" symbol.
  */
 export function formatCurrencyCompact(value: number): string {
     return new Intl.NumberFormat('pt-BR', {
