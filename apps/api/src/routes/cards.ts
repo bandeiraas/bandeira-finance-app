@@ -25,9 +25,9 @@ cardsRoutes.post('/', async (c) => {
 })
 
 cardsRoutes.delete('/:id', async (c) => {
-    const { cardService } = getServices(c)
+    const { userId, cardService } = getServices(c)
     const id = c.req.param('id')
-    const result = await cardService.deleteCard(id)
+    const result = await cardService.deleteCard(userId, id)
     if (!result.success) throw result.error
     return c.body(null, 204)
 })

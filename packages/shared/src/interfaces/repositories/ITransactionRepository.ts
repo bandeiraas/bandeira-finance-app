@@ -7,5 +7,5 @@ export interface ITransactionRepository {
     findByCategory(userId: string, categoryId: string): Promise<Transaction[]>
     create(transaction: InsertTables<'transactions'>): Promise<Transaction>
     update(id: string, updates: UpdateTables<'transactions'>): Promise<Transaction>
-    delete(id: string): Promise<void>
+    delete(userId: string, id: string): Promise<void>
 }
