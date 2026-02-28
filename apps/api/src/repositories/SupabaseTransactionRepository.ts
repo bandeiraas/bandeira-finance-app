@@ -13,13 +13,14 @@ export class SupabaseTransactionRepository implements ITransactionRepository {
     async findByUser(userId: string, limit = 50): Promise<Transaction[]> {
         const { data, error } = await this.client
             .from('transactions')
-            .select(this.TRANSACTION_SELECT)
+            .select(SupabaseTransactionRepository.TRANSACTION_SELECT)
             .eq('user_id', userId)
             .order('date', { ascending: false })
             .limit(limit)
+            .returns<Transaction[]>()
 
         if (error) throw SupabaseErrorMapper.toAppError(error, 'Transaction')
-        return data as Transaction[]
+        return data || []
     }
 
     async findByDateRange(
@@ -29,14 +30,15 @@ export class SupabaseTransactionRepository implements ITransactionRepository {
     ): Promise<Transaction[]> {
         const { data, error } = await this.client
             .from('transactions')
-            .select(this.TRANSACTION_SELECT)
+            .select(SupabaseTransactionRepository.TRANSACTION_SELECT)
             .eq('user_id', userId)
             .gte('date', startDate)
             .lte('date', endDate)
             .order('date', { ascending: false })
+            .returns<Transaction[]>()
 
         if (error) throw SupabaseErrorMapper.toAppError(error, 'Transaction')
-        return data as Transaction[]
+        return data || []
     }
 
     async findByCategory(
@@ -45,24 +47,26 @@ export class SupabaseTransactionRepository implements ITransactionRepository {
     ): Promise<Transaction[]> {
         const { data, error } = await this.client
             .from('transactions')
-            .select(this.TRANSACTION_SELECT)
+            .select(SupabaseTransactionRepository.TRANSACTION_SELECT)
             .eq('user_id', userId)
             .eq('category_id', categoryId)
             .order('date', { ascending: false })
+            .returns<Transaction[]>()
 
         if (error) throw SupabaseErrorMapper.toAppError(error, 'Transaction')
-        return data as Transaction[]
+        return data || []
     }
 
     async create(transaction: InsertTables<'transactions'>): Promise<Transaction> {
         const { data, error } = await this.client
             .from('transactions')
             .insert(transaction)
-            .select(this.TRANSACTION_SELECT)
+            .select(SupabaseTransactionRepository.TRANSACTION_SELECT)
             .single()
+            .returns<Transaction>()
 
         if (error) throw SupabaseErrorMapper.toAppError(error, 'Transaction')
-        return data as Transaction
+        return data
     }
 
     async update(id: string, updates: UpdateTables<'transactions'>): Promise<Transaction> {
@@ -70,11 +74,12 @@ export class SupabaseTransactionRepository implements ITransactionRepository {
             .from('transactions')
             .update(updates)
             .eq('id', id)
-            .select(this.TRANSACTION_SELECT)
+            .select(SupabaseTransactionRepository.TRANSACTION_SELECT)
             .single()
+            .returns<Transaction>()
 
         if (error) throw SupabaseErrorMapper.toAppError(error, 'Transaction')
-        return data as Transaction
+        return data
     }
 
     async delete(id: string): Promise<void> {
