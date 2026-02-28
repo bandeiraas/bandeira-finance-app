@@ -28,9 +28,21 @@ profileRoutes.post('/avatar', async (c) => {
     const { userId, profileService } = getServices(c)
     const formData = await c.req.formData()
     const file = formData.get('file') as File | null
+
     if (!file || !(file instanceof File)) {
         return c.json({ error: 'File required' }, 400)
     }
+
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp']
+    if (!allowedTypes.includes(file.type)) {
+        return c.json({ error: 'ValidationError', message: 'Invalid file type. Only JPEG, PNG, and WebP are allowed.', fields: {} }, 400)
+    }
+
+    const maxSize = 5 * 1024 * 1024 // 5MB
+    if (file.size > maxSize) {
+        return c.json({ error: 'ValidationError', message: 'File size exceeds the 5MB limit.', fields: {} }, 400)
+    }
+
     const result = await profileService.uploadAvatar(userId, file)
     if (!result.success) throw result.error
     return c.json({ avatarUrl: result.data }, 201)
