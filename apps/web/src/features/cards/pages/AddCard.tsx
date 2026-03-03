@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronDown, Loader2, AlertCircle, PlusCircle, SmartphoneNfc, Sparkles } from "lucide-react";
 import { useCreateCard } from "@features/cards/hooks/useCards";
@@ -46,17 +46,9 @@ export default function AddCard() {
         background: `linear-gradient(to bottom right, ${selectedColor}, ${darkenHex(selectedColor, 25)})`,
     };
 
-    useEffect(() => {
-        if (accounts && accounts.length > 0 && !accountId) {
-            setAccountId(accounts[0].id);
-        }
-    }, [accounts, accountId]);
 
-    useEffect(() => {
-        if (selectedAccount) {
-            setColorVariationIndex(2); // base da cor do banco ao trocar conta
-        }
-    }, [accountId, accounts]);
+
+
 
     const formatExpiry = (val: string) => {
         const v = val.replace(/\D/g, "").slice(0, 4);
