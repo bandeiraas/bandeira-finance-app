@@ -1,4 +1,4 @@
-import type { ICardRepository, Card, Result } from '@bandeira/shared'
+import type { ICardRepository, Card, Result, CreateCardDTO } from '@bandeira/shared'
 import { ResultUtil as R, AppError, CardFactory } from '@bandeira/shared'
 
 export class CardService {
@@ -16,16 +16,7 @@ export class CardService {
         }
     }
 
-    async createCard(
-        userId: string,
-        data: {
-            brand: string
-            last_four: string
-            expiry: string
-            card_name: string
-            credit_limit: number
-        }
-    ): Promise<Result<Card>> {
+    async createCard(userId: string, data: CreateCardDTO): Promise<Result<Card>> {
         try {
             const insert = CardFactory.create(userId, data)
             const card = await this.repository.create(insert)

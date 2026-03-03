@@ -26,6 +26,7 @@ import {
   Download,
   Lightbulb,
 } from "lucide-react";
+import { Logo } from "@components/ui/Logo";
 
 const TABS = [
   { id: "inicio" as const, label: "Início", icon: LayoutDashboard },
@@ -61,13 +62,8 @@ export default function OnboardingDemo() {
 
       {/* Nav */}
       <nav className="w-full flex justify-between items-center px-6 py-5 max-w-7xl mx-auto z-20 relative">
-        <Link to="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-slate-900 dark:bg-white flex items-center justify-center text-white dark:text-slate-900 font-display font-bold text-lg">
-            F
-          </div>
-          <span className="font-display font-bold text-slate-900 dark:text-white text-lg tracking-tight">
-            FinTrack
-          </span>
+        <Link to="/" className="shrink-0">
+          <Logo size="sm" />
         </Link>
         <div className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-500 dark:text-slate-400">
           <a href="#features" className="hover:text-slate-900 dark:hover:text-white transition-colors">
@@ -106,7 +102,7 @@ export default function OnboardingDemo() {
             <h1 className="font-display font-bold text-4xl text-slate-900 dark:text-white tracking-tight leading-[1.1] mb-8 max-w-3xl">
               Explore a interface completa do{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-300">
-                FinTrack
+                FinFlow
               </span>
             </h1>
             <div className="flex flex-wrap gap-3 overflow-x-auto pb-2 hide-scrollbar" id="main-tabs">
@@ -261,7 +257,7 @@ export default function OnboardingDemo() {
                   <div className="w-full max-w-xs h-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-md flex items-center px-3 gap-2 shadow-sm">
                     <Lock size={10} className="text-slate-400 shrink-0" />
                     <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium truncate w-full text-center">
-                      app.fintrack.com.br/dashboard
+                      app.finflow.com.br/dashboard
                     </span>
                   </div>
                 </div>
@@ -297,7 +293,7 @@ export default function OnboardingDemo() {
       </main>
 
       <footer className="w-full py-6 text-center text-slate-400 dark:text-slate-500 text-sm relative z-10">
-        <p>© 2026 FinTrack. Todos os direitos reservados.</p>
+        <p>© 2026 FinFlow. Todos os direitos reservados.</p>
       </footer>
     </div>
   );
@@ -511,7 +507,7 @@ function ScreenCartoes() {
         <div className="w-72 flex-shrink-0 h-44 bg-slate-900 dark:bg-slate-800 rounded-2xl p-6 relative overflow-hidden text-white shadow-xl shadow-slate-900/20 snap-center transition-transform hover:scale-[1.02] cursor-pointer">
           <div className="absolute -right-4 -bottom-4 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
           <div className="flex justify-between items-start mb-8">
-            <span className="text-sm opacity-60 font-medium">FinTrack Black</span>
+            <span className="text-sm opacity-60 font-medium">FinFlow Black</span>
             <CreditCard size={20} className="opacity-60" />
           </div>
           <p className="text-lg font-mono tracking-widest mb-4">**** **** **** 8821</p>

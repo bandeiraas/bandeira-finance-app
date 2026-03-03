@@ -35,15 +35,7 @@ export const app = new Hono()
     .use('/api/*', authMiddleware)
     .onError(errorHandler)
     .get('/', (c) => c.json({ name: 'Bandeira Finance API', version: '0.0.0' }))
-    .get('/health', (c) =>
-        c.json({
-            status: 'ok',
-            env: {
-                supabaseUrl: !!process.env.SUPABASE_URL,
-                supabaseKey: !!process.env.SUPABASE_ANON_KEY,
-            },
-        })
-    )
+    .get('/health', (c) => c.json({ status: 'ok' }))
     .route('/api/accounts', accountsRoutes)
     .route('/api/transactions', transactionsRoutes)
     .route('/api/categories', categoriesRoutes)

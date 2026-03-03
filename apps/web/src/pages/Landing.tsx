@@ -7,6 +7,7 @@ import {
   Shield,
   Brain,
 } from "lucide-react";
+import { Logo } from "@components/ui/Logo";
 
 export default function Landing() {
   return (
@@ -25,14 +26,7 @@ export default function Landing() {
 
       {/* Nav */}
       <nav className="w-full flex justify-between items-center px-6 py-5 max-w-7xl mx-auto z-20 relative">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-slate-900 dark:bg-white flex items-center justify-center text-white dark:text-slate-900 font-display font-bold text-lg">
-            F
-          </div>
-          <span className="font-display font-bold text-slate-900 dark:text-white text-lg tracking-tight">
-            FinTrack
-          </span>
-        </div>
+        <Logo size="sm" className="shrink-0" />
         <div className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-500 dark:text-slate-400">
           <a
             href="#features"
@@ -171,7 +165,7 @@ export default function Landing() {
       </main>
 
       <footer className="w-full py-6 text-center text-slate-400 dark:text-slate-500 text-sm relative z-10">
-        <p>© 2026 FinTrack. Todos os direitos reservados.</p>
+        <p>© 2026 FinFlow. Todos os direitos reservados.</p>
       </footer>
     </div>
   );
