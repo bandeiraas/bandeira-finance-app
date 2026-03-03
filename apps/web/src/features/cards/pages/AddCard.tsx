@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronDown, Loader2, AlertCircle, PlusCircle, SmartphoneNfc, Sparkles } from "lucide-react";
 import { useCreateCard } from "@features/cards/hooks/useCards";
@@ -46,17 +46,21 @@ export default function AddCard() {
         background: `linear-gradient(to bottom right, ${selectedColor}, ${darkenHex(selectedColor, 25)})`,
     };
 
-    useEffect(() => {
-        if (accounts && accounts.length > 0 && !accountId) {
-            setAccountId(accounts[0].id);
-        }
-    }, [accounts, accountId]);
+    // Handle default account selection during initialization instead of effect
+    // to avoid cascading renders.
+    const hasAccounts = accounts && accounts.length > 0;
 
-    useEffect(() => {
-        if (selectedAccount) {
-            setColorVariationIndex(2); // base da cor do banco ao trocar conta
-        }
-    }, [accountId, accounts]);
+    // Automatically select the first account if none is selected and there are accounts
+    if (hasAccounts && !accountId) {
+        setAccountId(accounts[0].id);
+    }
+
+    // Automatically reset the color variation when the selected account changes
+    // It's safe to do this during render when the state derived from props/other state changes
+    const previousAccountId = useState(accountId)[0];
+    if (accountId !== previousAccountId && selectedAccount) {
+        setColorVariationIndex(2); // base da cor do banco ao trocar conta
+    }
 
     const formatExpiry = (val: string) => {
         const v = val.replace(/\D/g, "").slice(0, 4);
@@ -106,8 +110,6 @@ export default function AddCard() {
             setError("Erro ao cadastrar cartão. Tente novamente.");
         }
     };
-
-    const hasAccounts = accounts && accounts.length > 0;
 
     if (accountsLoading) {
         return (
