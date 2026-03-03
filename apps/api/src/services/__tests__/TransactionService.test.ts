@@ -9,7 +9,7 @@ function createMockRepo(): ITransactionRepository {
         create: vi.fn(),
         update: vi.fn(),
         delete: vi.fn(),
-        getSummary: vi.fn(),
+        findByCategory: vi.fn(),
     }
 }
 
