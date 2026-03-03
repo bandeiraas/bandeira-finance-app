@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronDown, Loader2, AlertCircle, PlusCircle, SmartphoneNfc, Sparkles } from "lucide-react";
 import { useCreateCard } from "@features/cards/hooks/useCards";
@@ -22,8 +22,17 @@ export default function AddCard() {
     const { user } = useAuth();
     const { data: accounts, isLoading: accountsLoading } = useAccounts();
 
+    const createCard = useCreateCard();
     const [accountId, setAccountId] = useState<string>("");
-    const [colorVariationIndex, setColorVariationIndex] = useState(2); // 0–3, 2 = base da cor do banco
+
+    // Auto-select the first account if none is selected yet and data is available
+    const activeAccountId = accountId || (accounts?.[0]?.id ?? "");
+
+    // Track when the user manually changes the color to avoid overriding it automatically,
+    // otherwise sync the default color (index 2) when the active account changes.
+    const [colorVariationMap, setColorVariationMap] = useState<Record<string, number>>({});
+    const colorVariationIndex = colorVariationMap[activeAccountId] ?? 2;
+
     const [brand, setBrand] = useState("mastercard");
     const [lastFour, setLastFour] = useState("");
     const [expiry, setExpiry] = useState("");
@@ -35,8 +44,7 @@ export default function AddCard() {
     const [brandDropdownOpen, setBrandDropdownOpen] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const createCard = useCreateCard();
-    const selectedAccount = accounts?.find((a) => a.id === accountId);
+    const selectedAccount = accounts?.find((a) => a.id === activeAccountId);
     const bankKey = selectedAccount ? getBankKey(selectedAccount.bank_name) : "default";
     const bankHex = BANK_HEX[bankKey] ?? BANK_HEX.default;
     const bankConfig = BANK_COLORS[bankKey] ?? BANK_COLORS.default;
@@ -45,18 +53,6 @@ export default function AddCard() {
     const cardGradientStyle = {
         background: `linear-gradient(to bottom right, ${selectedColor}, ${darkenHex(selectedColor, 25)})`,
     };
-
-    useEffect(() => {
-        if (accounts && accounts.length > 0 && !accountId) {
-            setAccountId(accounts[0].id);
-        }
-    }, [accounts, accountId]);
-
-    useEffect(() => {
-        if (selectedAccount) {
-            setColorVariationIndex(2); // base da cor do banco ao trocar conta
-        }
-    }, [accountId, accounts]);
 
     const formatExpiry = (val: string) => {
         const v = val.replace(/\D/g, "").slice(0, 4);
@@ -198,7 +194,7 @@ export default function AddCard() {
                                                 <button
                                                     key={i}
                                                     type="button"
-                                                    onClick={() => setColorVariationIndex(i)}
+                                                    onClick={() => setColorVariationMap((prev) => ({ ...prev, [activeAccountId]: i }))}
                                                     className={cn(
                                                         "w-8 h-8 rounded-full border-2 transition-all shrink-0",
                                                         colorVariationIndex === i
