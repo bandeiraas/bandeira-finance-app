@@ -44,7 +44,6 @@ export class FakeAuthService implements IAuthService {
         return R.ok({ user: this.currentUser, session: this.currentSession })
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- interface requires param
     async signInWithOAuth(_provider: OAuthProvider): Promise<Result<void>> {
         this.currentUser = {
             id: crypto.randomUUID(),
@@ -64,7 +63,6 @@ export class FakeAuthService implements IAuthService {
         return R.ok(undefined)
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- interface requires param
     async resetPassword(_email: string): Promise<Result<void>> {
         return R.ok(undefined)
     }
