@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { TrendingUp, TrendingDown, Plus, Minus, FileText, Lightbulb, CreditCard, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import UserMenu from "@components/UserMenu";
@@ -28,11 +28,10 @@ export default function Dashboard() {
     const [selectedCardIndex, setSelectedCardIndex] = useState(0);
 
     const displayCards = cards?.slice(0, 3) ?? [];
+    const maxCardIndex = Math.max(0, displayCards.length - 1);
 
-    useEffect(() => {
-        const max = Math.max(0, displayCards.length - 1);
-        if (selectedCardIndex > max) setSelectedCardIndex(0);
-    }, [displayCards.length, selectedCardIndex]);
+    // Derive active index to ensure it's always within bounds without needing an effect
+    const activeCardIndex = selectedCardIndex > maxCardIndex ? 0 : selectedCardIndex;
 
     // Dummy data for financial tip in this phase
     const financialTip = {
@@ -185,7 +184,7 @@ export default function Dashboard() {
                                     <div className="flex items-center gap-1">
                                         <button
                                             type="button"
-                                            onClick={() => setSelectedCardIndex((i) => (i <= 0 ? displayCards.length - 1 : i - 1))}
+                                            onClick={() => setSelectedCardIndex(activeCardIndex <= 0 ? displayCards.length - 1 : activeCardIndex - 1)}
                                             className="w-7 h-7 flex items-center justify-center rounded-full bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-accent-blue dark:hover:text-accent-blue transition-all shadow-sm border border-slate-100 dark:border-slate-700"
                                             aria-label="Cartão anterior"
                                         >
@@ -193,7 +192,7 @@ export default function Dashboard() {
                                         </button>
                                         <button
                                             type="button"
-                                            onClick={() => setSelectedCardIndex((i) => (i >= displayCards.length - 1 ? 0 : i + 1))}
+                                            onClick={() => setSelectedCardIndex(activeCardIndex >= displayCards.length - 1 ? 0 : activeCardIndex + 1)}
                                             className="w-7 h-7 flex items-center justify-center rounded-full bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-accent-blue dark:hover:text-accent-blue transition-all shadow-sm border border-slate-100 dark:border-slate-700"
                                             aria-label="Próximo cartão"
                                         >
@@ -216,7 +215,7 @@ export default function Dashboard() {
                             <div className="relative flex flex-col items-center pt-2 px-2 h-[220px] sm:h-[250px] lg:h-[280px] overflow-hidden">
                                 <div className="relative w-full max-w-[320px] flex flex-col items-center">
                                     {displayCards.map((card, index) => {
-                                        const isSelected = index === selectedCardIndex;
+                                        const isSelected = index === activeCardIndex;
                                         const cardAccount = accounts?.find((a) => a.id === card.account_id);
                                         return (
                                             <button
