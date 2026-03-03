@@ -29,7 +29,7 @@ export function getBankKey(bankName: string): (typeof BANK_KEYS)[number] | "defa
     if (lower.includes("itaú") || lower.includes("itau")) return "itau";
     if (lower.includes("bradesco")) return "bradesco";
     if (lower.includes("santander")) return "santander";
-    if (lower.includes("banco do brasil") || lower.includes("bb ")) return "bb";
+    if (lower.includes("banco do brasil") || /\bbb\b/.test(lower)) return "bb";
     if (lower.includes("inter")) return "inter";
     if (lower.includes("c6")) return "c6";
     if (lower.includes("caixa")) return "caixa";
