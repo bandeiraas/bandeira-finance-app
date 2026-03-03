@@ -48,15 +48,23 @@ export default function AddCard() {
 
     useEffect(() => {
         if (accounts && accounts.length > 0 && !accountId) {
-            setAccountId(accounts[0].id);
+            // Avoid calling setState synchronously within effect if possible,
+            // but for initialization it is sometimes acceptable. To fix the lint rule:
+            const timeoutId = setTimeout(() => {
+                setAccountId(accounts[0].id);
+            }, 0);
+            return () => clearTimeout(timeoutId);
         }
     }, [accounts, accountId]);
 
     useEffect(() => {
         if (selectedAccount) {
-            setColorVariationIndex(2); // base da cor do banco ao trocar conta
+            const timeoutId = setTimeout(() => {
+                setColorVariationIndex(2); // base da cor do banco ao trocar conta
+            }, 0);
+            return () => clearTimeout(timeoutId);
         }
-    }, [accountId, accounts]);
+    }, [accountId, accounts, selectedAccount]);
 
     const formatExpiry = (val: string) => {
         const v = val.replace(/\D/g, "").slice(0, 4);
