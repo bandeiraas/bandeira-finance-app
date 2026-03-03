@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import type { ITransactionRepository, Transaction } from '@bandeira/shared'
+import type { ITransactionRepository} from '@bandeira/shared'
 import { TransactionService } from '../TransactionService'
 
 function createMockRepo(): ITransactionRepository {
