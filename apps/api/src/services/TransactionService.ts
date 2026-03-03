@@ -41,18 +41,38 @@ export class TransactionService {
         if (!result.success) return result
 
         const transactions = result.data
-        const totalIncome = transactions
-            .filter((t) => t.type === 'income')
-            .reduce((sum, t) => sum + Number(t.amount), 0)
+        const { totalIncome, totalExpenses, expensesGrouped } = transactions.reduce(
+            (acc, t) => {
+                const amount = Number(t.amount)
+                if (t.type === 'income') {
+                    acc.totalIncome += amount
+                } else if (t.type === 'expense') {
+                    acc.totalExpenses += amount
+                    const name = t.categories?.name ?? 'Sem categoria'
+                    const color = t.categories?.color ?? null
 
-        const totalExpenses = transactions
-            .filter((t) => t.type === 'expense')
-            .reduce((sum, t) => sum + Number(t.amount), 0)
-
-        const expensesByCategory = this.groupByCategory(
-            transactions.filter((t) => t.type === 'expense'),
-            totalExpenses
+                    if (!acc.expensesGrouped[name]) {
+                        acc.expensesGrouped[name] = { total: 0, color }
+                    }
+                    acc.expensesGrouped[name].total += amount
+                }
+                return acc
+            },
+            {
+                totalIncome: 0,
+                totalExpenses: 0,
+                expensesGrouped: {} as Record<string, { total: number; color: string | null }>,
+            }
         )
+
+        const expensesByCategory = Object.entries(expensesGrouped)
+            .map(([categoryName, { total, color }]) => ({
+                categoryName,
+                categoryColor: color,
+                total,
+                percentage: totalExpenses > 0 ? (total / totalExpenses) * 100 : 0,
+            }))
+            .sort((a, b) => b.total - a.total)
 
         return R.ok({
             totalIncome,
@@ -110,30 +130,4 @@ export class TransactionService {
         }
     }
 
-    private groupByCategory(
-        expenses: Transaction[],
-        totalExpenses: number
-    ): CategorySummary[] {
-        const grouped = expenses.reduce<Record<string, { total: number; color: string | null }>>(
-            (acc, t) => {
-                const name = t.categories?.name ?? 'Sem categoria'
-                const color = t.categories?.color ?? null
-                if (!acc[name]) {
-                    acc[name] = { total: 0, color }
-                }
-                acc[name].total += Number(t.amount)
-                return acc
-            },
-            {}
-        )
-
-        return Object.entries(grouped)
-            .map(([categoryName, { total, color }]) => ({
-                categoryName,
-                categoryColor: color,
-                total,
-                percentage: totalExpenses > 0 ? (total / totalExpenses) * 100 : 0,
-            }))
-            .sort((a, b) => b.total - a.total)
-    }
 }
