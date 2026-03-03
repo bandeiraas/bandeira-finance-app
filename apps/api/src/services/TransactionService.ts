@@ -41,29 +41,25 @@ export class TransactionService {
         if (!result.success) return result
 
         const transactions = result.data
-        const { totalIncome, totalExpenses, expensesGrouped } = transactions.reduce(
-            (acc, t) => {
-                const amount = Number(t.amount)
-                if (t.type === 'income') {
-                    acc.totalIncome += amount
-                } else if (t.type === 'expense') {
-                    acc.totalExpenses += amount
-                    const name = t.categories?.name ?? 'Sem categoria'
-                    const color = t.categories?.color ?? null
+        let totalIncome = 0
+        let totalExpenses = 0
+        const expensesGrouped: Record<string, { total: number; color: string | null }> = {}
 
-                    if (!acc.expensesGrouped[name]) {
-                        acc.expensesGrouped[name] = { total: 0, color }
-                    }
-                    acc.expensesGrouped[name].total += amount
+        for (const t of transactions) {
+            const amount = Number(t.amount)
+            if (t.type === 'income') {
+                totalIncome += amount
+            } else if (t.type === 'expense') {
+                totalExpenses += amount
+                const name = t.categories?.name ?? 'Sem categoria'
+                const color = t.categories?.color ?? null
+
+                if (!expensesGrouped[name]) {
+                    expensesGrouped[name] = { total: 0, color }
                 }
-                return acc
-            },
-            {
-                totalIncome: 0,
-                totalExpenses: 0,
-                expensesGrouped: {} as Record<string, { total: number; color: string | null }>,
+                expensesGrouped[name].total += amount
             }
-        )
+        }
 
         const expensesByCategory = Object.entries(expensesGrouped)
             .map(([categoryName, { total, color }]) => ({
