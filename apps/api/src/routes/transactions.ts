@@ -63,9 +63,9 @@ transactionsRoutes.post('/expense', async (c) => {
 })
 
 transactionsRoutes.delete('/:id', async (c) => {
-    const { transactionService } = getServices(c)
+    const { userId, transactionService } = getServices(c)
     const id = c.req.param('id')
-    const result = await transactionService.deleteTransaction(id)
+    const result = await transactionService.deleteTransaction(userId, id)
     if (!result.success) throw result.error
     return c.body(null, 204)
 })

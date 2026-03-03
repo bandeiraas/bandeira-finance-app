@@ -6,6 +6,6 @@ export interface IAccountRepository {
     findById(id: string): Promise<Account | null>
     create(account: InsertTables<'accounts'>): Promise<Account>
     update(id: string, updates: UpdateTables<'accounts'>): Promise<Account>
-    delete(id: string): Promise<void>
+    delete(userId: string, id: string): Promise<void>
     getTotalBalance(userId: string): Promise<number>
 }

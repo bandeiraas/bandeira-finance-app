@@ -50,13 +50,14 @@ export default function AddCard() {
         if (accounts && accounts.length > 0 && !accountId) {
             setAccountId(accounts[0].id);
         }
-    }, [accounts, accountId]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [accounts]);
 
     useEffect(() => {
         if (selectedAccount) {
             setColorVariationIndex(2); // base da cor do banco ao trocar conta
         }
-    }, [accountId, accounts]);
+    }, [selectedAccount]);
 
     const formatExpiry = (val: string) => {
         const v = val.replace(/\D/g, "").slice(0, 4);

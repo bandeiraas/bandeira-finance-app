@@ -53,11 +53,12 @@ export class SupabaseAccountRepository implements IAccountRepository {
         return data
     }
 
-    async delete(id: string): Promise<void> {
+    async delete(userId: string, id: string): Promise<void> {
         const { error } = await this.client
             .from('accounts')
             .delete()
             .eq('id', id)
+            .eq('user_id', userId)
 
         if (error) throw SupabaseErrorMapper.toAppError(error, 'Account')
     }
