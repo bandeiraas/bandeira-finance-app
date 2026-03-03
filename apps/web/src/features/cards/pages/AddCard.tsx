@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronDown, Loader2, AlertCircle, PlusCircle, SmartphoneNfc, Sparkles } from "lucide-react";
 import { useCreateCard } from "@features/cards/hooks/useCards";
@@ -36,7 +36,9 @@ export default function AddCard() {
     const [error, setError] = useState<string | null>(null);
 
     const createCard = useCreateCard();
-    const selectedAccount = accounts?.find((a) => a.id === accountId);
+    const effectiveAccountId = accountId || (accounts?.[0]?.id ?? "");
+    const selectedAccount = accounts?.find((a) => a.id === effectiveAccountId);
+
     const bankKey = selectedAccount ? getBankKey(selectedAccount.bank_name) : "default";
     const bankHex = BANK_HEX[bankKey] ?? BANK_HEX.default;
     const bankConfig = BANK_COLORS[bankKey] ?? BANK_COLORS.default;
@@ -46,17 +48,11 @@ export default function AddCard() {
         background: `linear-gradient(to bottom right, ${selectedColor}, ${darkenHex(selectedColor, 25)})`,
     };
 
-    useEffect(() => {
-        if (accounts && accounts.length > 0 && !accountId) {
-            setAccountId(accounts[0].id);
-        }
-    }, [accounts, accountId]);
-
-    useEffect(() => {
-        if (selectedAccount) {
-            setColorVariationIndex(2); // base da cor do banco ao trocar conta
-        }
-    }, [accountId, accounts]);
+    const handleAccountChange = (newAccountId: string) => {
+        setAccountId(newAccountId);
+        setColorVariationIndex(2); // reset color to base when changing account
+        setAccountDropdownOpen(false);
+    };
 
     const formatExpiry = (val: string) => {
         const v = val.replace(/\D/g, "").slice(0, 4);
@@ -68,7 +64,7 @@ export default function AddCard() {
         e.preventDefault();
         setError(null);
 
-        if (!accountId) {
+        if (!effectiveAccountId) {
             setError("Selecione uma conta bancária.");
             return;
         }
@@ -97,7 +93,7 @@ export default function AddCard() {
                 card_name: cardName.trim(),
                 credit_limit: creditLimit,
                 card_color: selectedColor,
-                account_id: accountId,
+                account_id: effectiveAccountId,
                 due_day: dueDay,
                 closing_day: closingDay,
             });
@@ -338,10 +334,7 @@ export default function AddCard() {
                                             <button
                                                 key={a.id}
                                                 type="button"
-                                                onClick={() => {
-                                                    setAccountId(a.id);
-                                                    setAccountDropdownOpen(false);
-                                                }}
+                                                    onClick={() => handleAccountChange(a.id)}
                                                 className="w-full flex items-center gap-3 p-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 text-left"
                                             >
                                                 <div
