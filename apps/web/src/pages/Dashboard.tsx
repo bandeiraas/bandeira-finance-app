@@ -31,7 +31,7 @@ export default function Dashboard() {
 
     useEffect(() => {
         const max = Math.max(0, displayCards.length - 1);
-        if (selectedCardIndex > max) setSelectedCardIndex(0);
+        if (selectedCardIndex > max) setTimeout(() => setSelectedCardIndex(0), 0);
     }, [displayCards.length, selectedCardIndex]);
 
     // Dummy data for financial tip in this phase
