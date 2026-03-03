@@ -26,7 +26,7 @@ describe('CardService', () => {
                     id: 'card1',
                     user_id: 'u1',
                     account_id: 'acc1',
-                    brand: 'Mastercard',
+                    brand: 'mastercard',
                     last_four: '1234',
                     expiry: '12/28',
                     card_name: 'Cartão de Crédito',
@@ -41,7 +41,7 @@ describe('CardService', () => {
                     id: 'card2',
                     user_id: 'u1',
                     account_id: 'acc1',
-                    brand: 'Visa',
+                    brand: 'visa',
                     last_four: '5678',
                     expiry: '05/26',
                     card_name: 'Cartão Secundário',
@@ -97,7 +97,7 @@ describe('CardService', () => {
         it('cria um cartão com sucesso fornecendo os dados corretos', async () => {
             const dto: CreateCardDTO = {
                 account_id: 'acc1',
-                brand: 'Visa',
+                brand: 'visa',
                 last_four: '4321',
                 expiry: '10/29',
                 card_name: 'Cartão Platinum',
@@ -145,11 +145,13 @@ describe('CardService', () => {
         it('cria um cartão utilizando valores default quando opcionais não são fornecidos', async () => {
             const dto: CreateCardDTO = {
                 account_id: 'acc1',
-                brand: 'Mastercard',
+                brand: 'mastercard',
                 last_four: '9999',
                 expiry: '12/30',
                 card_name: 'Cartão Básico',
                 credit_limit: 500,
+                due_day: 10,
+                closing_day: 5,
             }
 
             const expectedCard = {
@@ -186,11 +188,13 @@ describe('CardService', () => {
         it('retorna erro (AppError) quando ocorre uma falha na criação no repositório', async () => {
             const dto: CreateCardDTO = {
                 account_id: 'acc1',
-                brand: 'Visa',
+                brand: 'visa',
                 last_four: '4321',
                 expiry: '10/29',
                 card_name: 'Cartão Falho',
                 credit_limit: 1000,
+                due_day: 10,
+                closing_day: 5,
             }
 
             vi.mocked(repo.create).mockRejectedValue(new Error('Insert failed'))
