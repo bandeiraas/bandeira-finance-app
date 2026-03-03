@@ -222,7 +222,7 @@ export default function Dashboard() {
                                             <button
                                                 key={card.id}
                                                 type="button"
-                                                onClick={() => !isSelected && setSelectedCardIndex(index)}
+                                                onClick={() => setSelectedCardIndex(index)}
                                                 className={cn(
                                                     "w-full card-ratio rounded-2xl overflow-hidden shadow-md text-left transition-[transform,opacity,box-shadow,border-color] duration-500 ease-out",
                                                     index > 0 && displayCards.length > 1 && "-mt-[175px]",

@@ -4,7 +4,6 @@ import { AppError, UnexpectedError } from '../AppError'
 import { NotFoundError } from '../NotFoundError'
 import { AuthenticationError } from '../AuthenticationError'
 import { DatabaseError } from '../DatabaseError'
-import { NetworkError } from '../NetworkError'
 
 class TestAppError extends AppError {
     readonly code = 'TEST_ERROR'

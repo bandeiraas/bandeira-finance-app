@@ -64,7 +64,7 @@ export default function AddCard() {
         e.preventDefault();
         setError(null);
 
-        if (!accountId) {
+        if (!activeAccountId) {
             setError("Selecione uma conta bancária.");
             return;
         }
@@ -93,7 +93,7 @@ export default function AddCard() {
                 card_name: cardName.trim(),
                 credit_limit: creditLimit,
                 card_color: selectedColor,
-                account_id: accountId,
+                account_id: activeAccountId,
                 due_day: dueDay,
                 closing_day: closingDay,
             });
