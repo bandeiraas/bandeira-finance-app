@@ -2,6 +2,7 @@ import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { logger } from 'hono/logger'
 import { rateLimiter } from 'hono-rate-limiter'
+import { getConnInfo } from '@hono/node-server/conninfo'
 import { authMiddleware } from './middleware/auth'
 import { errorHandler } from './middleware/error'
 import { accountsRoutes } from './routes/accounts'
@@ -19,7 +20,13 @@ export const app = new Hono()
         rateLimiter({
             windowMs: 60 * 1000,
             limit: 100,
-            keyGenerator: (c) => c.req.header('x-forwarded-for') ?? c.req.header('x-real-ip') ?? 'anonymous',
+            keyGenerator: (c) => {
+                if (process.env.TRUST_PROXY === 'true') {
+                    return c.req.header('x-forwarded-for') ?? c.req.header('x-real-ip') ?? 'anonymous'
+                }
+                const info = getConnInfo(c)
+                return info.remote.address ?? 'anonymous'
+            },
         })
     )
     .use(
