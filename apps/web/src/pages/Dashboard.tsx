@@ -30,15 +30,8 @@ export default function Dashboard() {
     const displayCards = cards?.slice(0, 3) ?? [];
 
     useEffect(() => {
-        let mounted = true;
         const max = Math.max(0, displayCards.length - 1);
-        if (selectedCardIndex > max && mounted) {
-            setTimeout(() => {
-                if(mounted) setSelectedCardIndex(0);
-            }, 0);
-        }
-        return () => { mounted = false; };
-
+        if (selectedCardIndex > max) setSelectedCardIndex(0);
     }, [displayCards.length, selectedCardIndex]);
 
     // Dummy data for financial tip in this phase
