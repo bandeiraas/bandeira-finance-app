@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { TrendingUp, TrendingDown, Plus, Minus, FileText, Lightbulb, CreditCard, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import UserMenu from "@components/UserMenu";
@@ -29,10 +29,10 @@ export default function Dashboard() {
 
     const displayCards = cards?.slice(0, 3) ?? [];
 
-    useEffect(() => {
-        const max = Math.max(0, displayCards.length - 1);
-        if (selectedCardIndex > max) setSelectedCardIndex(0);
-    }, [displayCards.length, selectedCardIndex]);
+    // Removed the effect that synchronized selectedCardIndex with displayCards.length.
+    // Derived state pattern: clamp the selected index during render so we don't need to sync it.
+    const maxIndex = Math.max(0, displayCards.length - 1);
+    const validSelectedCardIndex = selectedCardIndex > maxIndex ? 0 : selectedCardIndex;
 
     // Dummy data for financial tip in this phase
     const financialTip = {
@@ -216,13 +216,13 @@ export default function Dashboard() {
                             <div className="relative flex flex-col items-center pt-2 px-2 h-[220px] sm:h-[250px] lg:h-[280px] overflow-hidden">
                                 <div className="relative w-full max-w-[320px] flex flex-col items-center">
                                     {displayCards.map((card, index) => {
-                                        const isSelected = index === selectedCardIndex;
+                                        const isSelected = index === validSelectedCardIndex;
                                         const cardAccount = accounts?.find((a) => a.id === card.account_id);
                                         return (
                                             <button
                                                 key={card.id}
                                                 type="button"
-                                                onClick={() => !isSelected && setSelectedCardIndex(index)}
+                                                onClick={() => setSelectedCardIndex(index)}
                                                 className={cn(
                                                     "w-full card-ratio rounded-2xl overflow-hidden shadow-md text-left transition-[transform,opacity,box-shadow,border-color] duration-500 ease-out",
                                                     index > 0 && displayCards.length > 1 && "-mt-[175px]",
