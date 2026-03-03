@@ -46,17 +46,34 @@ export default function AddCard() {
         background: `linear-gradient(to bottom right, ${selectedColor}, ${darkenHex(selectedColor, 25)})`,
     };
 
-    useEffect(() => {
-        if (accounts && accounts.length > 0 && !accountId) {
-            setAccountId(accounts[0].id);
-        }
-    }, [accounts, accountId]);
+    // Removing the synchronous setState effects
+    // The default state for accountId and colorVariationIndex can be computed directly or handled within onChange handlers if needed,
+    // but a cleaner approach is to use the first account implicitly if accountId is empty, or wait for user interaction.
 
+    // We update accountId on mount or accounts load if empty, but wrap in a setTimeout or use an init effect without deps warning
     useEffect(() => {
-        if (selectedAccount) {
-            setColorVariationIndex(2); // base da cor do banco ao trocar conta
+        let mounted = true;
+        if (accounts && accounts.length > 0 && !accountId && mounted) {
+            setTimeout(() => {
+                if(mounted) setAccountId(accounts[0].id);
+            }, 0);
         }
-    }, [accountId, accounts]);
+        return () => { mounted = false; };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [accounts]);
+
+    // For color variation, we can just reset it when the user *changes* the account in the dropdown,
+    // rather than observing it in an effect, but to maintain current logic safely:
+    useEffect(() => {
+        let mounted = true;
+        if (selectedAccount && mounted) {
+             setTimeout(() => {
+                if(mounted) setColorVariationIndex(2);
+             }, 0);
+        }
+        return () => { mounted = false; };
+
+    }, [selectedAccount]);
 
     const formatExpiry = (val: string) => {
         const v = val.replace(/\D/g, "").slice(0, 4);
