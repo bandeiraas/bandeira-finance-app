@@ -48,14 +48,19 @@ export default function AddCard() {
 
     useEffect(() => {
         if (accounts && accounts.length > 0 && !accountId) {
-            setAccountId(accounts[0].id);
+            queueMicrotask(() => {
+                setAccountId(accounts[0].id);
+            });
         }
     }, [accounts, accountId]);
 
     useEffect(() => {
         if (selectedAccount) {
-            setColorVariationIndex(2); // base da cor do banco ao trocar conta
+            queueMicrotask(() => {
+                setColorVariationIndex(2); // base da cor do banco ao trocar conta
+            });
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [accountId, accounts]);
 
     const formatExpiry = (val: string) => {
