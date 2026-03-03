@@ -1,0 +1,39 @@
+--- apps/web/src/features/cards/pages/AddCard.tsx
++++ apps/web/src/features/cards/pages/AddCard.tsx
+@@ -46,16 +46,11 @@
+     };
+     const variations = getBankColorVariations(selectedAccount ? getBankKey(selectedAccount.bank_name) : null);
+     const baseColor = variations[colorVariationIndex];
+
+-    useEffect(() => {
+-        if (accounts && accounts.length > 0 && !accountId) {
+-            setAccountId(accounts[0].id);
+-        }
+-    }, [accounts, accountId]);
+-
+-    useEffect(() => {
+-        if (selectedAccount) {
+-            setColorVariationIndex(2); // base da cor do banco ao trocar conta
+-        }
+-    }, [accountId, accounts]);
++    const handleAccountChange = (newAccountId: string) => {
++        setAccountId(newAccountId);
++        setColorVariationIndex(2); // base da cor do banco ao trocar conta
++    };
++
++    // If no account is selected but we have accounts, default to the first one.
++    // We can do this safely in render rather than an effect
++    const activeAccountId = accountId || (accounts && accounts.length > 0 ? accounts[0].id : "");
++    const activeSelectedAccount = accounts?.find((a) => a.id === activeAccountId);
+
+@@ -323,7 +318,7 @@
+                             <div className="space-y-2">
+                                 <label className="text-sm font-medium text-slate-700">Conta Vinculada *</label>
+                                 <select
+-                                    value={accountId}
+-                                    onChange={(e) => setAccountId(e.target.value)}
++                                    value={activeAccountId}
++                                    onChange={(e) => handleAccountChange(e.target.value)}
+                                     className="w-full rounded-xl border-slate-300 shadow-sm text-slate-900 bg-white"
+                                     required
+                                 >
