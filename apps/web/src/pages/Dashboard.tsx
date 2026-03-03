@@ -25,14 +25,13 @@ export default function Dashboard() {
     const { data: recentTransactions, isLoading: loadingTransactions } = useTransactions(3); // Limit 3
     const { data: accounts, isLoading: loadingAccounts } = useAccounts();
     const { data: cards, isLoading: loadingCards } = useCards();
-    const [selectedCardIndex, setSelectedCardIndex] = useState(0);
+    const [userSelectedCardIndex, setUserSelectedCardIndex] = useState<number | null>(null);
 
     const displayCards = cards?.slice(0, 3) ?? [];
-
-    useEffect(() => {
-        const max = Math.max(0, displayCards.length - 1);
-        if (selectedCardIndex > max) setSelectedCardIndex(0);
-    }, [displayCards.length, selectedCardIndex]);
+    const maxIndex = Math.max(0, displayCards.length - 1);
+    const selectedCardIndex = userSelectedCardIndex !== null && userSelectedCardIndex <= maxIndex
+        ? userSelectedCardIndex
+        : 0;
 
     // Dummy data for financial tip in this phase
     const financialTip = {
@@ -185,7 +184,7 @@ export default function Dashboard() {
                                     <div className="flex items-center gap-1">
                                         <button
                                             type="button"
-                                            onClick={() => setSelectedCardIndex((i) => (i <= 0 ? displayCards.length - 1 : i - 1))}
+                                            onClick={() => setUserSelectedCardIndex(selectedCardIndex <= 0 ? maxIndex : selectedCardIndex - 1)}
                                             className="w-7 h-7 flex items-center justify-center rounded-full bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-accent-blue dark:hover:text-accent-blue transition-all shadow-sm border border-slate-100 dark:border-slate-700"
                                             aria-label="Cartão anterior"
                                         >
@@ -193,7 +192,7 @@ export default function Dashboard() {
                                         </button>
                                         <button
                                             type="button"
-                                            onClick={() => setSelectedCardIndex((i) => (i >= displayCards.length - 1 ? 0 : i + 1))}
+                                            onClick={() => setUserSelectedCardIndex(selectedCardIndex >= maxIndex ? 0 : selectedCardIndex + 1)}
                                             className="w-7 h-7 flex items-center justify-center rounded-full bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-accent-blue dark:hover:text-accent-blue transition-all shadow-sm border border-slate-100 dark:border-slate-700"
                                             aria-label="Próximo cartão"
                                         >
@@ -222,7 +221,7 @@ export default function Dashboard() {
                                             <button
                                                 key={card.id}
                                                 type="button"
-                                                onClick={() => !isSelected && setSelectedCardIndex(index)}
+                                                onClick={() => !isSelected && setUserSelectedCardIndex(index)}
                                                 className={cn(
                                                     "w-full card-ratio rounded-2xl overflow-hidden shadow-md text-left transition-[transform,opacity,box-shadow,border-color] duration-500 ease-out",
                                                     index > 0 && displayCards.length > 1 && "-mt-[175px]",
