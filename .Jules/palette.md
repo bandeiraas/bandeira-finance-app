@@ -1,0 +1,3 @@
+## 2025-03-03 - [Missing Icon aria-labels and UserMenu Dropdown a11y]
+**Learning:** Found multiple icon-only "Back" buttons using standard `<Link>` and `<button>` patterns without an `aria-label` attribute, which are completely inaccessible to screen readers as they read empty content. The user menu dropdown lacked `aria-expanded` and semantic `role` attributes, making its state invisible to assistive tech.
+**Action:** When implementing new navigation components or icon-only buttons, always ensure an explicit `aria-label` is applied, particularly for critical flows like returning to previous dashboard states. Dropdowns need `aria-expanded` synchronized with state and `role="menu"`/`role="menuitem"` where appropriate.
