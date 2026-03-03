@@ -27,7 +27,7 @@ describe('CardService', () => {
                     id: '1',
                     user_id: 'u1',
                     account_id: 'a1',
-                    brand: 'nubank',
+                    brand: 'mastercard',
                     last_four: '1234',
                     expiry: '12/30',
                     card_name: 'Meu Cartão',
@@ -60,15 +60,15 @@ describe('CardService', () => {
     describe('createCard', () => {
         it('cria cartão com dados válidos', async () => {
             const input: CreateCardDTO = {
-                brand: 'nubank',
+                brand: 'mastercard',
                 last_four: '1234',
                 expiry: '12/30',
                 card_name: 'Meu Cartão',
                 credit_limit: 5000,
                 account_id: 'a1',
-                card_color: '#820ad1',
                 due_day: 10,
                 closing_day: 5,
+                card_color: '#820ad1',
             }
 
             const insertData = CardFactory.create('u1', input)
@@ -84,7 +84,7 @@ describe('CardService', () => {
 
             expect(result.success).toBe(true)
             if (result.success) {
-                expect(result.data.brand).toBe('nubank')
+                expect(result.data.brand).toBe('mastercard')
                 expect(result.data.last_four).toBe('1234')
             }
             expect(repo.create).toHaveBeenCalledWith(insertData)
@@ -92,12 +92,14 @@ describe('CardService', () => {
 
         it('retorna erro quando repository falha no createCard', async () => {
             const input: CreateCardDTO = {
-                brand: 'nubank',
+                brand: 'mastercard',
                 last_four: '1234',
                 expiry: '12/30',
                 card_name: 'Meu Cartão',
                 credit_limit: 5000,
-                account_id: 'a1'
+                account_id: 'a1',
+                due_day: 10,
+                closing_day: 5
             }
             vi.mocked(repo.create).mockRejectedValue(new Error('DB error create'))
 
