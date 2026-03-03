@@ -30,13 +30,13 @@ export default function EditProfile() {
     // Populate form when profile loads; fallback to Auth user (Google) when profile is empty
     useEffect(() => {
         if (profile || user) {
-            /* eslint-disable react-hooks/set-state-in-effect -- syncing form with async profile fetch */
+
             setFormData({
                 full_name: profile?.full_name || user?.fullName || "",
                 username: profile?.username || "",
                 website: profile?.website || "",
             });
-            /* eslint-enable react-hooks/set-state-in-effect */
+
         }
     }, [profile, user]);
 
