@@ -48,15 +48,17 @@ export default function AddCard() {
 
     useEffect(() => {
         if (accounts && accounts.length > 0 && !accountId) {
+
             setAccountId(accounts[0].id);
         }
     }, [accounts, accountId]);
 
     useEffect(() => {
         if (selectedAccount) {
+
             setColorVariationIndex(2); // base da cor do banco ao trocar conta
         }
-    }, [accountId, accounts]);
+    }, [accountId, accounts, selectedAccount]);
 
     const formatExpiry = (val: string) => {
         const v = val.replace(/\D/g, "").slice(0, 4);

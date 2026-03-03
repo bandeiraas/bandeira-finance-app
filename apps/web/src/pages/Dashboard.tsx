@@ -31,6 +31,7 @@ export default function Dashboard() {
 
     useEffect(() => {
         const max = Math.max(0, displayCards.length - 1);
+
         if (selectedCardIndex > max) setSelectedCardIndex(0);
     }, [displayCards.length, selectedCardIndex]);
 
