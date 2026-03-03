@@ -24,10 +24,11 @@ export class CardService {
             expiry: string
             card_name: string
             credit_limit: number
+            style?: 'black' | 'purple' | 'green' | 'pink'
         }
     ): Promise<Result<Card>> {
         try {
-            const insert = CardFactory.create(userId, data)
+            const insert = CardFactory.create(userId, { ...data, style: data.style ?? 'black' })
             const card = await this.repository.create(insert)
             return R.ok(card)
         } catch (err) {
