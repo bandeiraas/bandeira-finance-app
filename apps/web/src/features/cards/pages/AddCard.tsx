@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronDown, Loader2, AlertCircle, PlusCircle, SmartphoneNfc, Sparkles } from "lucide-react";
 import { useCreateCard } from "@features/cards/hooks/useCards";
@@ -46,17 +46,13 @@ export default function AddCard() {
         background: `linear-gradient(to bottom right, ${selectedColor}, ${darkenHex(selectedColor, 25)})`,
     };
 
-    useEffect(() => {
-        if (accounts && accounts.length > 0 && !accountId) {
-            setAccountId(accounts[0].id);
-        }
-    }, [accounts, accountId]);
+    // Only set default accountId if it's empty AND accounts are loaded
+    if (accounts && accounts.length > 0 && !accountId) {
+        setAccountId(accounts[0].id);
+    }
 
-    useEffect(() => {
-        if (selectedAccount) {
-            setColorVariationIndex(2); // base da cor do banco ao trocar conta
-        }
-    }, [accountId, accounts]);
+    // Determine the base color variation index
+    // We update this via user interaction when they change the account
 
     const formatExpiry = (val: string) => {
         const v = val.replace(/\D/g, "").slice(0, 4);
@@ -340,6 +336,7 @@ export default function AddCard() {
                                                 type="button"
                                                 onClick={() => {
                                                     setAccountId(a.id);
+                                                    setColorVariationIndex(2); // Reset color to base when changing account
                                                     setAccountDropdownOpen(false);
                                                 }}
                                                 className="w-full flex items-center gap-3 p-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 text-left"
