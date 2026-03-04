@@ -6,11 +6,26 @@ import { useMonthlySummary, useTransactions } from "@features/transactions/hooks
 import { formatCurrency } from "@shared/utils/formatCurrency";
 import { cn } from "@lib/utils";
 import {
-    AccountIcon,
-    TransactionIcon,
-    BalanceSummaryCard,
-} from "@features/accounts/components";
-import { ACCOUNT_TYPE_LABELS } from "@features/accounts/constants";
+    Plus,
+    Loader2,
+    Eye,
+    EyeOff,
+    Search,
+    Filter,
+    ChevronDown,
+    Download,
+    ChevronLeft,
+    ChevronRight,
+    TrendingUp,
+} from "lucide-react";
+import { useAccounts } from "../features/accounts/hooks/useAccounts";
+import { useMonthlySummary, useTransactions } from "../features/transactions/hooks/useTransactions";
+import { formatCurrency } from "../shared/utils/formatCurrency";
+import { ACCOUNT_TYPE_LABELS } from "../shared/constants/accounts";
+import { BankIcon } from "../components/BankIcon";
+import { TransactionIcon } from "../components/TransactionIcon";
+
+const BAR_HEIGHTS = [30, 45, 40, 65, 55, 85, 95];
 
 export default function Accounts() {
     const [searchTerm, setSearchTerm] = useState("");
@@ -143,7 +158,7 @@ export default function Accounts() {
                                             to={`/accounts/${acc.id}`}
                                             className={cn("w-full text-left p-4 rounded-2xl flex items-center gap-4 group transition-all", isSelected ? "glass-card bg-white/80 dark:bg-slate-800/80 border-l-4 border-l-primary" : "glass-card bg-white/40 dark:bg-slate-900/40")}
                                         >
-                                            <AccountIcon name={acc.bank_name} />
+                                            <BankIcon name={acc.bank_name} />
                                             <div className="flex-1 min-w-0">
                                                 <p className="text-sm font-bold text-slate-800 dark:text-white truncate">
                                                     {acc.bank_name}

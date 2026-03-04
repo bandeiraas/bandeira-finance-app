@@ -1,5 +1,48 @@
 import { useState, useMemo } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
+<<<<<<< refactor-extract-account-components-and-constants-6946231274707251745
+import {
+    ChevronLeft,
+    ChevronRight,
+    Loader2,
+    FileText,
+    ArrowRightLeft,
+    Search,
+    Filter,
+    Download,
+    Zap,
+    Droplets,
+    Building2,
+    Wifi,
+    TrendingUp,
+    PiggyBank,
+    LineChart,
+    SmartphoneNfc,
+} from "lucide-react";
+import { useAccounts } from "../features/accounts/hooks/useAccounts";
+import { useTransactions } from "../features/transactions/hooks/useTransactions";
+import { useCards } from "../features/cards/hooks/useCards";
+import { formatCurrency } from "../shared/utils/formatCurrency";
+import { ACCOUNT_TYPE_LABELS } from "../shared/constants/accounts";
+import { BANK_HEX, getBankKey } from "../shared/constants/banks";
+import { BankIcon } from "../components/BankIcon";
+import { TransactionIcon } from "../components/TransactionIcon";
+
+const MOCK_BILLS = [
+    { name: "Energia Elétrica", due: "2", date: "26 Out", amount: 245, icon: Zap, color: "red" },
+    { name: "Saneamento", due: "5", date: "29 Out", amount: 82.4, icon: Droplets, color: "blue" },
+    { name: "Condomínio", due: "10", date: "03 Nov", amount: 850, icon: Building2, color: "green" },
+    { name: "Internet Fibra", due: "12", date: "05 Nov", amount: 119.9, icon: Wifi, color: "slate" },
+];
+
+const MOCK_INVESTMENTS = [
+    { name: "CDB Pós-fixado", return: "+1.2%", value: 5430, icon: PiggyBank, color: "purple" },
+    { name: "Fundo DI", return: "+0.8%", value: 2150, icon: LineChart, color: "blue" },
+];
+
+const CHART_COLOR_CLASSES = ["stroke-blue-500", "stroke-purple-500"];
+
+=======
 import { ChevronLeft, ChevronRight, Loader2, FileText, ArrowRightLeft, Search, Filter, Download, TrendingUp, Plus } from "lucide-react";
 import { useAccounts } from "@features/accounts/hooks/useAccounts";
 import { useTransactions } from "@features/transactions/hooks/useTransactions";
@@ -10,6 +53,7 @@ import { BankIcon, TransactionIcon } from "@features/accounts/components";
 import { getBankKey, BANK_HEX, ACCOUNT_TYPE_LABELS } from "@features/accounts/constants";
 import { CardPreview } from "@features/cards/components/CardPreview";
 import { MOCK_BILLS, MOCK_INVESTMENTS, CHART_COLOR_CLASSES } from "@features/accounts/mockData";
+>>>>>>> main
 
 export default function AccountDetail() {
     const { id } = useParams<{ id: string }>();
@@ -393,7 +437,11 @@ export default function AccountDetail() {
                                             className="flex items-center justify-between p-4 hover:bg-white/50 dark:hover:bg-slate-800/50 rounded-2xl transition-all cursor-pointer group"
                                         >
                                             <div className="flex items-center gap-4">
+<<<<<<< refactor-extract-account-components-and-constants-6946231274707251745
+                                                <TransactionIcon categoryName={t.categories?.name} type={t.type} variant="detailed" />
+=======
                                                 <TransactionIcon categoryName={t.categories?.name} type={t.type} variant="detail" />
+>>>>>>> main
                                                 <div>
                                                     <p className="font-semibold text-slate-800 dark:text-white text-sm">{t.description ?? "Transação"}</p>
                                                     <p className="text-xs text-slate-500 dark:text-slate-400">
