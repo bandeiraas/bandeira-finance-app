@@ -55,15 +55,6 @@ export default {
       backgroundImage: {
         'navy-gradient': 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
       },
-      animation: {
-        float: 'float 4s ease-in-out infinite',
-      },
-      keyframes: {
-        float: {
-          '0%, 100%': { transform: 'translateY(0) translateX(-50%)' },
-          '50%': { transform: 'translateY(-5px) translateX(-50%)' },
-        },
-      },
     },
   },
   plugins: [],

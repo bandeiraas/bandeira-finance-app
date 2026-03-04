@@ -1,4 +1,4 @@
-import type { ICardRepository, Card, Result, CreateCardDTO } from '@bandeira/shared'
+import type { ICardRepository, Card, Result } from '@bandeira/shared'
 import { ResultUtil as R, AppError, CardFactory } from '@bandeira/shared'
 
 export class CardService {
