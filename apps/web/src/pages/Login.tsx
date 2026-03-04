@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate, useLocation, Navigate } from "react-router-dom";
 import { Loader2, Mail, Lock } from "lucide-react";
 import { useAuth } from "@features/auth/providers/AuthProvider";
 import { Logo } from "@components/ui/Logo";
@@ -14,13 +14,9 @@ export default function Login() {
     const [isLoading, setIsLoading] = useState(false);
     const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
-    useEffect(() => {
-        if (isAuthenticated) {
-            navigate("/dashboard", { replace: true });
-        }
-    }, [isAuthenticated, navigate]);
-
-    if (isAuthenticated) return null;
+    if (isAuthenticated) {
+        return <Navigate to="/dashboard" replace />;
+    }
 
     const from = (location.state as { from?: { pathname: string } })?.from?.pathname || "/dashboard";
 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronDown, Loader2, AlertCircle, PlusCircle, SmartphoneNfc, Sparkles } from "lucide-react";
 import { useCreateCard } from "@features/cards/hooks/useCards";
@@ -22,8 +22,11 @@ export default function AddCard() {
     const { user } = useAuth();
     const { data: accounts, isLoading: accountsLoading } = useAccounts();
 
-    const [accountId, setAccountId] = useState<string>("");
-    const [colorVariationIndex, setColorVariationIndex] = useState(2); // 0–3, 2 = base da cor do banco
+    const [selectedAccountId, setSelectedAccountId] = useState<string | null>(null);
+    const [selectedColorVariationIndex, setSelectedColorVariationIndex] = useState<number | null>(null);
+
+    const accountId = selectedAccountId ?? (accounts && accounts.length > 0 ? accounts[0].id : "");
+    const colorVariationIndex = selectedColorVariationIndex ?? 2;
     const [brand, setBrand] = useState("mastercard");
     const [lastFour, setLastFour] = useState("");
     const [expiry, setExpiry] = useState("");
@@ -46,17 +49,6 @@ export default function AddCard() {
         background: `linear-gradient(to bottom right, ${selectedColor}, ${darkenHex(selectedColor, 25)})`,
     };
 
-    useEffect(() => {
-        if (accounts && accounts.length > 0 && !accountId) {
-            setAccountId(accounts[0].id);
-        }
-    }, [accounts, accountId]);
-
-    useEffect(() => {
-        if (selectedAccount) {
-            setColorVariationIndex(2); // base da cor do banco ao trocar conta
-        }
-    }, [accountId, accounts]);
 
     const formatExpiry = (val: string) => {
         const v = val.replace(/\D/g, "").slice(0, 4);
@@ -198,7 +190,7 @@ export default function AddCard() {
                                                 <button
                                                     key={i}
                                                     type="button"
-                                                    onClick={() => setColorVariationIndex(i)}
+                                                    onClick={() => setSelectedColorVariationIndex(i)}
                                                     className={cn(
                                                         "w-8 h-8 rounded-full border-2 transition-all shrink-0",
                                                         colorVariationIndex === i
@@ -339,7 +331,8 @@ export default function AddCard() {
                                                 key={a.id}
                                                 type="button"
                                                 onClick={() => {
-                                                    setAccountId(a.id);
+                                                    setSelectedAccountId(a.id);
+                                                    setSelectedColorVariationIndex(2);
                                                     setAccountDropdownOpen(false);
                                                 }}
                                                 className="w-full flex items-center gap-3 p-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 text-left"

@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate, Navigate } from "react-router-dom";
 import { User, Mail, Lock, Loader2 } from "lucide-react";
 import { useAuth } from "@features/auth/providers/AuthProvider";
 import { Logo } from "@components/ui/Logo";
@@ -17,14 +17,9 @@ export default function Register() {
     const [isLoading, setIsLoading] = useState(false);
     const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
-    // Redirect if already logged in
-    useEffect(() => {
-        if (isAuthenticated) {
-            navigate("/dashboard", { replace: true });
-        }
-    }, [isAuthenticated, navigate]);
-
-    if (isAuthenticated) return null;
+    if (isAuthenticated) {
+        return <Navigate to="/dashboard" replace />;
+    }
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value, type, checked } = e.target;
