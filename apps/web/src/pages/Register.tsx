@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, Navigate } from "react-router-dom";
 import { User, Mail, Lock, Loader2 } from "lucide-react";
 import { useAuth } from "@features/auth/providers/AuthProvider";
 import { Logo } from "@components/ui/Logo";
@@ -18,8 +18,7 @@ export default function Register() {
     const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
     if (isAuthenticated) {
-        navigate("/dashboard", { replace: true });
-        return null;
+        return <Navigate to="/dashboard" replace />;
     }
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
