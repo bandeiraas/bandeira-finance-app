@@ -46,7 +46,7 @@ export class TransactionService {
         const expensesGrouped: Record<string, { total: number; color: string | null }> = {}
 
         for (const t of transactions) {
-            const amount = t.amount
+            const amount = Number(t.amount)
             if (t.type === 'income') {
                 totalIncome += amount
             } else if (t.type === 'expense') {

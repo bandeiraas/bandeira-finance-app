@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
     CheckCircle,
@@ -20,29 +20,26 @@ export default function EditProfile() {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     // UI toggle only, we don't update password here yet
-    const [formData, setFormData] = useState({
-        full_name: "",
-        username: "",
-        website: "",
-    });
-    const [successMessage, setSuccessMessage] = useState<string | null>(null);
+    const [userFormData, setUserFormData] = useState<{
+        full_name?: string;
+        username?: string;
+        website?: string;
+    } | null>(null);
 
-    // Populate form when profile loads; fallback to Auth user (Google) when profile is empty
-    useEffect(() => {
-        if (profile || user) {
-            /* eslint-disable react-hooks/set-state-in-effect -- syncing form with async profile fetch */
-            setFormData({
-                full_name: profile?.full_name || user?.fullName || "",
-                username: profile?.username || "",
-                website: profile?.website || "",
-            });
-            /* eslint-enable react-hooks/set-state-in-effect */
-        }
-    }, [profile, user]);
+    const formData = {
+        full_name: userFormData?.full_name ?? profile?.full_name ?? user?.fullName ?? "",
+        username: userFormData?.username ?? profile?.username ?? "",
+        website: userFormData?.website ?? profile?.website ?? "",
+    };
+
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+        setUserFormData(prev => ({
+            ...prev,
+            [name]: value
+        }));
     };
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
