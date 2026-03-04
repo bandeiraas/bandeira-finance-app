@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { TrendingUp, TrendingDown, Plus, Minus, FileText, Lightbulb, CreditCard, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import UserMenu from "@components/UserMenu";
@@ -25,14 +25,23 @@ export default function Dashboard() {
     const { data: recentTransactions, isLoading: loadingTransactions } = useTransactions(3); // Limit 3
     const { data: accounts, isLoading: loadingAccounts } = useAccounts();
     const { data: cards, isLoading: loadingCards } = useCards();
-    const [selectedCardIndex, setSelectedCardIndex] = useState(0);
+    const [rawSelectedCardIndex, setRawSelectedCardIndex] = useState(0);
 
     const displayCards = cards?.slice(0, 3) ?? [];
 
-    useEffect(() => {
-        const max = Math.max(0, displayCards.length - 1);
-        if (selectedCardIndex > max) setSelectedCardIndex(0);
-    }, [displayCards.length, selectedCardIndex]);
+    // Instead of using an effect to reset the card index when cards change,
+    // compute a safe derived index. This avoids calling setState in an effect
+    // and prevents cascading renders.
+    const maxIndex = Math.max(0, displayCards.length - 1);
+    const selectedCardIndex = rawSelectedCardIndex > maxIndex ? 0 : rawSelectedCardIndex;
+
+    const setSelectedCardIndex = (newIndex: number | ((prev: number) => number)) => {
+        if (typeof newIndex === 'function') {
+            setRawSelectedCardIndex(newIndex);
+        } else {
+            setRawSelectedCardIndex(newIndex);
+        }
+    }
 
     // Dummy data for financial tip in this phase
     const financialTip = {
