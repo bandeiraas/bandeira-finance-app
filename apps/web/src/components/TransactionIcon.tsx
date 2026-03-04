@@ -77,7 +77,7 @@ export function TransactionIcon({ categoryName, type, variant = "simple" }: Tran
         if (cat.includes("energia") || cat.includes("conta"))
             return <div className={iconClass}><Zap size={22} /></div>;
         if (cat.includes("transporte") || cat.includes("uber") || cat.includes("carro"))
-            return <div className={iconClass}><Zap size={22} /></div>;
+            return <div className={iconClass}><Car size={22} /></div>;
         if (cat.includes("lazer") || cat.includes("restaurant"))
             return <div className={iconClass}><ShoppingBag size={22} /></div>;
 
