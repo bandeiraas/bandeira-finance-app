@@ -1,4 +1,0 @@
-## 2024-05-18 - Prevent IDOR Vulnerabilities on Database Deletes
-**Vulnerability:** Repository delete methods (`deleteTransaction`, `deleteCard`, `deleteAccount`) were only accepting an ID, omitting the user ownership validation, which could allow malicious actors to delete records belonging to other users (IDOR - Insecure Direct Object Reference).
-**Learning:** Due to how repositories wrap database operations, any method modifying or fetching specific objects MUST explicitly enforce authorization boundaries at the database level rather than assuming the object id maps securely to the authenticated user.
-**Prevention:** Always propagate `userId` from controllers through services and to repository level, and strictly append `.eq('user_id', userId)` on all database operations related to user-owned models.
