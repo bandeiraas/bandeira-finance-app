@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronDown, Loader2, AlertCircle, PlusCircle, SmartphoneNfc, Sparkles } from "lucide-react";
 import { useCreateCard } from "@features/cards/hooks/useCards";
@@ -36,8 +36,14 @@ export default function AddCard() {
     const [error, setError] = useState<string | null>(null);
 
     const createCard = useCreateCard();
-    const selectedAccount = accounts?.find((a) => a.id === accountId);
-    const bankKey = selectedAccount ? getBankKey(selectedAccount.bank_name) : "default";
+
+    // Auto-select first account on load logic implemented differently to avoid effect loops
+    // In a real scenario, this might be handled via route state or higher up,
+    // but here we ensure `accountId` defaults if accounts are loaded.
+    const effectiveAccountId = accountId || (accounts && accounts.length > 0 ? accounts[0].id : "");
+    const effectiveSelectedAccount = accounts?.find((a) => a.id === effectiveAccountId);
+
+    const bankKey = effectiveSelectedAccount ? getBankKey(effectiveSelectedAccount.bank_name) : "default";
     const bankHex = BANK_HEX[bankKey] ?? BANK_HEX.default;
     const bankConfig = BANK_COLORS[bankKey] ?? BANK_COLORS.default;
     const colorVariations = getBankColorVariations(bankHex);
@@ -46,17 +52,13 @@ export default function AddCard() {
         background: `linear-gradient(to bottom right, ${selectedColor}, ${darkenHex(selectedColor, 25)})`,
     };
 
-    useEffect(() => {
-        if (accounts && accounts.length > 0 && !accountId) {
-            setAccountId(accounts[0].id);
-        }
-    }, [accounts, accountId]);
-
-    useEffect(() => {
-        if (selectedAccount) {
-            setColorVariationIndex(2); // base da cor do banco ao trocar conta
-        }
-    }, [accountId, accounts]);
+    // Note: We removed the useEffects that called setState to avoid cascading renders.
+    // When a user selects an account, we update both states together.
+    const handleAccountSelect = (id: string) => {
+        setAccountId(id);
+        setColorVariationIndex(2);
+        setAccountDropdownOpen(false);
+    };
 
     const formatExpiry = (val: string) => {
         const v = val.replace(/\D/g, "").slice(0, 4);
@@ -68,7 +70,9 @@ export default function AddCard() {
         e.preventDefault();
         setError(null);
 
-        if (!accountId) {
+        const currentAccountId = effectiveAccountId;
+
+        if (!currentAccountId) {
             setError("Selecione uma conta bancária.");
             return;
         }
@@ -97,7 +101,7 @@ export default function AddCard() {
                 card_name: cardName.trim(),
                 credit_limit: creditLimit,
                 card_color: selectedColor,
-                account_id: accountId,
+                account_id: currentAccountId,
                 due_day: dueDay,
                 closing_day: closingDay,
             });
@@ -191,7 +195,7 @@ export default function AddCard() {
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">
-                                            Sugestão de Estilo ({selectedAccount?.bank_name ?? "Banco"})
+                                            Sugestão de Estilo ({effectiveSelectedAccount?.bank_name ?? "Banco"})
                                         </p>
                                         <div className="flex items-center gap-2">
                                             {colorVariations.map((hex, i) => (
@@ -232,7 +236,7 @@ export default function AddCard() {
                                         {bankConfig.label}
                                     </div>
                                     <span className="font-semibold text-[10px] uppercase tracking-wide">
-                                        {selectedAccount?.bank_name ?? "Banco"}
+                                        {effectiveSelectedAccount?.bank_name ?? "Banco"}
                                     </span>
                                 </div>
                                 <SmartphoneNfc size={18} className="opacity-60" />
@@ -292,10 +296,10 @@ export default function AddCard() {
                                     onClick={() => setAccountDropdownOpen(!accountDropdownOpen)}
                                     className="w-full flex items-center gap-3 p-4 rounded-xl bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-left hover:border-primary/50 transition-colors"
                                 >
-                                    {selectedAccount ? (
+                                    {effectiveSelectedAccount ? (
                                         <>
                                             {(() => {
-                                                const bankKey = getBankKey(selectedAccount.bank_name);
+                                                const bankKey = getBankKey(effectiveSelectedAccount.bank_name);
                                                 const config = BANK_COLORS[bankKey] ?? BANK_COLORS.default;
                                                 const hex = BANK_HEX[bankKey] ?? BANK_HEX.default;
                                                 return (
@@ -312,11 +316,11 @@ export default function AddCard() {
                                             })()}
                                             <div className="flex-1">
                                                 <p className="font-semibold text-slate-800 dark:text-white">
-                                                    {selectedAccount.bank_name}
+                                                    {effectiveSelectedAccount.bank_name}
                                                 </p>
                                                 <p className="text-xs text-slate-500">
-                                                    {ACCOUNT_TYPE_LABELS[selectedAccount.account_type]} •{" "}
-                                                    {Number(selectedAccount.balance || 0).toLocaleString("pt-BR", {
+                                                    {ACCOUNT_TYPE_LABELS[effectiveSelectedAccount.account_type]} •{" "}
+                                                    {Number(effectiveSelectedAccount.balance || 0).toLocaleString("pt-BR", {
                                                         style: "currency",
                                                         currency: "BRL",
                                                     })}
@@ -338,10 +342,7 @@ export default function AddCard() {
                                             <button
                                                 key={a.id}
                                                 type="button"
-                                                onClick={() => {
-                                                    setAccountId(a.id);
-                                                    setAccountDropdownOpen(false);
-                                                }}
+                                                onClick={() => handleAccountSelect(a.id)}
                                                 className="w-full flex items-center gap-3 p-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 text-left"
                                             >
                                                 <div
