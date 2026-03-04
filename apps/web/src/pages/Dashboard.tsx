@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { TrendingUp, TrendingDown, Plus, Minus, FileText, Lightbulb, CreditCard, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import UserMenu from "@components/UserMenu";
@@ -7,7 +7,7 @@ import { useAuth } from "@features/auth/providers/AuthProvider";
 import { useMonthlySummary, useTransactions } from "@features/transactions/hooks/useTransactions";
 import { useAccounts } from "@features/accounts/hooks/useAccounts";
 import { useCards } from "@features/cards/hooks/useCards";
-import { CardPreview } from "@features/cards/components/CardPreview";
+import { getCardGradientClass } from "@features/cards/constants";
 import { formatCurrency } from "@shared/utils/formatCurrency";
 import {
     AccountCard,
@@ -29,13 +29,9 @@ export default function Dashboard() {
 
     const displayCards = cards?.slice(0, 3) ?? [];
 
-    useEffect(() => {
-        const max = Math.max(0, displayCards.length - 1);
-        if (selectedCardIndex > max) {
-            // Defer the state update to avoid synchronous cascading renders
-            setTimeout(() => setSelectedCardIndex(0), 0);
-        }
-    }, [displayCards.length, selectedCardIndex]);
+    // Ensure selected card index is valid if cards are deleted
+    const maxIndex = Math.max(0, displayCards.length - 1);
+    const validSelectedIndex = selectedCardIndex > maxIndex ? 0 : selectedCardIndex;
 
     // Dummy data for financial tip in this phase
     const financialTip = {
@@ -219,30 +215,80 @@ export default function Dashboard() {
                             <div className="relative flex flex-col items-center pt-2 px-2 h-[220px] sm:h-[250px] lg:h-[280px] overflow-hidden">
                                 <div className="relative w-full max-w-[320px] flex flex-col items-center">
                                     {displayCards.map((card, index) => {
-                                        const isSelected = index === selectedCardIndex;
-                                        const cardAccount = accounts?.find((a) => a.id === card.account_id);
+                                        const isSelected = index === validSelectedIndex;
+                                        const gradientClasses = getCardGradientClass(card.style);
                                         return (
-                                            <button
-                                                key={card.id}
-                                                type="button"
-                                                onClick={() => !isSelected && setSelectedCardIndex(index)}
-                                                className={cn(
-                                                    "w-full card-ratio rounded-2xl overflow-hidden shadow-md text-left transition-[transform,opacity,box-shadow,border-color] duration-500 ease-out",
-                                                    index > 0 && displayCards.length > 1 && "-mt-[175px]",
-                                                    isSelected
-                                                        ? "z-30 scale-100 opacity-100 border-2 border-primary dark:border-primary cursor-default shadow-2xl"
-                                                        : "z-10 scale-90 opacity-80 cursor-pointer hover:opacity-100 hover:scale-[0.92] border border-white/10 dark:border-white/10"
-                                                )}
-                                            >
-                                                <CardPreview
-                                                    card={card}
-                                                    account={cardAccount ?? null}
-                                                    userName={user?.fullName}
-                                                    className="absolute inset-0 w-full h-full"
-                                                />
-                                            </button>
-                                        );
-                                    })}
+                                        <button
+                                            key={card.id}
+                                            type="button"
+                                            onClick={() => !isSelected && setSelectedCardIndex(index)}
+                                            className={cn(
+                                                "w-full card-ratio rounded-2xl overflow-hidden shadow-md text-left transition-[transform,opacity,box-shadow,border-color] duration-500 ease-out",
+                                                index > 0 && displayCards.length > 1 && "-mt-[175px]",
+                                                isSelected
+                                                    ? "z-30 scale-100 opacity-100 border-2 border-primary dark:border-primary cursor-default shadow-2xl"
+                                                    : "z-10 scale-90 opacity-80 cursor-pointer hover:opacity-100 hover:scale-[0.92] border border-white/10 dark:border-white/10"
+                                            )}
+                                        >
+                                            {isSelected ? (
+                                                <>
+                                                    <div className={cn("absolute inset-0 bg-gradient-to-br transition-colors duration-500", gradientClasses)}></div>
+                                                    <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10 mix-blend-overlay"></div>
+                                                    <div className="relative z-10 h-full flex flex-col justify-between p-5 text-white">
+                                                        <div className="flex justify-between items-start">
+                                                            <div className="flex flex-col gap-1">
+                                                                <span className="font-display font-bold text-xs tracking-tight">{card.brand || 'FinTrack Bank'}</span>
+                                                                <div className="px-2 py-0.5 bg-white/10 rounded-lg text-[7px] font-bold tracking-widest border border-white/20 uppercase w-max">
+                                                                    {card.card_name || 'Black Edition'}
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex flex-col items-end">
+                                                                <div className="flex -space-x-3 mb-1">
+                                                                    <div className="w-6 h-6 rounded-full bg-rose-600/90 border border-white/20"></div>
+                                                                    <div className="w-6 h-6 rounded-full bg-amber-500/90 border border-white/20"></div>
+                                                                </div>
+                                                                <span className="text-[7px] font-bold text-white/40 uppercase tracking-tighter">Mastercard</span>
+                                                            </div>
+                                                        </div>
+                                                        <div className="space-y-3">
+                                                            <div className="w-8 h-6 bg-amber-200/20 rounded-md border border-amber-200/30 backdrop-blur-sm relative overflow-hidden">
+                                                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+                                                            </div>
+                                                            <div className="flex justify-between items-end">
+                                                                <div>
+                                                                    <div className="text-[9px] text-white/50 font-mono tracking-widest mb-1">•••• {card.last_four}</div>
+                                                                    <div className="text-[10px] font-extrabold tracking-widest uppercase">{user?.fullName || "Usuário"}</div>
+                                                                </div>
+                                                                <div className="text-right">
+                                                                    <div className="text-[7px] text-white/40 uppercase mb-0.5">Limite Disponível</div>
+                                                                    <div className="text-sm font-black text-accent-blue">
+                                                                        {formatCurrency(Number(card.credit_limit) - 0)}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <div className={cn("absolute inset-0 bg-gradient-to-br", gradientClasses)}></div>
+                                                    <div className="relative z-10 p-3 flex items-center justify-between border-b border-white/5">
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="font-display font-bold text-[9px] text-white/90">{card.brand || 'FinTrack Bank'}</span>
+                                                            <span className="px-1.5 py-0.5 bg-white/10 rounded text-[7px] font-bold text-white/60 tracking-widest uppercase border border-white/5">
+                                                                {card.card_name || 'Platinum'}
+                                                            </span>
+                                                        </div>
+                                                        <span className="text-[8px] font-bold text-white/50">
+                                                            Limite Total: {formatCurrency(Number(card.credit_limit) || 0)}
+                                                        </span>
+                                                    </div>
+                                                    <div className="h-full bg-black/20 min-h-[60px]"></div>
+                                                </>
+                                            )}
+                                        </button>
+                                    );
+                                })}
                                 </div>
                             </div>
                         ) : (

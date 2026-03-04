@@ -1,5 +1,3 @@
-export { CARD_BRANDS, CARD_BRAND_SLUGS, type CardBrandSlug } from './cardBrands'
-
 // Query Keys for React Query
 export const QUERY_KEYS = {
     AUTH: {
