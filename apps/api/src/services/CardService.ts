@@ -1,4 +1,4 @@
-import type { ICardRepository, Card, Result } from '@bandeira/shared'
+import type { ICardRepository, Card, Result, CreateCardDTO } from '@bandeira/shared'
 import { ResultUtil as R, AppError, CardFactory } from '@bandeira/shared'
 
 export class CardService {
@@ -36,9 +36,9 @@ export class CardService {
         }
     }
 
-    async deleteCard(id: string): Promise<Result<void>> {
+    async deleteCard(id: string, userId: string): Promise<Result<void>> {
         try {
-            await this.repository.delete(id)
+            await this.repository.delete(id, userId)
             return R.ok(undefined)
         } catch (err) {
             return R.fail(AppError.fromUnknown(err))

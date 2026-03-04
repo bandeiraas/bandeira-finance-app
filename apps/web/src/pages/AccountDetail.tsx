@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { ChevronLeft, ChevronRight, Loader2, FileText, ArrowRightLeft, Search, Filter, Download, TrendingUp, SmartphoneNfc } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2, FileText, ArrowRightLeft, Search, Filter, Download, TrendingUp, Plus } from "lucide-react";
 import { useAccounts } from "@features/accounts/hooks/useAccounts";
 import { useTransactions } from "@features/transactions/hooks/useTransactions";
 import { useCards } from "@features/cards/hooks/useCards";
@@ -8,6 +8,7 @@ import { formatCurrency } from "@shared/utils/formatCurrency";
 import { cn } from "@lib/utils";
 import { BankIcon, TransactionIcon } from "@features/accounts/components";
 import { getBankKey, BANK_HEX, ACCOUNT_TYPE_LABELS } from "@features/accounts/constants";
+import { CardPreview } from "@features/cards/components/CardPreview";
 import { MOCK_BILLS, MOCK_INVESTMENTS, CHART_COLOR_CLASSES } from "@features/accounts/mockData";
 
 export default function AccountDetail() {
@@ -49,7 +50,7 @@ export default function AccountDetail() {
         .sort((a, b) => b.percentage - a.percentage)
         .slice(0, 3);
 
-    const primaryCard = cards?.[0];
+    const primaryCard = cards?.find((c) => c.account_id === id);
 
     const groupedByDate = useMemo(() => {
         const groups: Record<string, typeof accountTransactions> = {};
@@ -327,29 +328,13 @@ export default function AccountDetail() {
                         <h3 className="font-display font-semibold text-slate-800 dark:text-white mb-4">Cartões Vinculados</h3>
                         {primaryCard ? (
                             <>
-                                <div className="relative w-full aspect-[1.586] rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 p-5 text-white shadow-xl overflow-hidden mb-3">
-                                    <div className="absolute right-0 top-0 w-32 h-32 bg-white/5 rounded-full -mr-10 -mt-10 blur-2xl" />
-                                    <div
-                                        className="absolute bottom-0 left-0 w-24 h-24 rounded-full -ml-10 -mb-10 blur-xl opacity-30"
-                                        style={{ backgroundColor: bankHex }}
+                                <div className="mb-3 max-w-md">
+                                    <CardPreview
+                                        card={primaryCard}
+                                        account={account}
+                                        userName={undefined}
+                                        className="w-full"
                                     />
-                                    <div className="flex justify-between items-start mb-6">
-                                        <span className="font-display italic font-bold text-xl">{primaryCard.brand}</span>
-                                        <SmartphoneNfc size={24} className="text-white/60" />
-                                    </div>
-                                    <div className="mt-auto">
-                                        <p className="text-slate-400 text-xs mb-1">Limite</p>
-                                        <div className="flex justify-between items-end">
-                                            <span className="text-2xl font-bold tracking-tight">{formatCurrency(Number(primaryCard.credit_limit))}</span>
-                                            <div className="flex flex-col items-end">
-                                                <span className="text-xs text-slate-400 font-mono">•••• {primaryCard.last_four}</span>
-                                                <div className="flex -space-x-2 mt-1">
-                                                    <div className="w-6 h-6 rounded-full bg-red-500/80" />
-                                                    <div className="w-6 h-6 rounded-full bg-yellow-500/80" />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
                                 </div>
                                 <Link
                                     to="/cards"
@@ -362,10 +347,10 @@ export default function AccountDetail() {
                         ) : (
                             <Link
                                 to="/cards/new"
-                                className="block py-6 text-center text-slate-500 dark:text-slate-400 transition-colors font-medium hover:opacity-80"
-                                style={{ color: bankHex } as React.CSSProperties}
+                                className="w-full p-3 rounded-xl border border-dashed border-slate-300 dark:border-slate-700 flex items-center justify-center gap-2 text-slate-400 hover:text-primary hover:border-primary/50 hover:bg-primary/5 transition-all text-xs font-bold uppercase tracking-widest"
                             >
-                                Nenhum cartão vinculado. Adicionar cartão →
+                                <Plus size={18} />
+                                Adicionar cartão
                             </Link>
                         )}
                     </div>
