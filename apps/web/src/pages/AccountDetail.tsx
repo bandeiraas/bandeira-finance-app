@@ -30,26 +30,20 @@ export default function AccountDetail() {
 
     const currentMonth = new Date().getMonth();
     const currentYear = new Date().getFullYear();
-
-    // Performance optimization: Single pass iteration
-    let monthIncome = 0;
-    let monthExpense = 0;
-    const categoryTotals: Record<string, number> = {};
-
-    accountTransactions.forEach((t) => {
+    const monthTransactions = accountTransactions.filter((t) => {
         const d = new Date(t.date);
-        if (d.getMonth() === currentMonth && d.getFullYear() === currentYear) {
-            const amount = Number(t.amount);
-            if (t.type === "income") {
-                monthIncome += amount;
-            } else if (t.type === "expense") {
-                monthExpense += amount;
-                const name = t.categories?.name ?? "Outros";
-                categoryTotals[name] = (categoryTotals[name] ?? 0) + amount;
-            }
-        }
+        return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
     });
+    const monthIncome = monthTransactions.filter((t) => t.type === "income").reduce((s, t) => s + Number(t.amount), 0);
+    const monthExpense = monthTransactions.filter((t) => t.type === "expense").reduce((s, t) => s + Number(t.amount), 0);
 
+    const categoryTotals = monthTransactions
+        .filter((t) => t.type === "expense")
+        .reduce<Record<string, number>>((acc, t) => {
+            const name = t.categories?.name ?? "Outros";
+            acc[name] = (acc[name] ?? 0) + Number(t.amount);
+            return acc;
+        }, {});
     const totalExpense = monthExpense;
     const categoriesWithPercent = Object.entries(categoryTotals)
         .map(([name, total]) => ({ name, total, percentage: totalExpense > 0 ? (total / totalExpense) * 100 : 0 }))

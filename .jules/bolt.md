@@ -1,0 +1,3 @@
+## 2024-05-24 - Single-Pass Iterations for Data Summaries
+**Learning:** We identified an O(k*N) iteration anti-pattern where data lists were `.filter`ed and `.reduce`d sequentially for different summary properties (e.g., total income, total expense, totals by category). This is unnecessary overhead, especially as array size grows or if done repeatedly in components or services.
+**Action:** When calculating complex multi-part summaries, use single-pass array iterations via `reduce` or `for...of` loops. This minimizes O(N) traversal overhead to a single loop, producing multiple computed properties efficiently.
