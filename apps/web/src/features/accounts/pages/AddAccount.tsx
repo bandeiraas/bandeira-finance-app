@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ChevronLeft, Wallet, Plus, Check, Search, AlertCircle, Loader2 } from "lucide-react";
-import { useCreateAccount } from "../features/accounts/hooks/useAccounts";
-import { parseBRL } from "../shared/utils/parseBRL";
+import { useCreateAccount } from "@features/accounts/hooks/useAccounts";
+import { parseBRL } from "@shared/utils/parseBRL";
+import { cn } from "@lib/utils";
 
 type Step = 1 | 2;
 
@@ -29,14 +30,13 @@ export default function AddAccount() {
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedBank, setSelectedBank] = useState<Bank | null>(null);
 
-    // Form State
     const [balance, setBalance] = useState("0,00");
     const [accountType, setAccountType] = useState("Conta Corrente");
     const [error, setError] = useState<string | null>(null);
 
     const createAccount = useCreateAccount();
 
-    const filteredBanks = BANKS.filter(bank =>
+    const filteredBanks = BANKS.filter((bank) =>
         bank.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
@@ -50,7 +50,7 @@ export default function AddAccount() {
         setSelectedBank({
             name: "Outro Banco",
             color: "bg-slate-800",
-            logo: <Wallet size={20} />
+            logo: <Wallet size={20} />,
         });
         setStep(2);
         setError(null);
@@ -68,8 +68,8 @@ export default function AddAccount() {
                 bankName: selectedBank.name === "Outro Banco" ? "Outro" : selectedBank.name,
                 accountType,
                 balance: numericBalance,
-                color: selectedBank.color, // We use the tailwind class as color for now, or could map to hex
-                isPrimary: false
+                color: selectedBank.color,
+                isPrimary: false,
             });
 
             navigate("/dashboard");
@@ -81,11 +81,13 @@ export default function AddAccount() {
 
     return (
         <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col">
-            {/* Header */}
             <header className="px-6 py-4 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-10">
                 <div className="flex items-center gap-4 max-w-lg mx-auto w-full">
                     {step === 1 ? (
-                        <Link to="/dashboard" className="p-2 -ml-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors text-slate-600 dark:text-slate-400">
+                        <Link
+                            to="/dashboard"
+                            className="p-2 -ml-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors text-slate-600 dark:text-slate-400"
+                        >
                             <ChevronLeft size={24} />
                         </Link>
                     ) : (
@@ -105,10 +107,12 @@ export default function AddAccount() {
             <div className="flex-1 px-6 py-8">
                 <div className="max-w-lg mx-auto space-y-8">
                     {step === 1 ? (
-                        /* Step 1: Select Bank */
                         <div className="space-y-6 animate-in slide-in-from-right-4 fade-in duration-300">
                             <div className="relative">
-                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={20} />
+                                <Search
+                                    className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+                                    size={20}
+                                />
                                 <input
                                     type="text"
                                     placeholder="Buscar instituição..."
@@ -119,7 +123,9 @@ export default function AddAccount() {
                             </div>
 
                             <div className="space-y-2">
-                                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider px-2">Instituições Populares</p>
+                                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider px-2">
+                                    Instituições Populares
+                                </p>
                                 <div className="grid grid-cols-2 gap-3">
                                     {filteredBanks.map((bank) => (
                                         <button
@@ -127,10 +133,17 @@ export default function AddAccount() {
                                             onClick={() => handleSelectBank(bank)}
                                             className="flex items-center gap-3 p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl hover:border-primary/50 hover:bg-primary/5 dark:hover:bg-primary/10 transition-all group text-left shadow-sm hover:shadow-md"
                                         >
-                                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold shadow-sm ${bank.color}`}>
-                                                {typeof bank.logo === 'string' ? bank.logo : bank.logo}
+                                            <div
+                                                className={cn(
+                                                    "w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold shadow-sm",
+                                                    bank.color
+                                                )}
+                                            >
+                                                {typeof bank.logo === "string" ? bank.logo : bank.logo}
                                             </div>
-                                            <span className="font-medium text-slate-700 dark:text-slate-200 group-hover:text-primary transition-colors">{bank.name}</span>
+                                            <span className="font-medium text-slate-700 dark:text-slate-200 group-hover:text-primary transition-colors">
+                                                {bank.name}
+                                            </span>
                                         </button>
                                     ))}
                                 </div>
@@ -145,15 +158,28 @@ export default function AddAccount() {
                             </button>
                         </div>
                     ) : (
-                        /* Step 2: Configure Account */
-                        <form onSubmit={handleManualSubmit} className="space-y-8 animate-in slide-in-from-right-4 fade-in duration-300">
+                        <form
+                            onSubmit={handleManualSubmit}
+                            className="space-y-8 animate-in slide-in-from-right-4 fade-in duration-300"
+                        >
                             <div className="flex items-center gap-4 p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-                                <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold shadow-sm ${selectedBank?.color}`}>
-                                    {typeof selectedBank?.logo === 'string' ? selectedBank?.logo : selectedBank?.logo}
+                                <div
+                                    className={cn(
+                                        "w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold shadow-sm",
+                                        selectedBank?.color
+                                    )}
+                                >
+                                    {typeof selectedBank?.logo === "string"
+                                        ? selectedBank?.logo
+                                        : selectedBank?.logo}
                                 </div>
                                 <div>
-                                    <p className="text-sm text-slate-500 dark:text-slate-400">Instituição Selecionada</p>
-                                    <p className="text-lg font-bold text-slate-800 dark:text-white">{selectedBank?.name}</p>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">
+                                        Instituição Selecionada
+                                    </p>
+                                    <p className="text-lg font-bold text-slate-800 dark:text-white">
+                                        {selectedBank?.name}
+                                    </p>
                                 </div>
                             </div>
 
@@ -166,9 +192,13 @@ export default function AddAccount() {
 
                             <div className="space-y-6">
                                 <div>
-                                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Saldo Atual</label>
+                                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
+                                        Saldo Atual
+                                    </label>
                                     <div className="relative group">
-                                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-medium text-lg">R$</span>
+                                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-medium text-lg">
+                                            R$
+                                        </span>
                                         <input
                                             type="text"
                                             value={balance}
@@ -181,22 +211,28 @@ export default function AddAccount() {
                                 </div>
 
                                 <div>
-                                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Tipo de Conta</label>
+                                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
+                                        Tipo de Conta
+                                    </label>
                                     <div className="grid grid-cols-2 gap-3">
-                                        {["Conta Corrente", "Poupança", "Investimento", "Carteira"].map((type) => (
-                                            <button
-                                                key={type}
-                                                type="button"
-                                                onClick={() => setAccountType(type)}
-                                                disabled={createAccount.isPending}
-                                                className={`p-3 rounded-xl border text-sm font-medium transition-all ${accountType === type
-                                                        ? "border-primary bg-primary/5 text-primary"
-                                                        : "border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:border-primary/30"
-                                                    }`}
-                                            >
-                                                {type}
-                                            </button>
-                                        ))}
+                                        {["Conta Corrente", "Poupança", "Investimento", "Carteira"].map(
+                                            (type) => (
+                                                <button
+                                                    key={type}
+                                                    type="button"
+                                                    onClick={() => setAccountType(type)}
+                                                    disabled={createAccount.isPending}
+                                                    className={cn(
+                                                        "p-3 rounded-xl border text-sm font-medium transition-all",
+                                                        accountType === type
+                                                            ? "border-primary bg-primary/5 text-primary"
+                                                            : "border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:border-primary/30"
+                                                    )}
+                                                >
+                                                    {type}
+                                                </button>
+                                            )
+                                        )}
                                     </div>
                                 </div>
                             </div>

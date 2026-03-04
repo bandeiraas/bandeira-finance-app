@@ -1,5 +1,5 @@
 import * as React from "react";
-import { cn } from "../../lib/utils";
+import { cn } from "@lib/utils";
 
 // Note: I'm implementing a simplified version first without cva dependency if not installed, 
 // but sticking to the plan of "clean react components". 

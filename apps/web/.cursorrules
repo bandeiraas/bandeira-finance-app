@@ -1,0 +1,40 @@
+# Bandeira Finance — Frontend (apps/web)
+
+## Stack
+
+- React 19, Vite 7, TailwindCSS, TanStack Query (React Query), React Router.
+- Componentes base: shadcn/ui (Radix), Lucide Icons, clsx + tailwind-merge (`cn()`).
+
+## Design System & Temas
+
+- É OBRIGATÓRIO o suporte fluído aos modos Light e Dark.
+- Sempre utilize as classes `dark:` do Tailwind (ex: `bg-white dark:bg-slate-900`, `text-slate-900 dark:text-white`).
+- Aplique o estilo "Glassmorphism" do projeto: `backdrop-blur`, backgrounds com opacidade (`bg-white/40 dark:bg-slate-900/40`).
+- Consulte `docs/design/DESIGN.md` para paleta, tipografia (Outfit, Inter), tokens e padrões de componente.
+- Use `glassmorphism`, `glass-card` e `bg-mesh` conforme definidos no design system.
+
+## Desacoplamento de Dados
+
+- Proibido importar `@supabase/supabase-js` exceto para Auth SDK (login, sessão, logout).
+- Toda busca de dados deve ser feita EXCLUSIVAMENTE através do cliente da API (`lib/api.ts`) integrado ao React Query.
+- Token vem de `session.accessToken` (Supabase Auth).
+- Types vêm de `@bandeira/shared` (Account, Transaction, etc.).
+
+## Componentização
+
+- Mantenha componentes pequenos e focados na UI.
+- Lógica complexa de estado e requisições deve ser extraída para Custom Hooks em `src/features/.../hooks`.
+- Hooks chamam `api.accounts.list(token)`, `api.transactions.createIncome(token, data)`, etc.
+- Organize por domínio: `features/accounts`, `features/transactions`, `features/cards`, etc.
+
+## Tratamento de Erros
+
+- Use o `ErrorBoundary` global (react-error-boundary). Fallback em `@components/ErrorBoundaryFallback`.
+- Use o `ApiErrorBanner` para capturar erros de queries do React Query.
+- Exiba mensagens amigáveis em português (PT-BR). Consulte `lib/errorMessages.ts` para mapeamento.
+
+## Boas Práticas de UI
+
+- Evite `any`. Prefira tipos do `@bandeira/shared` e refinamento com `unknown`.
+- Use `type` para unions/aliases; `interface` só quando precisar de extensão.
+- Respeite a tipografia e cores semânticas (receita: emerald, despesa: rose, faturas: amber).

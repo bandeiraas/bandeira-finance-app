@@ -1,5 +1,10 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
+import { Plus, Loader2, Search, Filter, ChevronDown, Download, ChevronLeft, ChevronRight } from "lucide-react";
+import { useAccounts } from "@features/accounts/hooks/useAccounts";
+import { useMonthlySummary, useTransactions } from "@features/transactions/hooks/useTransactions";
+import { formatCurrency } from "@shared/utils/formatCurrency";
+import { cn } from "@lib/utils";
 import {
     Plus,
     Loader2,
@@ -133,66 +138,14 @@ export default function Accounts() {
                     </div>
 
                     <div className="space-y-3">
-                        {/* Saldo Total Card */}
-                        <div className="p-5 bg-slate-900 dark:bg-slate-800 rounded-2xl text-white shadow-xl relative overflow-hidden group">
-                            <div className="relative z-10">
-                                <div className="flex items-center justify-between mb-2">
-                                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                                        Saldo Total
-                                    </span>
-                                    <button
-                                        onClick={() => setShowBalance(!showBalance)}
-                                        className="text-slate-400 hover:text-slate-200 transition-colors"
-                                    >
-                                        {showBalance ? <Eye size={18} /> : <EyeOff size={18} />}
-                                    </button>
-                                </div>
-                                <h4 className="text-2xl font-display font-bold mb-3">
-                                    {showBalance ? formatCurrency(totalBalance) : "••••••"}
-                                </h4>
-                                <div className="flex items-center gap-4">
-                                    <div className="flex items-center gap-1.5 px-2 py-0.5 bg-emerald-500/10 rounded-lg">
-                                        <TrendingUp size={14} className="text-emerald-400" />
-                                        <span className="text-emerald-400 text-[11px] font-bold">
-                                            +12.5%
-                                        </span>
-                                    </div>
-                                    <div className="h-8 flex-1 flex items-end gap-[2px] pb-1">
-                                        {BAR_HEIGHTS.map((h, i) => (
-                                            <div
-                                                key={i}
-                                                className={`flex-1 rounded-full ${
-                                                    i >= 5 ? "bg-primary" : "bg-slate-700/50"
-                                                }`}
-                                                style={{ height: `${h}%` }}
-                                            />
-                                        ))}
-                                    </div>
-                                </div>
-                                <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between">
-                                    <div className="flex flex-col">
-                                        <span className="text-[9px] text-slate-500 uppercase font-medium">
-                                            Entradas
-                                        </span>
-                                        <span className="text-[11px] font-bold text-emerald-400">
-                                            {loadingSummary
-                                                ? "—"
-                                                : formatCurrency(summary?.totalIncome ?? 0)}
-                                        </span>
-                                    </div>
-                                    <div className="flex flex-col text-right">
-                                        <span className="text-[9px] text-slate-500 uppercase font-medium">
-                                            Saídas
-                                        </span>
-                                        <span className="text-[11px] font-bold text-rose-400">
-                                            {loadingSummary
-                                                ? "—"
-                                                : formatCurrency(summary?.totalExpenses ?? 0)}
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <BalanceSummaryCard
+                            totalBalance={totalBalance}
+                            showBalance={showBalance}
+                            onToggleBalance={() => setShowBalance(!showBalance)}
+                            totalIncome={summary?.totalIncome ?? 0}
+                            totalExpenses={summary?.totalExpenses ?? 0}
+                            isLoadingSummary={loadingSummary}
+                        />
 
                         {/* Account List */}
                         {accounts && accounts.length > 0 ? (
@@ -203,11 +156,7 @@ export default function Accounts() {
                                         <Link
                                             key={acc.id}
                                             to={`/accounts/${acc.id}`}
-                                            className={`w-full text-left p-4 rounded-2xl flex items-center gap-4 group transition-all ${
-                                                isSelected
-                                                    ? "glass-card bg-white/80 dark:bg-slate-800/80 border-l-4 border-l-primary"
-                                                    : "glass-card bg-white/40 dark:bg-slate-900/40"
-                                            }`}
+                                            className={cn("w-full text-left p-4 rounded-2xl flex items-center gap-4 group transition-all", isSelected ? "glass-card bg-white/80 dark:bg-slate-800/80 border-l-4 border-l-primary" : "glass-card bg-white/40 dark:bg-slate-900/40")}
                                         >
                                             <BankIcon name={acc.bank_name} />
                                             <div className="flex-1 min-w-0">
@@ -346,11 +295,7 @@ export default function Accounts() {
                                                         </div>
                                                         <div className="text-right">
                                                             <p
-                                                                className={`text-sm font-bold ${
-                                                                    t.type === "income"
-                                                                        ? "text-emerald-500"
-                                                                        : "text-rose-500"
-                                                                }`}
+                                                                className={cn("text-sm font-bold", t.type === "income" ? "text-emerald-500" : "text-rose-500")}
                                                             >
                                                                 {t.type === "income" ? "+" : "-"} {formatCurrency(Number(t.amount))}
                                                             </p>

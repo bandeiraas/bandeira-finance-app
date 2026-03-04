@@ -4,8 +4,8 @@ import {
     Loader2,
     Check
 } from "lucide-react";
-import { useAlerts, useMarkAlertAsRead, useMarkAllAlertsAsRead } from "../features/alerts/hooks/useAlerts";
-import { cn } from "../lib/utils";
+import { useAlerts, useMarkAlertAsRead, useMarkAllAlertsAsRead } from "@features/alerts/hooks/useAlerts";
+import { cn } from "@lib/utils";
 
 export default function Alerts() {
     const { data: alerts, isLoading } = useAlerts();

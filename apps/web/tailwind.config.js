@@ -38,9 +38,12 @@ export default {
         background: '#0f172a', // Slate 900
         surface: '#1e293b', // Slate 800
         border: '#334155', // Slate 700
+        'navy-dark': '#0f172a',
+        'accent-blue': '#0ea5e9',
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
+        body: ['Inter', 'sans-serif'],
         display: ['Outfit', 'sans-serif'],
       },
       borderRadius: {
@@ -48,6 +51,18 @@ export default {
         xl: '20px',
         '2xl': '28px',
         '3xl': '36px',
+      },
+      backgroundImage: {
+        'navy-gradient': 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+      },
+      animation: {
+        float: 'float 4s ease-in-out infinite',
+      },
+      keyframes: {
+        float: {
+          '0%, 100%': { transform: 'translateY(0) translateX(-50%)' },
+          '50%': { transform: 'translateY(-5px) translateX(-50%)' },
+        },
       },
     },
   },

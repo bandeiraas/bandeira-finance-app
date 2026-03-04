@@ -1,12 +1,20 @@
-import { ArrowDownRight, TrendingUp, TrendingDown, ShoppingBag, Plus, Minus, FileText, Lightbulb, CreditCard, Loader2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { TrendingUp, TrendingDown, Plus, Minus, FileText, Lightbulb, CreditCard, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
-import { cn } from "../lib/utils";
-import UserMenu from "../components/UserMenu";
-import { useAuth } from "../features/auth/providers/AuthProvider";
-import { useMonthlySummary, useTransactions } from "../features/transactions/hooks/useTransactions";
-import { useAccounts } from "../features/accounts/hooks/useAccounts";
-import { useCards } from "../features/cards/hooks/useCards";
-import { formatCurrency } from "../shared/utils/formatCurrency";
+import UserMenu from "@components/UserMenu";
+import { cn } from "@lib/utils";
+import { useAuth } from "@features/auth/providers/AuthProvider";
+import { useMonthlySummary, useTransactions } from "@features/transactions/hooks/useTransactions";
+import { useAccounts } from "@features/accounts/hooks/useAccounts";
+import { useCards } from "@features/cards/hooks/useCards";
+import { CardPreview } from "@features/cards/components/CardPreview";
+import { formatCurrency } from "@shared/utils/formatCurrency";
+import {
+    AccountCard,
+    AddAccountCard,
+    QuickActionCard,
+    RecentTransactionRow,
+} from "@features/dashboard/components";
 
 export default function Dashboard() {
     const { user } = useAuth();
@@ -17,8 +25,17 @@ export default function Dashboard() {
     const { data: recentTransactions, isLoading: loadingTransactions } = useTransactions(3); // Limit 3
     const { data: accounts, isLoading: loadingAccounts } = useAccounts();
     const { data: cards, isLoading: loadingCards } = useCards();
+    const [selectedCardIndex, setSelectedCardIndex] = useState(0);
 
-    const primaryCard = cards?.[0];
+    const displayCards = cards?.slice(0, 3) ?? [];
+
+    useEffect(() => {
+        const max = Math.max(0, displayCards.length - 1);
+        if (selectedCardIndex > max) {
+            // Defer the state update to avoid synchronous cascading renders
+            setTimeout(() => setSelectedCardIndex(0), 0);
+        }
+    }, [displayCards.length, selectedCardIndex]);
 
     // Dummy data for financial tip in this phase
     const financialTip = {
@@ -129,33 +146,13 @@ export default function Dashboard() {
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
                             {loadingAccounts ? (
-                                [1, 2, 3].map(i => (
+                                [1, 2, 3].map((i) => (
                                     <div key={i} className="glass-card p-5 rounded-2xl h-32 animate-pulse bg-slate-100 dark:bg-slate-800/50"></div>
                                 ))
                             ) : accounts && accounts.length > 0 ? (
-                                accounts.map(acc => (
-                                    <Link key={acc.id} to={`/accounts/${acc.id}`} className="glass-card p-5 rounded-2xl group hover:border-primary/50 cursor-pointer transition-all hover:-translate-y-1 block">
-                                        <div className="flex justify-between items-start mb-4">
-                                            <div
-                                                className="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg font-bold text-white"
-                                                style={{ backgroundColor: acc.color || '#64748b' }}
-                                            >
-                                                {acc.bank_name[0]}
-                                            </div>
-                                            {acc.is_primary && (
-                                                <span className="text-[9px] font-bold px-2 py-0.5 bg-primary/10 text-primary rounded-full">PRINCIPAL</span>
-                                            )}
-                                        </div>
-                                        <p className="text-[10px] text-slate-600 dark:text-slate-400 font-bold uppercase tracking-wider">{acc.bank_name}</p>
-                                        <p className="text-xl font-bold text-slate-900 dark:text-white mt-0.5">{formatCurrency(Number(acc.balance))}</p>
-                                        <p className="text-[10px] text-slate-600 dark:text-slate-400 mt-1">{acc.account_type}</p>
-                                    </Link>
-                                ))
+                                accounts.map((acc) => <AccountCard key={acc.id} account={acc} />)
                             ) : (
-                                <Link to="/accounts/add" className="glass-card p-5 rounded-2xl flex flex-col items-center justify-center text-slate-600 dark:text-slate-400 hover:text-primary hover:bg-primary/5 transition-all h-32 border-dashed">
-                                    <Plus size={24} className="mb-2" />
-                                    <span className="text-xs font-bold">Adicionar Conta</span>
-                                </Link>
+                                <AddAccountCard />
                             )}
                         </div>
                     </div>
@@ -172,25 +169,7 @@ export default function Dashboard() {
                                     <div key={i} className="h-16 bg-slate-100 dark:bg-slate-800/50 rounded-xl animate-pulse"></div>
                                 ))
                             ) : recentTransactions && recentTransactions.length > 0 ? (
-                                recentTransactions.map((t) => (
-                                    <div key={t.id} className="flex items-center justify-between p-3 rounded-xl hover:bg-white/40 dark:hover:bg-slate-800/40 transition-colors">
-                                        <div className="flex items-center gap-3">
-                                            <div className={cn(
-                                                "w-10 h-10 rounded-xl flex items-center justify-center",
-                                                t.type === 'expense' ? "bg-rose-500/10 text-rose-500" : "bg-emerald-500/10 text-emerald-500"
-                                            )}>
-                                                {t.type === 'expense' ? <ShoppingBag size={18} /> : <ArrowDownRight size={18} />}
-                                            </div>
-                                            <div>
-                                                <p className="text-sm font-bold text-slate-800 dark:text-slate-200">{t.description}</p>
-                                                <p className="text-[10px] text-slate-600 dark:text-slate-400">{new Date(t.date).toLocaleDateString('pt-BR')}</p>
-                                            </div>
-                                        </div>
-                                        <span className={cn("text-sm font-bold", t.type === 'income' ? "text-emerald-500" : "text-rose-500")}>
-                                            {t.type === 'expense' ? '- ' : '+ '}{formatCurrency(Number(t.amount))}
-                                        </span>
-                                    </div>
-                                ))
+                                recentTransactions.map((t) => <RecentTransactionRow key={t.id} transaction={t} />)
                             ) : (
                                 <p className="text-sm text-slate-600 dark:text-slate-400 text-center py-6">Nenhuma transação recente.</p>
                             )}
@@ -200,98 +179,102 @@ export default function Dashboard() {
 
                 {/* Right Column */}
                 <div className="lg:col-span-4 flex flex-col gap-6">
-                    {/* My Cards Widget */}
-                    <div className="glass-card p-6 rounded-3xl relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 p-4 opacity-50">
-                            <CreditCard size={40} className="text-slate-300 dark:text-slate-200 mask-image-b" />
-                        </div>
-                        <div className="flex justify-between items-center mb-4 relative z-10">
-                            <h3 className="text-[10px] font-bold text-slate-700 dark:text-slate-400 uppercase tracking-[0.2em]">Meus Cartões</h3>
-                            <Link to="/cards/new" className="text-primary hover:bg-primary/10 p-1 rounded-lg transition-colors">
-                                <Plus size={16} />
-                            </Link>
+                    {/* My Cards Widget - Stitch reference */}
+                    <div className="flex flex-col gap-3 py-4 overflow-hidden">
+                        <div className="flex items-center justify-between px-2 mb-0">
+                            <h3 className="text-[10px] font-bold text-slate-400 dark:text-slate-400 uppercase tracking-[0.2em]">Meus Cartões</h3>
+                            <div className="flex items-center gap-3">
+                                {displayCards.length > 1 && (
+                                    <div className="flex items-center gap-1">
+                                        <button
+                                            type="button"
+                                            onClick={() => setSelectedCardIndex((i) => (i <= 0 ? displayCards.length - 1 : i - 1))}
+                                            className="w-7 h-7 flex items-center justify-center rounded-full bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-accent-blue dark:hover:text-accent-blue transition-all shadow-sm border border-slate-100 dark:border-slate-700"
+                                            aria-label="Cartão anterior"
+                                        >
+                                            <ChevronLeft size={14} />
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setSelectedCardIndex((i) => (i >= displayCards.length - 1 ? 0 : i + 1))}
+                                            className="w-7 h-7 flex items-center justify-center rounded-full bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-accent-blue dark:hover:text-accent-blue transition-all shadow-sm border border-slate-100 dark:border-slate-700"
+                                            aria-label="Próximo cartão"
+                                        >
+                                            <ChevronRight size={14} />
+                                        </button>
+                                    </div>
+                                )}
+                                <Link to="/cards" className="text-[10px] font-bold text-slate-500 dark:text-slate-400 hover:text-accent-blue dark:hover:text-accent-blue transition-colors uppercase">
+                                    Ver todos
+                                </Link>
+                                <Link to="/cards/new" className="p-1 rounded-lg text-slate-500 dark:text-slate-400 hover:text-accent-blue hover:bg-accent-blue/10 transition-colors" aria-label="Novo cartão">
+                                    <Plus size={14} />
+                                </Link>
+                            </div>
                         </div>
 
                         {loadingCards ? (
-                            <div className="w-full aspect-[1.586/1] bg-slate-200 dark:bg-slate-800 rounded-2xl animate-pulse"></div>
-                        ) : primaryCard ? (
-                            <div className="relative aspect-[1.586/1] rounded-2xl p-5 text-white shadow-xl bg-gradient-to-br from-slate-900 via-slate-800 to-black overflow-hidden mb-4 group-hover:scale-[1.02] transition-transform duration-500">
-                                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20 mix-blend-overlay"></div>
-                                <div className="relative z-10 h-full flex flex-col justify-between">
-                                    <div className="flex justify-between items-start">
-                                        <span className="text-[9px] font-bold bg-white/20 px-2 py-0.5 rounded-full border border-white/20 backdrop-blur-sm">
-                                            {primaryCard.brand || 'CARTÃO'}
-                                        </span>
-                                        <div className="flex -space-x-1.5 opacity-80">
-                                            <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                                            <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div className="text-[10px] text-white/50 font-mono mb-0.5 tracking-widest">
-                                            •••• {primaryCard.last_four}
-                                        </div>
-                                        <div className="flex justify-between items-end">
-                                            <div className="text-[11px] text-white/80 font-semibold uppercase tracking-wider">
-                                                {user?.fullName || "Usuário"}
-                                            </div>
-                                            <div className="text-[9px] text-white/50 uppercase tracking-widest">
-                                                {primaryCard.expiry ? new Date(primaryCard.expiry).toLocaleDateString('pt-BR', { month: '2-digit', year: '2-digit' }) : 'N/A'}
-                                            </div>
-                                        </div>
-                                    </div>
+                            <div className="w-full max-w-[320px] mx-auto card-ratio bg-slate-200 dark:bg-slate-800 rounded-2xl animate-pulse min-h-[140px]"></div>
+                        ) : displayCards.length > 0 ? (
+                            <div className="relative flex flex-col items-center pt-2 px-2 h-[220px] sm:h-[250px] lg:h-[280px] overflow-hidden">
+                                <div className="relative w-full max-w-[320px] flex flex-col items-center">
+                                    {displayCards.map((card, index) => {
+                                        const isSelected = index === selectedCardIndex;
+                                        const cardAccount = accounts?.find((a) => a.id === card.account_id);
+                                        return (
+                                            <button
+                                                key={card.id}
+                                                type="button"
+                                                onClick={() => !isSelected && setSelectedCardIndex(index)}
+                                                className={cn(
+                                                    "w-full card-ratio rounded-2xl overflow-hidden shadow-md text-left transition-[transform,opacity,box-shadow,border-color] duration-500 ease-out",
+                                                    index > 0 && displayCards.length > 1 && "-mt-[175px]",
+                                                    isSelected
+                                                        ? "z-30 scale-100 opacity-100 border-2 border-primary dark:border-primary cursor-default shadow-2xl"
+                                                        : "z-10 scale-90 opacity-80 cursor-pointer hover:opacity-100 hover:scale-[0.92] border border-white/10 dark:border-white/10"
+                                                )}
+                                            >
+                                                <CardPreview
+                                                    card={card}
+                                                    account={cardAccount ?? null}
+                                                    userName={user?.fullName}
+                                                    className="absolute inset-0 w-full h-full"
+                                                />
+                                            </button>
+                                        );
+                                    })}
                                 </div>
                             </div>
                         ) : (
-                            <div className="aspect-[1.586/1] rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center text-slate-600 dark:text-slate-400 mb-4">
-                                <CreditCard size={32} className="mb-2 opacity-50" />
+                            <div className="w-full max-w-[320px] mx-auto card-ratio min-h-[140px] rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700 flex flex-col items-center justify-center text-slate-600 dark:text-slate-400">
+                                <CreditCard size={28} className="mb-2 opacity-50" />
                                 <span className="text-xs">Nenhum cartão</span>
                             </div>
                         )}
-
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
-                                <span className="text-xs font-medium text-slate-700 dark:text-slate-300">Limite Disp.</span>
-                            </div>
-                            <span className="text-sm font-bold text-slate-900 dark:text-white">
-                                {primaryCard ? formatCurrency(Number(primaryCard.credit_limit) - 0) : 'R$ 0,00'}
-                            </span>
-                        </div>
-                        <div className="w-full h-1 bg-slate-100 dark:bg-slate-700 rounded-full mt-2 overflow-hidden">
-                            <div
-                                className="h-full bg-emerald-500 transition-all duration-500"
-                                style={{
-                                    width: primaryCard
-                                        ? `${Math.min(((Number(primaryCard.credit_limit) - 0) / Number(primaryCard.credit_limit)) * 100, 100)}%`
-                                        : '0%'
-                                }}
-                            ></div>
-                        </div>
                     </div>
 
                     {/* Quick Actions */}
                     <div className="flex flex-col gap-4">
                         <h3 className="text-[10px] font-bold text-slate-700 dark:text-slate-400 uppercase tracking-[0.2em] px-2">Ações Rápidas</h3>
                         <div className="grid grid-cols-3 gap-2">
-                            <Link to="/new-income" className="flex flex-col items-center justify-center gap-1.5 p-3 glass-card rounded-2xl group w-full hover:scale-105 transition-transform active:scale-95">
-                                <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center text-emerald-500 group-hover:bg-emerald-500 group-hover:text-white transition-all shadow-sm">
-                                    <Plus size={20} />
-                                </div>
-                                <span className="text-[9px] font-bold text-slate-700 dark:text-slate-300 text-center leading-tight">Receita</span>
-                            </Link>
-                            <Link to="/new-expense" className="flex flex-col items-center justify-center gap-1.5 p-3 glass-card rounded-2xl group w-full hover:scale-105 transition-transform active:scale-95">
-                                <div className="w-10 h-10 bg-rose-500/10 rounded-xl flex items-center justify-center text-rose-500 group-hover:bg-rose-500 group-hover:text-white transition-all shadow-sm">
-                                    <Minus size={20} />
-                                </div>
-                                <span className="text-[9px] font-bold text-slate-700 dark:text-slate-300 text-center leading-tight">Despesa</span>
-                            </Link>
-                            <Link to="/invoices" className="flex flex-col items-center justify-center gap-1.5 p-3 glass-card rounded-2xl group w-full hover:scale-105 transition-transform active:scale-95">
-                                <div className="w-10 h-10 bg-amber-500/10 rounded-xl flex items-center justify-center text-amber-500 group-hover:bg-amber-500 group-hover:text-white transition-all shadow-sm">
-                                    <FileText size={20} />
-                                </div>
-                                <span className="text-[9px] font-bold text-slate-700 dark:text-slate-300 text-center leading-tight">Faturas</span>
-                            </Link>
+                            <QuickActionCard
+                                to="/new-income"
+                                icon={Plus}
+                                label="Receita"
+                                iconBgClass="bg-emerald-500/10 text-emerald-500 group-hover:bg-emerald-500 group-hover:text-white"
+                            />
+                            <QuickActionCard
+                                to="/new-expense"
+                                icon={Minus}
+                                label="Despesa"
+                                iconBgClass="bg-rose-500/10 text-rose-500 group-hover:bg-rose-500 group-hover:text-white"
+                            />
+                            <QuickActionCard
+                                to="/invoices"
+                                icon={FileText}
+                                label="Faturas"
+                                iconBgClass="bg-amber-500/10 text-amber-500 group-hover:bg-amber-500 group-hover:text-white"
+                            />
                         </div>
                     </div>
 

@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
+<<<<<<< refactor-extract-account-components-and-constants-6946231274707251745
 import {
     ChevronLeft,
     ChevronRight,
@@ -41,6 +42,18 @@ const MOCK_INVESTMENTS = [
 
 const CHART_COLOR_CLASSES = ["stroke-blue-500", "stroke-purple-500"];
 
+=======
+import { ChevronLeft, ChevronRight, Loader2, FileText, ArrowRightLeft, Search, Filter, Download, TrendingUp, Plus } from "lucide-react";
+import { useAccounts } from "@features/accounts/hooks/useAccounts";
+import { useTransactions } from "@features/transactions/hooks/useTransactions";
+import { useCards } from "@features/cards/hooks/useCards";
+import { formatCurrency } from "@shared/utils/formatCurrency";
+import { cn } from "@lib/utils";
+import { BankIcon, TransactionIcon } from "@features/accounts/components";
+import { getBankKey, BANK_HEX, ACCOUNT_TYPE_LABELS } from "@features/accounts/constants";
+import { CardPreview } from "@features/cards/components/CardPreview";
+import { MOCK_BILLS, MOCK_INVESTMENTS, CHART_COLOR_CLASSES } from "@features/accounts/mockData";
+>>>>>>> main
 
 export default function AccountDetail() {
     const { id } = useParams<{ id: string }>();
@@ -81,7 +94,7 @@ export default function AccountDetail() {
         .sort((a, b) => b.percentage - a.percentage)
         .slice(0, 3);
 
-    const primaryCard = cards?.[0];
+    const primaryCard = cards?.find((c) => c.account_id === id);
 
     const groupedByDate = useMemo(() => {
         const groups: Record<string, typeof accountTransactions> = {};
@@ -332,23 +345,11 @@ export default function AccountDetail() {
                             {MOCK_BILLS.map((bill, i) => (
                                 <div
                                     key={bill.name}
-                                    className={`flex items-center justify-between p-2.5 rounded-xl transition-colors ${
-                                        i === 0
-                                            ? "bg-white/40 dark:bg-slate-800/40 border border-white/20 dark:border-slate-700/50"
-                                            : "hover:bg-white/40 dark:hover:bg-slate-800/40 border border-transparent hover:border-white/20 dark:hover:border-slate-700/50"
-                                    }`}
+                                    className={cn("flex items-center justify-between p-2.5 rounded-xl transition-colors", i === 0 ? "bg-white/40 dark:bg-slate-800/40 border border-white/20 dark:border-slate-700/50" : "hover:bg-white/40 dark:hover:bg-slate-800/40 border border-transparent hover:border-white/20 dark:hover:border-slate-700/50")}
                                 >
                                     <div className="flex items-center gap-3">
                                         <div
-                                            className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                                                bill.color === "red"
-                                                    ? "bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400"
-                                                    : bill.color === "blue"
-                                                    ? "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"
-                                                    : bill.color === "green"
-                                                    ? "bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400"
-                                                    : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
-                                            }`}
+                                            className={cn("w-8 h-8 rounded-lg flex items-center justify-center", bill.color === "red" ? "bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400" : bill.color === "blue" ? "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400" : bill.color === "green" ? "bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400")}
                                         >
                                             <bill.icon size={16} />
                                         </div>
@@ -371,29 +372,13 @@ export default function AccountDetail() {
                         <h3 className="font-display font-semibold text-slate-800 dark:text-white mb-4">Cartões Vinculados</h3>
                         {primaryCard ? (
                             <>
-                                <div className="relative w-full aspect-[1.586] rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 p-5 text-white shadow-xl overflow-hidden mb-3">
-                                    <div className="absolute right-0 top-0 w-32 h-32 bg-white/5 rounded-full -mr-10 -mt-10 blur-2xl" />
-                                    <div
-                                        className="absolute bottom-0 left-0 w-24 h-24 rounded-full -ml-10 -mb-10 blur-xl opacity-30"
-                                        style={{ backgroundColor: bankHex }}
+                                <div className="mb-3 max-w-md">
+                                    <CardPreview
+                                        card={primaryCard}
+                                        account={account}
+                                        userName={undefined}
+                                        className="w-full"
                                     />
-                                    <div className="flex justify-between items-start mb-6">
-                                        <span className="font-display italic font-bold text-xl">{primaryCard.brand}</span>
-                                        <SmartphoneNfc size={24} className="text-white/60" />
-                                    </div>
-                                    <div className="mt-auto">
-                                        <p className="text-slate-400 text-xs mb-1">Limite</p>
-                                        <div className="flex justify-between items-end">
-                                            <span className="text-2xl font-bold tracking-tight">{formatCurrency(Number(primaryCard.credit_limit))}</span>
-                                            <div className="flex flex-col items-end">
-                                                <span className="text-xs text-slate-400 font-mono">•••• {primaryCard.last_four}</span>
-                                                <div className="flex -space-x-2 mt-1">
-                                                    <div className="w-6 h-6 rounded-full bg-red-500/80" />
-                                                    <div className="w-6 h-6 rounded-full bg-yellow-500/80" />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
                                 </div>
                                 <Link
                                     to="/cards"
@@ -406,10 +391,10 @@ export default function AccountDetail() {
                         ) : (
                             <Link
                                 to="/cards/new"
-                                className="block py-6 text-center text-slate-500 dark:text-slate-400 transition-colors font-medium hover:opacity-80"
-                                style={{ color: bankHex } as React.CSSProperties}
+                                className="w-full p-3 rounded-xl border border-dashed border-slate-300 dark:border-slate-700 flex items-center justify-center gap-2 text-slate-400 hover:text-primary hover:border-primary/50 hover:bg-primary/5 transition-all text-xs font-bold uppercase tracking-widest"
                             >
-                                Nenhum cartão vinculado. Adicionar cartão →
+                                <Plus size={18} />
+                                Adicionar cartão
                             </Link>
                         )}
                     </div>
@@ -452,7 +437,11 @@ export default function AccountDetail() {
                                             className="flex items-center justify-between p-4 hover:bg-white/50 dark:hover:bg-slate-800/50 rounded-2xl transition-all cursor-pointer group"
                                         >
                                             <div className="flex items-center gap-4">
+<<<<<<< refactor-extract-account-components-and-constants-6946231274707251745
                                                 <TransactionIcon categoryName={t.categories?.name} type={t.type} variant="detailed" />
+=======
+                                                <TransactionIcon categoryName={t.categories?.name} type={t.type} variant="detail" />
+>>>>>>> main
                                                 <div>
                                                     <p className="font-semibold text-slate-800 dark:text-white text-sm">{t.description ?? "Transação"}</p>
                                                     <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -465,11 +454,7 @@ export default function AccountDetail() {
                                                 </div>
                                             </div>
                                             <span
-                                                className={`font-bold ${
-                                                    t.type === "income"
-                                                        ? "text-green-600 dark:text-green-400"
-                                                        : "text-slate-800 dark:text-white"
-                                                }`}
+                                                className={cn("font-bold", t.type === "income" ? "text-green-600 dark:text-green-400" : "text-slate-800 dark:text-white")}
                                             >
                                                 {t.type === "income" ? "+" : "-"} {formatCurrency(Number(t.amount))}
                                             </span>

@@ -55,6 +55,24 @@ export class SupabaseAuthService implements IAuthService {
         })
     }
 
+    async signInWithOAuth(provider: 'google'): Promise<Result<void>> {
+        try {
+            const { error } = await this.client.auth.signInWithOAuth({
+                provider,
+                options: {
+                    redirectTo: `${window.location.origin}/login`,
+                    queryParams: {
+                        prompt: 'select_account', // Google: sempre exibe seletor de contas
+                    },
+                },
+            })
+            if (error) return R.fail(this.mapAuthError(error.message))
+            return R.ok(undefined)
+        } catch (err) {
+            return R.fail(AppError.fromUnknown(err))
+        }
+    }
+
     async signOut(): Promise<Result<void>> {
         const { error } = await this.client.auth.signOut()
         if (error) return R.fail(this.mapAuthError(error.message))
@@ -92,11 +110,15 @@ export class SupabaseAuthService implements IAuthService {
     }
 
     private toAuthUser(user: User): AuthUser {
+        const meta = user.user_metadata ?? {}
+        // Google OAuth usa 'name' e 'picture'; outros provedores usam 'full_name' e 'avatar_url'
+        const fullName = meta.full_name ?? meta.name ?? null
+        const avatarUrl = meta.avatar_url ?? meta.picture ?? null
         return {
             id: user.id,
             email: user.email ?? '',
-            fullName: user.user_metadata?.full_name ?? null,
-            avatarUrl: user.user_metadata?.avatar_url ?? null,
+            fullName: typeof fullName === 'string' ? fullName : null,
+            avatarUrl: typeof avatarUrl === 'string' ? avatarUrl : null,
         }
     }
 
@@ -127,6 +149,8 @@ export class SupabaseAuthService implements IAuthService {
             'Email not confirmed': 'Confirme seu email antes de fazer login.',
             'Too many requests': 'Muitas tentativas. Aguarde alguns minutos e tente novamente.',
             'Over quota': 'Muitas tentativas. Aguarde 1 hora.',
+            'provider_disabled': 'Login com Google não está habilitado. Entre em contato com o suporte.',
+            'OAuth provider not enabled': 'Login com Google não está habilitado. Configure no painel do Supabase.',
         }
         return new AuthenticationError(messages[message] ?? message)
     }

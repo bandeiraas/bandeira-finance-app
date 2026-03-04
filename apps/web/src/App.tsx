@@ -8,8 +8,9 @@ import { ApiErrorBanner } from "@components/ApiErrorBanner.tsx"
 import Layout from "@layouts/MainLayout.tsx"
 
 import Landing from "@pages/Landing.tsx"
+import OnboardingDemo from "@pages/OnboardingDemo.tsx"
 import Login from "@pages/Login.tsx"
-import Register from "./pages/Register.tsx"
+import Register from "@pages/Register.tsx"
 import ForgotPassword from "@pages/ForgotPassword.tsx"
 
 import Dashboard from "@pages/Dashboard.tsx"
@@ -20,10 +21,10 @@ import Alerts from "@pages/Alerts.tsx"
 import Profile from "@pages/Profile.tsx"
 import EditProfile from "@pages/EditProfile.tsx"
 import Settings from "@pages/Settings.tsx"
-import AddAccount from "@pages/AddAccount.tsx"
+import AddAccount from "@features/accounts/pages/AddAccount.tsx"
 import Accounts from "@pages/Accounts.tsx"
 import AccountDetail from "@pages/AccountDetail.tsx"
-import AddCard from "@pages/AddCard.tsx"
+import AddCard from "@features/cards/pages/AddCard.tsx"
 import NewIncome from "@pages/NewIncome.tsx"
 import NewExpense from "@pages/NewExpense.tsx"
 
@@ -36,6 +37,7 @@ function App() {
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Landing />} />
+              <Route path="/demo" element={<OnboardingDemo />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />

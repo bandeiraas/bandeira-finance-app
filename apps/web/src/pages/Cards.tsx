@@ -1,13 +1,17 @@
 import { useState } from "react";
 import { Plus, Copy, Receipt, CreditCard, Shield, Trash2, Loader2, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useCards, useDeleteCard } from "../features/cards/hooks/useCards";
-import { formatCurrency } from "../shared/utils/formatCurrency";
-import { useAuth } from "../features/auth/providers/AuthProvider";
+import { useCards, useDeleteCard } from "@features/cards/hooks/useCards";
+import { useAccounts } from "@features/accounts/hooks/useAccounts";
+import { CardPreview } from "@features/cards/components/CardPreview";
+import { formatCurrency } from "@shared/utils/formatCurrency";
+import { cn } from "@lib/utils";
+import { useAuth } from "@features/auth/providers/AuthProvider";
 
 export default function Cards() {
     const { user } = useAuth();
     const { data: cards, isLoading } = useCards();
+    const { data: accounts } = useAccounts();
     const deleteCard = useDeleteCard();
     const [selectedCardIndex, setSelectedCardIndex] = useState(0);
 
@@ -49,44 +53,33 @@ export default function Cards() {
                         <div className="w-full flex flex-col -space-y-40 lg:-space-y-44">
                             {cards.map((card, index) => {
                                 const isSelected = index === selectedCardIndex;
+                                const cardAccount = accounts?.find((a) => a.id === card.account_id);
                                 return (
                                     <button
                                         key={card.id}
                                         onClick={() => setSelectedCardIndex(index)}
-                                        className={`group relative w-full aspect-[1.58/1] rounded-2xl overflow-hidden shadow-2xl transition-all duration-500 text-left
-                                            ${isSelected ? 'z-50 scale-100 opacity-100 border-2 border-primary' : 'z-40 scale-[0.94] opacity-80 hover:scale-[0.96] hover:opacity-100 hover:z-45'}
-                                        `}
+                                        className={cn(
+                                            "group relative w-full aspect-[1.58/1] rounded-2xl overflow-hidden shadow-2xl transition-all duration-500 text-left",
+                                            isSelected ? "z-50 scale-100 opacity-100 border-2 border-primary" : "z-40 scale-[0.94] opacity-80 hover:scale-[0.96] hover:opacity-100 hover:z-45"
+                                        )}
                                     >
-                                        <div className={`absolute inset-0 bg-gradient-to-br ${index % 2 === 0 ? 'from-[#1a1a1a] via-[#333] to-[#000]' : 'from-[#820ad1] to-[#5a0792]'}`}></div>
-                                        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20 mix-blend-overlay"></div>
-
-                                        <div className="relative z-10 h-full flex flex-col justify-between p-5 text-white">
-                                            <div className="flex justify-between items-start">
-                                                <span className="text-[9px] font-bold bg-white/20 px-2 py-0.5 rounded-full border border-white/20 backdrop-blur-sm uppercase">
-                                                    {card.brand || 'Card'}
-                                                </span>
-                                                <div className="flex -space-x-1.5 opacity-80">
-                                                    <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                                                    <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                                        <CardPreview
+                                            card={card}
+                                            account={cardAccount ?? null}
+                                            userName={user?.fullName}
+                                            className="absolute inset-0 w-full h-full"
+                                        >
+                                            {isSelected && (
+                                                <div
+                                                    className="absolute bottom-5 right-5 z-20"
+                                                    onClick={(e) => handleDelete(e, card.id)}
+                                                >
+                                                    <div className="p-1.5 bg-red-500/20 hover:bg-red-500 text-red-100 rounded-full transition-colors cursor-pointer">
+                                                        <Trash2 size={12} />
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div className="flex justify-between items-end">
-                                                <div>
-                                                    <div className="text-[10px] text-white/50 font-mono mb-0.5 tracking-widest">•••• {card.last_four}</div>
-                                                    <div className="text-[11px] text-white/80 font-semibold uppercase tracking-wider">{card.card_name || user?.fullName}</div>
-                                                </div>
-                                                <div className="flex items-center gap-2">
-                                                    {isSelected && (
-                                                        <div
-                                                            onClick={(e) => handleDelete(e, card.id)}
-                                                            className="p-1.5 bg-red-500/20 hover:bg-red-500 text-red-100 rounded-full transition-colors"
-                                                        >
-                                                            <Trash2 size={12} />
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </div>
+                                            )}
+                                        </CardPreview>
                                     </button>
                                 );
                             })}
