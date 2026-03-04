@@ -48,15 +48,19 @@ export default function AddCard() {
 
     useEffect(() => {
         if (accounts && accounts.length > 0 && !accountId) {
-            setAccountId(accounts[0].id);
+            // Using a timeout defers the state update so it isn't completely synchronous during render.
+            // Ideally this would be set as initial state, but since accounts are loaded asynchronously, this is a practical workaround.
+            setTimeout(() => setAccountId(accounts[0].id), 0);
         }
     }, [accounts, accountId]);
 
+    // Keep color variations in sync if accountId changes externally
     useEffect(() => {
         if (selectedAccount) {
-            setColorVariationIndex(2); // base da cor do banco ao trocar conta
+             // Defer the state update
+             setTimeout(() => setColorVariationIndex(2), 0);
         }
-    }, [accountId, accounts]);
+    }, [accountId, selectedAccount]);
 
     const formatExpiry = (val: string) => {
         const v = val.replace(/\D/g, "").slice(0, 4);
