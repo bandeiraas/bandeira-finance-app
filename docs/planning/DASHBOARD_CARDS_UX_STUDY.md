@@ -1,7 +1,7 @@
 # Estudo de UX: Dashboard "Meus Cartões" vs Tela /cards
 
-**Branch:** `feature/dashboard-cards-ux-review`  
-**Data:** 21/02/2025  
+**Branch:** `feature/dashboard-cards-ux-review`
+**Data:** 21/02/2025
 **Objetivo:** Avaliar o widget "Meus Cartões" do Dashboard e propor melhorias para oferecer uma experiência de seleção de cartões similar à tela `/cards`, sem implementação neste momento.
 
 ---

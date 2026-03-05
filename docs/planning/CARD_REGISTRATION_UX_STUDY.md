@@ -1,9 +1,9 @@
 # Estudo de Produto: Cadastro de Novo Cartão (FinFlow)
 
-**Branch:** `feature/card-registration-ux-study`  
-**Data:** 22/02/2025  
-**Rota:** `/cards/new` → `apps/web/src/features/cards/pages/AddCard.tsx`  
-**Referência de design:** Stitch – tela "Novo Cartão" (ID: c4d6775652094a9a92a21c13525d557d)  
+**Branch:** `feature/card-registration-ux-study`
+**Data:** 22/02/2025
+**Rota:** `/cards/new` → `apps/web/src/features/cards/pages/AddCard.tsx`
+**Referência de design:** Stitch – tela "Novo Cartão" (ID: c4d6775652094a9a92a21c13525d557d)
 **Objetivo:** Especificação funcional, regras de negócio e modelagem alinhadas ao novo design.
 
 ---
