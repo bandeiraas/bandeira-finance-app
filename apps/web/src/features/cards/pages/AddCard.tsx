@@ -50,8 +50,7 @@ export default function AddCard() {
         if (accounts && accounts.length > 0 && !accountId) {
             setAccountId(accounts[0].id); // eslint-disable-line react-hooks/set-state-in-effect
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [accounts]);
+    }, [accounts, accountId]);
 
     useEffect(() => {
         if (selectedAccount) {
