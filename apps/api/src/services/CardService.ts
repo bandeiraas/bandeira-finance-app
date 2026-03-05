@@ -26,9 +26,9 @@ export class CardService {
         }
     }
 
-    async deleteCard(id: string, userId: string): Promise<Result<void>> {
+    async deleteCard(id: string): Promise<Result<void>> {
         try {
-            await this.repository.delete(id, userId)
+            await this.repository.delete(id)
             return R.ok(undefined)
         } catch (err) {
             return R.fail(AppError.fromUnknown(err))

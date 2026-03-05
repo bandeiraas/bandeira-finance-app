@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { TrendingUp, TrendingDown, Plus, Minus, FileText, Lightbulb, CreditCard, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import UserMenu from "@components/UserMenu";
@@ -29,11 +29,9 @@ export default function Dashboard() {
 
     const displayCards = cards?.slice(0, 3) ?? [];
 
-    useEffect(() => {
-        const max = Math.max(0, displayCards.length - 1);
-        if (selectedCardIndex > max) setSelectedCardIndex(0);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [displayCards.length]);
+    if (selectedCardIndex > Math.max(0, displayCards.length - 1)) {
+        setSelectedCardIndex(0);
+    }
 
     // Dummy data for financial tip in this phase
     const financialTip = {

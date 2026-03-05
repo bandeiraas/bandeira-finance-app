@@ -49,8 +49,8 @@ export class InMemoryTransactionRepository implements ITransactionRepository {
         return this.transactions[index]
     }
 
-    async delete(id: string, userId: string): Promise<void> {
-        this.transactions = this.transactions.filter(t => !(t.id === id && t.user_id === userId))
+    async delete(id: string): Promise<void> {
+        this.transactions = this.transactions.filter(t => t.id !== id)
     }
 
     seed(transactions: Transaction[]): void {
