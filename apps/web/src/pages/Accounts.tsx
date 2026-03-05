@@ -1,109 +1,14 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-import {
-    Plus,
-    Loader2,
-    Eye,
-    EyeOff,
-    Search,
-    Filter,
-    ChevronDown,
-    Download,
-    ChevronLeft,
-    ChevronRight,
-    TrendingUp,
-    ShoppingCart,
-    Zap,
-    Banknote,
-    Car,
-    UtensilsCrossed,
-} from "lucide-react";
+import { Plus, Loader2, Eye, EyeOff, Search, Filter, ChevronDown, Download, ChevronLeft, ChevronRight, TrendingUp } from "lucide-react";
 import { useAccounts } from "../features/accounts/hooks/useAccounts";
 import { useMonthlySummary, useTransactions } from "../features/transactions/hooks/useTransactions";
 import { formatCurrency } from "../shared/utils/formatCurrency";
-
-const ACCOUNT_TYPE_LABELS: Record<string, string> = {
-    corrente: "Corrente",
-    poupanca: "Poupança",
-    investimento: "Investimentos",
-    carteira: "Carteira",
-};
+import { ACCOUNT_TYPE_LABELS } from "../shared/constants/accounts";
+import { BankIcon } from "../components/BankIcon";
+import { TransactionIcon } from "../components/TransactionIcon";
 
 const BAR_HEIGHTS = [30, 45, 40, 65, 55, 85, 95];
-
-const BANK_COLORS: Record<string, { bg: string; text: "white" | "black"; label: string }> = {
-    nubank: { bg: "bg-[#820ad1] shadow-[#820ad1]/30", text: "white", label: "Nu" },
-    itaú: { bg: "bg-orange-500 shadow-orange-500/30", text: "white", label: "It" },
-    itau: { bg: "bg-orange-500 shadow-orange-500/30", text: "white", label: "It" },
-    bradesco: { bg: "bg-red-600 shadow-red-500/30", text: "white", label: "Br" },
-    santander: { bg: "bg-red-600 shadow-red-500/30", text: "white", label: "Sa" },
-    "banco do brasil": { bg: "bg-yellow-400 shadow-yellow-400/30", text: "black", label: "BB" },
-    inter: { bg: "bg-orange-500 shadow-orange-500/30", text: "white", label: "In" },
-    "c6 bank": { bg: "bg-slate-900 shadow-slate-900/30", text: "white", label: "C6" },
-    c6: { bg: "bg-slate-900 shadow-slate-900/30", text: "white", label: "C6" },
-    caixa: { bg: "bg-blue-600 shadow-blue-500/30", text: "white", label: "Ca" },
-};
-
-function AccountIcon({ name }: { name: string }) {
-    const lower = name.toLowerCase().trim();
-    const key = Object.keys(BANK_COLORS).find((k) => lower.includes(k));
-    const config = key ? BANK_COLORS[key] : { bg: "bg-slate-600 shadow-slate-500/30", text: "white" as const, label: name.slice(0, 2).toUpperCase() };
-    const { bg, text, label } = config;
-
-    return (
-        <div
-            className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-lg font-display font-bold text-xs uppercase ${bg} ${
-                text === "black" ? "text-slate-900" : "text-white"
-            }`}
-        >
-            {label}
-        </div>
-    );
-}
-
-function TransactionIcon({ categoryName, type }: { categoryName?: string | null; type: string }) {
-    const cat = (categoryName ?? "").toLowerCase();
-    const isIncome = type === "income";
-
-    if (isIncome) {
-        return (
-            <div className="w-11 h-11 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-xl flex items-center justify-center shadow-sm">
-                <Banknote size={22} />
-            </div>
-        );
-    }
-
-    if (cat.includes("aliment") || cat.includes("supermercado"))
-        return (
-            <div className="w-11 h-11 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-xl flex items-center justify-center shadow-sm">
-                <ShoppingCart size={22} />
-            </div>
-        );
-    if (cat.includes("energia") || cat.includes("conta"))
-        return (
-            <div className="w-11 h-11 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center shadow-sm">
-                <Zap size={22} />
-            </div>
-        );
-    if (cat.includes("transporte") || cat.includes("uber") || cat.includes("carro"))
-        return (
-            <div className="w-11 h-11 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-xl flex items-center justify-center shadow-sm">
-                <Car size={22} />
-            </div>
-        );
-    if (cat.includes("lazer") || cat.includes("restaurant"))
-        return (
-            <div className="w-11 h-11 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-xl flex items-center justify-center shadow-sm">
-                <UtensilsCrossed size={22} />
-            </div>
-        );
-
-    return (
-        <div className="w-11 h-11 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-xl flex items-center justify-center shadow-sm">
-            <Banknote size={22} />
-        </div>
-    );
-}
 
 export default function Accounts() {
     const [searchTerm, setSearchTerm] = useState("");
@@ -292,7 +197,7 @@ export default function Accounts() {
                                                     : "glass-card bg-white/40 dark:bg-slate-900/40"
                                             }`}
                                         >
-                                            <AccountIcon name={acc.bank_name} />
+                                            <BankIcon name={acc.bank_name} />
                                             <div className="flex-1 min-w-0">
                                                 <p className="text-sm font-bold text-slate-800 dark:text-white truncate">
                                                     {acc.bank_name}
