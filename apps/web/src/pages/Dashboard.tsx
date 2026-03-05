@@ -33,7 +33,8 @@ export default function Dashboard() {
         const max = Math.max(0, displayCards.length - 1);
         // eslint-disable-next-line react-hooks/set-state-in-effect
         if (selectedCardIndex > max) setSelectedCardIndex(0);
-    }, [displayCards.length, selectedCardIndex]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [displayCards.length]);
 
     // Dummy data for financial tip in this phase
     const financialTip = {
