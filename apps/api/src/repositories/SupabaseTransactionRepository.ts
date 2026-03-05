@@ -2,9 +2,10 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import type { Database, ITransactionRepository, Transaction, InsertTables, UpdateTables } from '@bandeira/shared'
 import { SupabaseErrorMapper } from '@bandeira/shared'
 
+const TRANSACTION_SELECT = 'id, user_id, account_id, category_id, amount, type, description, date, created_at, categories(id, name, color)'
+
 export class SupabaseTransactionRepository implements ITransactionRepository {
     private client: SupabaseClient<Database>
-    private readonly TRANSACTION_SELECT = 'id, user_id, account_id, category_id, amount, type, description, date, created_at, categories(id, name, color)'
 
     constructor(client: SupabaseClient<Database>) {
         this.client = client
@@ -13,7 +14,7 @@ export class SupabaseTransactionRepository implements ITransactionRepository {
     async findByUser(userId: string, limit = 50): Promise<Transaction[]> {
         const { data, error } = await this.client
             .from('transactions')
-            .select(SupabaseTransactionRepository.TRANSACTION_SELECT)
+            .select(TRANSACTION_SELECT)
             .eq('user_id', userId)
             .order('date', { ascending: false })
             .limit(limit)
@@ -29,7 +30,7 @@ export class SupabaseTransactionRepository implements ITransactionRepository {
     ): Promise<Transaction[]> {
         const { data, error } = await this.client
             .from('transactions')
-            .select(SupabaseTransactionRepository.TRANSACTION_SELECT)
+            .select(TRANSACTION_SELECT)
             .eq('user_id', userId)
             .gte('date', startDate)
             .lte('date', endDate)
@@ -45,7 +46,7 @@ export class SupabaseTransactionRepository implements ITransactionRepository {
     ): Promise<Transaction[]> {
         const { data, error } = await this.client
             .from('transactions')
-            .select(SupabaseTransactionRepository.TRANSACTION_SELECT)
+            .select(TRANSACTION_SELECT)
             .eq('user_id', userId)
             .eq('category_id', categoryId)
             .order('date', { ascending: false })
@@ -58,7 +59,7 @@ export class SupabaseTransactionRepository implements ITransactionRepository {
         const { data, error } = await this.client
             .from('transactions')
             .insert(transaction)
-            .select(SupabaseTransactionRepository.TRANSACTION_SELECT)
+            .select(TRANSACTION_SELECT)
             .single()
 
         if (error) throw SupabaseErrorMapper.toAppError(error, 'Transaction')
@@ -70,19 +71,18 @@ export class SupabaseTransactionRepository implements ITransactionRepository {
             .from('transactions')
             .update(updates)
             .eq('id', id)
-            .select(SupabaseTransactionRepository.TRANSACTION_SELECT)
+            .select(TRANSACTION_SELECT)
             .single()
 
         if (error) throw SupabaseErrorMapper.toAppError(error, 'Transaction')
         return data as Transaction
     }
 
-    async delete(id: string, userId: string): Promise<void> {
+    async delete(id: string): Promise<void> {
         const { error } = await this.client
             .from('transactions')
             .delete()
             .eq('id', id)
-            .eq('user_id', userId)
 
         if (error) throw SupabaseErrorMapper.toAppError(error, 'Transaction')
     }
