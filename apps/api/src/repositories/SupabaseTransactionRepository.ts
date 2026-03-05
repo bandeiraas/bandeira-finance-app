@@ -4,7 +4,7 @@ import { SupabaseErrorMapper } from '@bandeira/shared'
 
 export class SupabaseTransactionRepository implements ITransactionRepository {
     private client: SupabaseClient<Database>
-    private static readonly TRANSACTION_SELECT = 'id, user_id, account_id, category_id, amount, type, description, date, created_at, categories(id, name, color)'
+    private readonly TRANSACTION_SELECT = 'id, user_id, account_id, category_id, amount, type, description, date, created_at, categories(id, name, color)'
 
     constructor(client: SupabaseClient<Database>) {
         this.client = client
@@ -77,11 +77,12 @@ export class SupabaseTransactionRepository implements ITransactionRepository {
         return data as Transaction
     }
 
-    async delete(id: string): Promise<void> {
+    async delete(id: string, userId: string): Promise<void> {
         const { error } = await this.client
             .from('transactions')
             .delete()
             .eq('id', id)
+            .eq('user_id', userId)
 
         if (error) throw SupabaseErrorMapper.toAppError(error, 'Transaction')
     }
