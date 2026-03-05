@@ -109,9 +109,9 @@ export class TransactionService {
         }
     }
 
-    async deleteTransaction(id: string): Promise<Result<void>> {
+    async deleteTransaction(id: string, userId: string): Promise<Result<void>> {
         try {
-            await this.repository.delete(id)
+            await this.repository.delete(id, userId)
             return R.ok(undefined)
         } catch (err) {
             return R.fail(AppError.fromUnknown(err))
