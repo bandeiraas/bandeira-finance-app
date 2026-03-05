@@ -35,8 +35,8 @@ export class InMemoryAccountRepository implements IAccountRepository {
         return this.accounts[index]
     }
 
-    async delete(id: string, userId: string): Promise<void> {
-        this.accounts = this.accounts.filter(a => !(a.id === id && a.user_id === userId))
+    async delete(id: string): Promise<void> {
+        this.accounts = this.accounts.filter(a => a.id !== id)
     }
 
     async getTotalBalance(userId: string): Promise<number> {

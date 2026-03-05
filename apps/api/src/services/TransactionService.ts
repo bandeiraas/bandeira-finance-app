@@ -41,16 +41,24 @@ export class TransactionService {
         if (!result.success) return result
 
         const transactions = result.data
-        const totalIncome = transactions
-            .filter((t) => t.type === 'income')
-            .reduce((sum, t) => sum + Number(t.amount), 0)
 
-        const totalExpenses = transactions
-            .filter((t) => t.type === 'expense')
-            .reduce((sum, t) => sum + Number(t.amount), 0)
+        // Single pass performance optimization
+        let totalIncome = 0;
+        let totalExpenses = 0;
+        const expenses: Transaction[] = [];
+
+        for (const t of transactions) {
+            const amount = Number(t.amount);
+            if (t.type === 'income') {
+                totalIncome += amount;
+            } else if (t.type === 'expense') {
+                totalExpenses += amount;
+                expenses.push(t);
+            }
+        }
 
         const expensesByCategory = this.groupByCategory(
-            transactions.filter((t) => t.type === 'expense'),
+            expenses,
             totalExpenses
         )
 
@@ -101,9 +109,9 @@ export class TransactionService {
         }
     }
 
-    async deleteTransaction(id: string, userId: string): Promise<Result<void>> {
+    async deleteTransaction(id: string): Promise<Result<void>> {
         try {
-            await this.repository.delete(id, userId)
+            await this.repository.delete(id)
             return R.ok(undefined)
         } catch (err) {
             return R.fail(AppError.fromUnknown(err))
