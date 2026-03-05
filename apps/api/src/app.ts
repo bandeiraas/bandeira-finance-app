@@ -1,8 +1,8 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { logger } from 'hono/logger'
+import { secureHeaders } from 'hono/secure-headers'
 import { rateLimiter } from 'hono-rate-limiter'
-import { getConnInfo } from '@hono/node-server/conninfo'
 import { authMiddleware } from './middleware/auth'
 import { errorHandler } from './middleware/error'
 import { accountsRoutes } from './routes/accounts'
@@ -14,34 +14,14 @@ import { invoicesRoutes } from './routes/invoices'
 import { profileRoutes } from './routes/profile'
 
 export const app = new Hono()
+    .use('*', secureHeaders())
     .use('*', logger())
     .use(
         '/api/*',
         rateLimiter({
             windowMs: 60 * 1000,
             limit: 100,
-            keyGenerator: (c) => {
-                try {
-                    const connInfo = getConnInfo(c)
-                    const isProxyTrusted = process.env.TRUST_PROXY === 'true'
-
-                    if (isProxyTrusted) {
-                        const forwardedFor = c.req.header('x-forwarded-for')
-                        if (forwardedFor) {
-                            return forwardedFor.split(',')[0].trim()
-                        }
-                        const realIp = c.req.header('x-real-ip')
-                        if (realIp) {
-                            return realIp
-                        }
-                    }
-
-                    return connInfo.remote.address ?? 'anonymous'
-                } catch {
-                    // Fallback in case getConnInfo fails (e.g., in some test environments)
-                    return 'anonymous'
-                }
-            },
+            keyGenerator: (c) => c.req.header('x-forwarded-for') ?? c.req.header('x-real-ip') ?? 'anonymous',
         })
     )
     .use(
@@ -57,7 +37,15 @@ export const app = new Hono()
     .use('/api/*', authMiddleware)
     .onError(errorHandler)
     .get('/', (c) => c.json({ name: 'Bandeira Finance API', version: '0.0.0' }))
-    .get('/health', (c) => c.json({ status: 'ok' }))
+    .get('/health', (c) =>
+        c.json({
+            status: 'ok',
+            env: {
+                supabaseUrl: !!process.env.SUPABASE_URL,
+                supabaseKey: !!process.env.SUPABASE_ANON_KEY,
+            },
+        })
+    )
     .route('/api/accounts', accountsRoutes)
     .route('/api/transactions', transactionsRoutes)
     .route('/api/categories', categoriesRoutes)

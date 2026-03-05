@@ -30,12 +30,11 @@ export class SupabaseCardRepository implements ICardRepository {
         return data
     }
 
-    async delete(id: string, userId: string): Promise<void> {
+    async delete(id: string): Promise<void> {
         const { error } = await this.client
             .from('cards')
             .delete()
             .eq('id', id)
-            .eq('user_id', userId)
 
         if (error) throw SupabaseErrorMapper.toAppError(error, 'Card')
     }

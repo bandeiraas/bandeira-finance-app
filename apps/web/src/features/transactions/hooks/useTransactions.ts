@@ -1,4 +1,3 @@
-import { useCallback } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '@features/auth/providers/AuthProvider'
 import { api } from '@lib/api.ts'
@@ -24,18 +23,9 @@ export function useTransactions(limit?: number) {
     })
 }
 
-export function useInvalidateTransactions() {
-    const queryClient = useQueryClient()
-
-    return useCallback(() => {
-        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.TRANSACTIONS.ALL })
-        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.ACCOUNTS.ALL })
-    }, [queryClient])
-}
-
 export function useCreateIncome() {
     const { session } = useAuth()
-    const invalidateTransactions = useInvalidateTransactions()
+    const queryClient = useQueryClient()
 
     return useMutation({
         mutationFn: async (data: {
@@ -46,14 +36,15 @@ export function useCreateIncome() {
             date: string
         }) => api.transactions.createIncome(session!.accessToken, data),
         onSuccess: () => {
-            invalidateTransactions()
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.TRANSACTIONS.ALL })
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.ACCOUNTS.ALL })
         },
     })
 }
 
 export function useCreateExpense() {
     const { session } = useAuth()
-    const invalidateTransactions = useInvalidateTransactions()
+    const queryClient = useQueryClient()
 
     return useMutation({
         mutationFn: async (data: {
@@ -64,19 +55,21 @@ export function useCreateExpense() {
             date: string
         }) => api.transactions.createExpense(session!.accessToken, data),
         onSuccess: () => {
-            invalidateTransactions()
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.TRANSACTIONS.ALL })
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.ACCOUNTS.ALL })
         },
     })
 }
 
 export function useDeleteTransaction() {
     const { session } = useAuth()
-    const invalidateTransactions = useInvalidateTransactions()
+    const queryClient = useQueryClient()
 
     return useMutation({
         mutationFn: (id: string) => api.transactions.delete(session!.accessToken, id),
         onSuccess: () => {
-            invalidateTransactions()
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.TRANSACTIONS.ALL })
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.ACCOUNTS.ALL })
         },
     })
 }
