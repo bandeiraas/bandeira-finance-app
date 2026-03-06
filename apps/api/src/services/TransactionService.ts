@@ -1,4 +1,4 @@
-import type { ITransactionRepository, Transaction, DashboardSummary, CategorySummary, Result } from '@bandeira/shared'
+import type { ITransactionRepository, Transaction, DashboardSummary, Result } from '@bandeira/shared'
 import { ResultUtil as R, AppError, TransactionFactory } from '@bandeira/shared'
 
 export class TransactionService {
@@ -41,18 +41,35 @@ export class TransactionService {
         if (!result.success) return result
 
         const transactions = result.data
-        const totalIncome = transactions
-            .filter((t) => t.type === 'income')
-            .reduce((sum, t) => sum + Number(t.amount), 0)
+        let totalIncome = 0
+        let totalExpenses = 0
+        const grouped: Record<string, { total: number; color: string | null }> = {}
 
-        const totalExpenses = transactions
-            .filter((t) => t.type === 'expense')
-            .reduce((sum, t) => sum + Number(t.amount), 0)
+        // Single-pass iteration to minimize complexity from O(k*N) to O(N)
+        for (const t of transactions) {
+            if (t.type === 'income') {
+                totalIncome += t.amount
+            } else if (t.type === 'expense') {
+                totalExpenses += t.amount
 
-        const expensesByCategory = this.groupByCategory(
-            transactions.filter((t) => t.type === 'expense'),
-            totalExpenses
-        )
+                const name = t.categories?.name ?? 'Sem categoria'
+                const color = t.categories?.color ?? null
+
+                if (!grouped[name]) {
+                    grouped[name] = { total: 0, color }
+                }
+                grouped[name].total += t.amount
+            }
+        }
+
+        const expensesByCategory = Object.entries(grouped)
+            .map(([categoryName, { total, color }]) => ({
+                categoryName,
+                categoryColor: color,
+                total,
+                percentage: totalExpenses > 0 ? (total / totalExpenses) * 100 : 0,
+            }))
+            .sort((a, b) => b.total - a.total)
 
         return R.ok({
             totalIncome,
@@ -108,32 +125,5 @@ export class TransactionService {
         } catch (err) {
             return R.fail(AppError.fromUnknown(err))
         }
-    }
-
-    private groupByCategory(
-        expenses: Transaction[],
-        totalExpenses: number
-    ): CategorySummary[] {
-        const grouped = expenses.reduce<Record<string, { total: number; color: string | null }>>(
-            (acc, t) => {
-                const name = t.categories?.name ?? 'Sem categoria'
-                const color = t.categories?.color ?? null
-                if (!acc[name]) {
-                    acc[name] = { total: 0, color }
-                }
-                acc[name].total += Number(t.amount)
-                return acc
-            },
-            {}
-        )
-
-        return Object.entries(grouped)
-            .map(([categoryName, { total, color }]) => ({
-                categoryName,
-                categoryColor: color,
-                total,
-                percentage: totalExpenses > 0 ? (total / totalExpenses) * 100 : 0,
-            }))
-            .sort((a, b) => b.total - a.total)
     }
 }
