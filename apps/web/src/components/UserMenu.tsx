@@ -36,6 +36,9 @@ export default function UserMenu() {
     return (
         <div className="relative group" ref={menuRef}>
             <button
+                aria-expanded={isOpen}
+                aria-haspopup="menu"
+                aria-label="Menu do usuário"
                 onClick={() => setIsOpen(!isOpen)}
                 className="flex items-center gap-3 glass-card py-1 px-1 pr-4 rounded-full cursor-pointer transition-all hover:bg-white/40 dark:hover:bg-slate-800/40"
             >
@@ -56,8 +59,12 @@ export default function UserMenu() {
 
             {/* Dropdown Menu */}
             {isOpen && (
-                <div className="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 p-2 z-[60] animate-in fade-in zoom-in-95 duration-200">
+                <div
+                    role="menu"
+                    className="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 p-2 z-[60] animate-in fade-in zoom-in-95 duration-200"
+                >
                     <Link
+                        role="menuitem"
                         to="/profile/edit"
                         className="flex items-center gap-3 p-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl text-slate-600 dark:text-slate-300 transition-colors group/item"
                         onClick={() => setIsOpen(false)}
@@ -67,6 +74,7 @@ export default function UserMenu() {
                     </Link>
 
                     <Link
+                        role="menuitem"
                         to="/settings"
                         className="flex items-center gap-3 p-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl text-slate-600 dark:text-slate-300 transition-colors group/item"
                         onClick={() => setIsOpen(false)}
@@ -75,9 +83,10 @@ export default function UserMenu() {
                         <span className="text-sm font-medium">Configurações</span>
                     </Link>
 
-                    <div className="h-px bg-slate-100 dark:bg-slate-800 my-1 mx-2"></div>
+                    <div role="separator" className="h-px bg-slate-100 dark:bg-slate-800 my-1 mx-2"></div>
 
                     <button
+                        role="menuitem"
                         type="button"
                         onClick={handleLogout}
                         className="w-full flex items-center gap-3 p-2.5 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-xl text-rose-500 dark:text-rose-400 transition-colors group/item"
