@@ -93,7 +93,7 @@ export default function Layout() {
                 {/* Mobile Header (Visible only on small screens) */}
                 <header className="sm:hidden flex items-center justify-between p-4 glassmorphism m-4 rounded-2xl z-20">
                     <Logo size="sm" className="shrink-0" />
-                    <button onClick={toggleTheme} className="text-slate-500 dark:text-slate-400 hover:bg-white/40 dark:hover:bg-slate-800/40 p-2 rounded-lg transition-all">
+                    <button onClick={toggleTheme} aria-label="Alternar Tema" className="text-slate-500 dark:text-slate-400 hover:bg-white/40 dark:hover:bg-slate-800/40 p-2 rounded-lg transition-all">
                         {isDark ? <Sun size={20} /> : <Moon size={20} />}
                     </button>
                 </header>
@@ -107,6 +107,7 @@ export default function Layout() {
                         <nav className="glassmorphism rounded-3xl px-6 py-3 flex items-center justify-between shadow-lg dark:shadow-sky-900/40">
                         <Link
                             to="/dashboard"
+                            aria-label="Dashboard"
                             className={cn(
                                 "p-2 rounded-xl transition-all duration-300",
                                 location.pathname === "/dashboard" ? "text-primary bg-white/60 dark:bg-slate-800/60 shadow-sm" : "text-slate-500 dark:text-slate-400 hover:bg-white/40 dark:hover:bg-slate-800/40"
@@ -117,6 +118,7 @@ export default function Layout() {
 
                         <Link
                             to="/transactions"
+                            aria-label="Extrato"
                             className={cn(
                                 "p-2 rounded-xl transition-all duration-300",
                                 location.pathname === "/transactions" ? "text-primary bg-white/60 dark:bg-slate-800/60 shadow-sm" : "text-slate-500 dark:text-slate-400 hover:bg-white/40 dark:hover:bg-slate-800/40"
@@ -141,13 +143,14 @@ export default function Layout() {
                                     </div>
                                 </Link>
                             </div>
-                            <button className="w-14 h-14 bg-gradient-to-tr from-sky-500 to-violet-600 rounded-full flex items-center justify-center text-white shadow-lg shadow-sky-500/40 hover:shadow-sky-500/60 transition-transform hover:scale-110 active:scale-95 ring-4 ring-slate-300/80 dark:ring-slate-900">
+                            <button aria-label="Nova transação" className="w-14 h-14 bg-gradient-to-tr from-sky-500 to-violet-600 rounded-full flex items-center justify-center text-white shadow-lg shadow-sky-500/40 hover:shadow-sky-500/60 transition-transform hover:scale-110 active:scale-95 ring-4 ring-slate-300/80 dark:ring-slate-900">
                                 <Plus size={28} className="group-hover:rotate-45 transition-transform duration-300" />
                             </button>
                         </div>
 
                         <Link
                             to="/cards"
+                            aria-label="Meus Cartões"
                             className={cn(
                                 "p-2 rounded-xl transition-all duration-300",
                                 location.pathname === "/cards" ? "text-primary bg-white/60 dark:bg-slate-800/60 shadow-sm" : "text-slate-500 dark:text-slate-400 hover:bg-white/40 dark:hover:bg-slate-800/40"
@@ -158,6 +161,7 @@ export default function Layout() {
 
                         <Link
                             to="/profile"
+                            aria-label="Perfil"
                             className={cn(
                                 "p-2 rounded-xl transition-all duration-300",
                                 location.pathname === "/profile" ? "text-primary bg-white/60 dark:bg-slate-800/60 shadow-sm" : "text-slate-500 dark:text-slate-400 hover:bg-white/40 dark:hover:bg-slate-800/40"
