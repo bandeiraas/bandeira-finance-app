@@ -1,0 +1,40 @@
+# Bandeira Finance — Regras Globais (Monorepo)
+
+## Monorepo Boundaries
+
+- O frontend (`apps/web`) NUNCA pode importar código do backend (`apps/api`) ou do banco de dados (`packages/database`).
+- A comunicação entre frontend e backend é estritamente via API HTTP/RPC.
+- O único pacote que transita livremente entre apps é o `@bandeira/shared`.
+- Respeite o gráfico de dependências: `apps/web` → `@bandeira/shared`; `apps/api` → `@bandeira/shared` + `@bandeira/database`.
+
+## Documentação Viva
+
+- Sempre que implementar uma nova feature, alterar configurações ou mudar a arquitetura, você DEVE revisar e atualizar o `README.md` e a documentação na pasta `docs/`.
+- Consulte e mantenha atualizados: `docs/design/DESIGN.md`, `docs/planning/`, `docs/architecture/`.
+- Documente decisões arquiteturais relevantes.
+
+## Versionamento (Sempre Comitar)
+
+- Ao concluir qualquer tarefa ou refatoração, SEMPRE gere e sugira o comando de commit utilizando o padrão Conventional Commits.
+- Use os prefixos: `feat:`, `fix:`, `refactor:`, `docs:`, `chore:`, `test:`, `style:`.
+- Exemplo: `feat(accounts): adiciona modal de criação de conta`.
+
+## Segurança Global
+
+- É estritamente proibido criar arquivos com senhas, tokens ou secrets hardcoded.
+- Exija sempre o uso de variáveis de ambiente (`.env.local`, `.env.example`).
+- Nunca commite `.env.local` — mantenha-o no `.gitignore`.
+- Valide que variáveis sensíveis estejam documentadas em `.env.example`.
+
+## Testes (Visão Global)
+
+- Sempre verifique se as alterações quebram os testes existentes.
+- Execute `npx turbo run test` antes de concluir qualquer mudança.
+- Corrija ou adapte testes que falharem devido às suas alterações.
+- Testes de schemas ficam em `packages/shared/src/validation/__tests__/`.
+
+## Pipeline de Qualidade
+
+- Execute `npx turbo run lint test build` para garantir que lint, testes e build passem.
+- Resolva erros de ESLint antes de commitar.
+- Use `// eslint-disable-next-line regra -- motivo` apenas quando estritamente necessário e documente o motivo.

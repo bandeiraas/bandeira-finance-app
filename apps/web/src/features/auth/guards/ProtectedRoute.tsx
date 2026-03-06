@@ -1,5 +1,5 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
-import { useAuth } from '../providers/AuthProvider'
+import { useAuth } from '@features/auth/providers/AuthProvider'
 
 /**
  * Guard component that protects routes requiring authentication.

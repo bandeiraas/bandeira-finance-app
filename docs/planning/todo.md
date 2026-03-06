@@ -22,6 +22,7 @@ Lista de todas as telas identificadas no projeto Stitch (`projects/1620250293343
 | `f93a61c519924880949a87b239c6a350` | FinTrack... | **Bem-vindo / Landing** | `src/pages/Landing.tsx` | ✅ Implementado |
 | `659cc8a9b58d4c2cae3c778daf2dfa30` | Modern Card... | **Cadastro** (Register) | `src/pages/Register.tsx` | ✅ Implementado |
 | `659cc8a9b58d4c2cae3c778daf2dfa30` | Modern Card... | **Mobile Menu / Outros** | - | ✅ Implementado |
+| `3116463382aa4ef4a8be071d06b6e644` | Onboarding... | **Ver Demonstração** | `src/pages/OnboardingDemo.tsx` | ✅ Implementado |
 | `623bd42c008a474b985b8b19f115f92c` | Form... | **Criar Receita** | `src/pages/NewIncome.tsx` | ✅ Implementado |
 | `b9db098578ba47b2b39a215a110f5b78` | Form... | **Criar Despesa** | `src/pages/NewExpense.tsx` | ✅ Implementado |
 | `d1c5102d7fa647679100805ca8b8f790` | Modern Card... | **Dashboard** (Dropdown) | `src/components/UserMenu.tsx` | ✅ Implementado |

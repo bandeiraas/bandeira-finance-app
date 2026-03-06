@@ -26,6 +26,7 @@ export {
 // Interfaces
 export type {
     IAuthService,
+    OAuthProvider,
     IAccountRepository,
     ITransactionRepository,
     ICategoryRepository,

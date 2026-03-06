@@ -81,7 +81,7 @@ export default function AccountDetail() {
         .sort((a, b) => b.percentage - a.percentage)
         .slice(0, 3);
 
-    const primaryCard = cards?.[0];
+    const primaryCard = cards?.find((c) => c.account_id === id);
 
     const groupedByDate = useMemo(() => {
         const groups: Record<string, typeof accountTransactions> = {};
@@ -409,7 +409,8 @@ export default function AccountDetail() {
                                 className='block py-6 text-center text-slate-500 dark:text-slate-400 transition-colors font-medium hover:opacity-80'
                                 style={{ color: bankHex } as React.CSSProperties}
                             >
-                                Nenhum cartão vinculado. Adicionar cartão →
+                                <Plus size={18} />
+                                Adicionar cartão
                             </Link>
                         )}
                     </div>

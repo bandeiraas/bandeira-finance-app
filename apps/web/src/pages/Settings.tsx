@@ -1,5 +1,5 @@
 import { Bell, Shield, Globe, Moon, CreditCard, HelpCircle, LogOut } from "lucide-react";
-import { cn } from "../lib/utils";
+import { cn } from "@lib/utils";
 
 interface SettingItem {
     icon: React.ElementType;
@@ -10,7 +10,7 @@ interface SettingItem {
     onClick?: () => void;
 }
 
-import { useAuth } from "../features/auth/providers/AuthProvider";
+import { useAuth } from "@features/auth/providers/AuthProvider";
 
 export default function Settings() {
     const { signOut } = useAuth();

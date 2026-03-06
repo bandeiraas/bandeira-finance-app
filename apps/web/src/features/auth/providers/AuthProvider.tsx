@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import type { AuthUser, AuthSession } from '@bandeira/shared'
 import { SupabaseAuthService } from '@infrastructure/supabase/SupabaseAuthService'
 import { supabase } from '@core/config/supabase'
@@ -11,6 +12,7 @@ interface AuthContextType {
     isLoading: boolean
     isAuthenticated: boolean
     signIn: (email: string, password: string) => Promise<void>
+    signInWithOAuth: (provider: 'google') => Promise<void>
     signUp: (email: string, password: string, fullName: string) => Promise<void>
     signOut: () => Promise<void>
     resetPassword: (email: string) => Promise<void>
@@ -23,6 +25,7 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
+    const queryClient = useQueryClient()
     const [user, setUser] = useState<AuthUser | null>(null)
     const [session, setSession] = useState<AuthSession | null>(null)
     const [isLoading, setIsLoading] = useState(true)
@@ -50,6 +53,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
         if (!result.success) throw result.error
     }, [])
 
+    const signInWithOAuth = useCallback(async (provider: 'google') => {
+        const result = await authService.signInWithOAuth(provider)
+        if (!result.success) throw result.error
+    }, [])
+
     const signUp = useCallback(async (email: string, password: string, fullName: string) => {
         const result = await authService.signUp({ email, password, fullName })
         if (!result.success) throw result.error
@@ -60,7 +68,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
         if (!result.success) throw result.error
         setUser(null)
         setSession(null)
-    }, [])
+        queryClient.clear() // Evita vazamento de dados do usuário anterior
+    }, [queryClient])
 
     const resetPassword = useCallback(async (email: string) => {
         const result = await authService.resetPassword(email)
@@ -73,6 +82,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         isLoading,
         isAuthenticated: !!user,
         signIn,
+        signInWithOAuth,
         signUp,
         signOut,
         resetPassword,

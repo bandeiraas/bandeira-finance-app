@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { X, Calendar, ChevronDown, Check, Landmark, Minus, Tag, Repeat, Loader2, AlertCircle } from "lucide-react";
-import { useCreateExpense } from "../features/transactions/hooks/useTransactions";
-import { useCategories } from "../features/transactions/hooks/useCategories";
-import { useAccounts } from "../features/accounts/hooks/useAccounts";
-import { parseBRL } from "../shared/utils/parseBRL";
-import { formatCurrency } from "../shared/utils/formatCurrency";
+import { useCreateExpense } from "@features/transactions/hooks/useTransactions";
+import { useCategories } from "@features/transactions/hooks/useCategories";
+import { useAccounts } from "@features/accounts/hooks/useAccounts";
+import { parseBRL } from "@shared/utils/parseBRL";
+import { formatCurrency } from "@shared/utils/formatCurrency";
+import { cn } from "@lib/utils";
 
 export default function NewExpense() {
     const navigate = useNavigate();
@@ -181,7 +182,10 @@ export default function NewExpense() {
                                             className="peer sr-only"
                                             disabled={createExpense.isPending}
                                         />
-                                        <div className={`p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 transition-all flex items-center gap-3 ${accountId === acc.id ? '!border-rose-500 !bg-rose-50 dark:!bg-rose-900/20' : ''}`}>
+                                        <div className={cn(
+                                            "p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 transition-all flex items-center gap-3",
+                                            accountId === acc.id && "!border-rose-500 !bg-rose-50 dark:!bg-rose-900/20"
+                                        )}>
                                             <div
                                                 className="w-8 h-8 rounded-lg flex items-center justify-center text-white shadow-sm shrink-0"
                                                 style={{ backgroundColor: acc.color || '#64748b' }}
@@ -193,7 +197,7 @@ export default function NewExpense() {
                                                 <p className="text-[9px] text-slate-400 truncate">Saldo: {formatCurrency(Number(acc.balance))}</p>
                                             </div>
                                         </div>
-                                        <div className={`absolute top-2 right-2 w-2 h-2 rounded-full bg-rose-500 transition-opacity ${accountId === acc.id ? 'opacity-100' : 'opacity-0'}`}></div>
+                                        <div className={cn("absolute top-2 right-2 w-2 h-2 rounded-full bg-rose-500 transition-opacity", accountId === acc.id ? "opacity-100" : "opacity-0")}></div>
                                     </label>
                                 ))}
                             </div>

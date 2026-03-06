@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useAuth } from '../../auth/providers/AuthProvider.tsx'
+import { useAuth } from '@features/auth/providers/AuthProvider'
 import { api } from '@lib/api.ts'
 import { QUERY_KEYS } from '@bandeira/shared'
 
@@ -24,6 +24,10 @@ export function useCreateCard() {
             expiry: string
             card_name: string
             credit_limit: number
+            card_color?: string
+            account_id: string
+            due_day?: number
+            closing_day?: number
         }) => api.cards.create(session!.accessToken, data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.CARDS.ALL })

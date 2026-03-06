@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { X, Plus, Calendar, ChevronDown, Check, Landmark, Briefcase, CheckCircle2, Loader2, AlertCircle } from "lucide-react";
-import { useCreateIncome } from "../features/transactions/hooks/useTransactions";
-import { useCategories } from "../features/transactions/hooks/useCategories";
-import { useAccounts } from "../features/accounts/hooks/useAccounts";
-import { parseBRL } from "../shared/utils/parseBRL";
+import { useCreateIncome } from "@features/transactions/hooks/useTransactions";
+import { useCategories } from "@features/transactions/hooks/useCategories";
+import { useAccounts } from "@features/accounts/hooks/useAccounts";
+import { parseBRL } from "@shared/utils/parseBRL";
+import { cn } from "@lib/utils";
 
 export default function NewIncome() {
     const navigate = useNavigate();
@@ -162,10 +163,12 @@ export default function NewIncome() {
                                 {accounts.map((acc) => (
                                     <label
                                         key={acc.id}
-                                        className={`relative flex items-center p-3 border rounded-xl cursor-pointer transition-all ${accountId === acc.id
-                                                ? 'border-emerald-500 bg-emerald-50/50 dark:bg-emerald-900/10'
-                                                : 'border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/50'
-                                            }`}
+                                        className={cn(
+                                            "relative flex items-center p-3 border rounded-xl cursor-pointer transition-all",
+                                            accountId === acc.id
+                                                ? "border-emerald-500 bg-emerald-50/50 dark:bg-emerald-900/10"
+                                                : "border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/50"
+                                        )}
                                     >
                                         <input
                                             type="radio"
@@ -185,9 +188,11 @@ export default function NewIncome() {
                                             <p className="text-sm font-bold text-slate-800 dark:text-white">{acc.bank_name}</p>
                                             <p className="text-xs text-slate-500">{acc.account_type}</p>
                                         </div>
-                                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${accountId === acc.id ? 'border-emerald-500 bg-emerald-500' : 'border-slate-300 dark:border-slate-600'
-                                            }`}>
-                                            <Check size={12} className={`text-white transition-opacity ${accountId === acc.id ? 'opacity-100' : 'opacity-0'}`} />
+                                        <div className={cn(
+                                            "w-5 h-5 rounded-full border-2 flex items-center justify-center",
+                                            accountId === acc.id ? "border-emerald-500 bg-emerald-500" : "border-slate-300 dark:border-slate-600"
+                                        )}>
+                                            <Check size={12} className={cn("text-white transition-opacity", accountId === acc.id ? "opacity-100" : "opacity-0")} />
                                         </div>
                                     </label>
                                 ))}

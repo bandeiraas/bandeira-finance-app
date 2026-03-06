@@ -8,12 +8,12 @@ import {
     ChevronLeft,
     Loader2
 } from "lucide-react";
-import { useAuth } from "../features/auth/providers/AuthProvider";
-import { useProfile, useUpdateProfile, useUploadAvatar } from "../features/profile/hooks/useProfile";
+import { useAuth } from "@features/auth/providers/AuthProvider";
+import { useProfile, useUpdateProfile, useUploadAvatar } from "@features/profile/hooks/useProfile";
 
 export default function EditProfile() {
     const navigate = useNavigate();
-    const { signOut } = useAuth();
+    const { signOut, user } = useAuth();
     const { data: profile, isLoading: loadingProfile } = useProfile();
     const updateProfile = useUpdateProfile();
     const uploadAvatar = useUploadAvatar();
@@ -27,18 +27,18 @@ export default function EditProfile() {
     });
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-    // Populate form when profile loads (sync form with fetched data)
+    // Populate form when profile loads; fallback to Auth user (Google) when profile is empty
     useEffect(() => {
-        if (profile) {
+        if (profile || user) {
             /* eslint-disable react-hooks/set-state-in-effect -- syncing form with async profile fetch */
             setFormData({
-                full_name: profile.full_name || "",
-                username: profile.username || "",
-                website: profile.website || "",
+                full_name: profile?.full_name || user?.fullName || "",
+                username: profile?.username || "",
+                website: profile?.website || "",
             });
             /* eslint-enable react-hooks/set-state-in-effect */
         }
-    }, [profile]);
+    }, [profile, user]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -119,15 +119,15 @@ export default function EditProfile() {
                 <div className="text-center mb-10 relative z-10">
                     <div className="relative inline-block mb-4 group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
                         <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-white dark:border-slate-700 shadow-lg mx-auto bg-slate-200 dark:bg-slate-800">
-                            {profile?.avatar_url ? (
+                            {(profile?.avatar_url || user?.avatarUrl) ? (
                                 <img
-                                    src={profile.avatar_url}
+                                    src={profile?.avatar_url || user?.avatarUrl || ""}
                                     alt="Avatar"
                                     className="w-full h-full object-cover"
                                 />
                             ) : (
                                 <div className="w-full h-full flex items-center justify-center text-3xl font-bold text-slate-500 dark:text-slate-400">
-                                    {formData.full_name?.[0] || "?"}
+                                    {(formData.full_name || user?.fullName)?.[0] || "?"}
                                 </div>
                             )}
                         </div>

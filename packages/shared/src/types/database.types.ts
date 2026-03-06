@@ -165,29 +165,44 @@ export interface Database {
                 Row: {
                     id: string
                     user_id: string
+                    account_id: string | null
                     last_four: string
                     brand: string | null
                     expiry: string | null
                     card_name: string | null
                     credit_limit: number | null
+                    style: string | null
+                    card_color: string | null
+                    due_day: number | null
+                    closing_day: number | null
                     created_at: string
                 }
                 Insert: {
                     id?: string
                     user_id: string
+                    account_id?: string | null
                     last_four: string
                     brand?: string | null
                     expiry?: string | null
                     card_name?: string | null
                     credit_limit?: number | null
+                    style?: string | null
+                    card_color?: string | null
+                    due_day?: number | null
+                    closing_day?: number | null
                     created_at?: string
                 }
                 Update: {
+                    account_id?: string | null
                     last_four?: string
                     brand?: string | null
                     expiry?: string | null
                     card_name?: string | null
                     credit_limit?: number | null
+                    style?: string | null
+                    card_color?: string | null
+                    due_day?: number | null
+                    closing_day?: number | null
                 }
                 Relationships: [
                     {
@@ -195,6 +210,13 @@ export interface Database {
                         columns: ['user_id']
                         isOneToOne: false
                         referencedRelation: 'profiles'
+                        referencedColumns: ['id']
+                    },
+                    {
+                        foreignKeyName: 'cards_account_id_fkey'
+                        columns: ['account_id']
+                        isOneToOne: false
+                        referencedRelation: 'accounts'
                         referencedColumns: ['id']
                     }
                 ]
