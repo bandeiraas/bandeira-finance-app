@@ -56,7 +56,7 @@ export default function Invoices() {
                             Histórico de Gestão
                         </h3>
                         <div className="flex gap-2">
-                            <button className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                            <button aria-label="Filtrar" className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
                                 <ListFilter size={18} />
                             </button>
                         </div>
