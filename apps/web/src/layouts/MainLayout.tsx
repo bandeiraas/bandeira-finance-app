@@ -61,6 +61,8 @@ export default function Layout() {
                                             ? "bg-white/60 dark:bg-slate-800/60 text-slate-900 dark:text-white shadow-sm border border-white/40 dark:border-slate-700/40"
                                             : "text-slate-500 dark:text-slate-400 hover:bg-white/40 dark:hover:bg-slate-800/40"
                                     )}
+                                    aria-label={item.label}
+                                    title={item.label}
                                 >
                                     <item.icon size={22} className={cn(isActive ? "text-primary" : "group-hover:text-primary transition-colors")} />
                                     <span className="font-medium hidden lg:block">{item.label}</span>
@@ -74,6 +76,8 @@ export default function Layout() {
                     <button
                         onClick={toggleTheme}
                         className="flex items-center gap-3 p-3 w-full text-slate-500 dark:text-slate-400 hover:bg-white/40 dark:hover:bg-slate-800/40 rounded-xl transition-all"
+                        aria-label="Mudar Tema"
+                        title="Mudar Tema"
                     >
                         {isDark ? <Sun size={22} /> : <Moon size={22} />}
                         <span className="font-medium hidden lg:block">Mudar Tema</span>
@@ -81,6 +85,8 @@ export default function Layout() {
                     <button
                         onClick={() => auth.signOut()}
                         className="flex items-center gap-3 p-3 w-full text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 hover:text-rose-600 dark:hover:text-rose-500 rounded-xl transition-all"
+                        aria-label="Sair"
+                        title="Sair"
                     >
                         <LogOut size={22} />
                         <span className="font-medium hidden lg:block">Sair</span>
@@ -93,7 +99,7 @@ export default function Layout() {
                 {/* Mobile Header (Visible only on small screens) */}
                 <header className="sm:hidden flex items-center justify-between p-4 glassmorphism m-4 rounded-2xl z-20">
                     <Logo size="sm" className="shrink-0" />
-                    <button onClick={toggleTheme} className="text-slate-500 dark:text-slate-400 hover:bg-white/40 dark:hover:bg-slate-800/40 p-2 rounded-lg transition-all">
+                    <button onClick={toggleTheme} className="text-slate-500 dark:text-slate-400 hover:bg-white/40 dark:hover:bg-slate-800/40 p-2 rounded-lg transition-all" aria-label="Mudar Tema" title="Mudar Tema">
                         {isDark ? <Sun size={20} /> : <Moon size={20} />}
                     </button>
                 </header>
@@ -111,6 +117,8 @@ export default function Layout() {
                                 "p-2 rounded-xl transition-all duration-300",
                                 location.pathname === "/dashboard" ? "text-primary bg-white/60 dark:bg-slate-800/60 shadow-sm" : "text-slate-500 dark:text-slate-400 hover:bg-white/40 dark:hover:bg-slate-800/40"
                             )}
+                            aria-label="Dashboard"
+                            title="Dashboard"
                         >
                             <LayoutDashboard size={22} className={location.pathname === "/dashboard" ? "drop-shadow-[0_0_8px_rgba(14,165,233,0.5)]" : ""} />
                         </Link>
@@ -121,6 +129,8 @@ export default function Layout() {
                                 "p-2 rounded-xl transition-all duration-300",
                                 location.pathname === "/transactions" ? "text-primary bg-white/60 dark:bg-slate-800/60 shadow-sm" : "text-slate-500 dark:text-slate-400 hover:bg-white/40 dark:hover:bg-slate-800/40"
                             )}
+                            aria-label="Extrato"
+                            title="Extrato"
                         >
                             <Receipt size={22} className={location.pathname === "/transactions" ? "drop-shadow-[0_0_8px_rgba(14,165,233,0.5)]" : ""} />
                         </Link>
@@ -141,7 +151,13 @@ export default function Layout() {
                                     </div>
                                 </Link>
                             </div>
-                            <button className="w-14 h-14 bg-gradient-to-tr from-sky-500 to-violet-600 rounded-full flex items-center justify-center text-white shadow-lg shadow-sky-500/40 hover:shadow-sky-500/60 transition-transform hover:scale-110 active:scale-95 ring-4 ring-slate-300/80 dark:ring-slate-900">
+                            <button
+                                className="w-14 h-14 bg-gradient-to-tr from-sky-500 to-violet-600 rounded-full flex items-center justify-center text-white shadow-lg shadow-sky-500/40 hover:shadow-sky-500/60 transition-transform hover:scale-110 active:scale-95 ring-4 ring-slate-300/80 dark:ring-slate-900"
+                                aria-label="Nova transação"
+                                title="Nova transação"
+                                aria-haspopup="menu"
+                                aria-expanded="false"
+                            >
                                 <Plus size={28} className="group-hover:rotate-45 transition-transform duration-300" />
                             </button>
                         </div>
@@ -152,6 +168,8 @@ export default function Layout() {
                                 "p-2 rounded-xl transition-all duration-300",
                                 location.pathname === "/cards" ? "text-primary bg-white/60 dark:bg-slate-800/60 shadow-sm" : "text-slate-500 dark:text-slate-400 hover:bg-white/40 dark:hover:bg-slate-800/40"
                             )}
+                            aria-label="Meus Cartões"
+                            title="Meus Cartões"
                         >
                             <CreditCard size={22} className={location.pathname === "/cards" ? "drop-shadow-[0_0_8px_rgba(14,165,233,0.5)]" : ""} />
                         </Link>
@@ -162,6 +180,8 @@ export default function Layout() {
                                 "p-2 rounded-xl transition-all duration-300",
                                 location.pathname === "/profile" ? "text-primary bg-white/60 dark:bg-slate-800/60 shadow-sm" : "text-slate-500 dark:text-slate-400 hover:bg-white/40 dark:hover:bg-slate-800/40"
                             )}
+                            aria-label="Meu Perfil"
+                            title="Meu Perfil"
                         >
                             <User size={22} className={location.pathname === "/profile" ? "drop-shadow-[0_0_8px_rgba(14,165,233,0.5)]" : ""} />
                         </Link>
