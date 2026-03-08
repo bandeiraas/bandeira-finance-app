@@ -34,12 +34,15 @@ export function ExpenseChart({ summary, isLoading }: ExpenseChartProps) {
                         <div
                             className="relative w-40 h-40 rounded-full"
                             style={{
-                                background: `conic-gradient(${categories
-                                    .map((c, i, arr) => {
-                                        const prev = arr.slice(0, i).reduce((sum, item) => sum + item.percentage, 0);
-                                        return `${getCategoryColor(c.categoryColor)} ${prev}% ${prev + c.percentage}%`;
-                                    })
-                                    .join(", ")})`,
+                                // ⚡ O(N) accumulation of gradient stops instead of O(N^2)
+                                background: `conic-gradient(${(() => {
+                                    let acc = 0;
+                                    return categories.map(c => {
+                                        const start = acc;
+                                        acc += c.percentage;
+                                        return `${getCategoryColor(c.categoryColor)} ${start}% ${acc}%`;
+                                    }).join(", ");
+                                })()})`,
                             }}
                         >
                             <div className="absolute inset-0 m-8 bg-slate-50 dark:bg-slate-900 rounded-full flex items-center justify-center shadow-inner">

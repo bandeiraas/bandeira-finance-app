@@ -65,16 +65,23 @@ export default function AccountDetail() {
         const d = new Date(t.date);
         return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
     });
-    const monthIncome = monthTransactions.filter((t) => t.type === 'income').reduce((s, t) => s + Number(t.amount), 0);
-    const monthExpense = monthTransactions.filter((t) => t.type === 'expense').reduce((s, t) => s + Number(t.amount), 0);
+    // ⚡ O(N) single-pass iteration instead of multiple filter/reduce passes (O(3N))
+    let monthIncome = 0;
+    let monthExpense = 0;
+    const categoryTotals: Record<string, number> = {};
 
-    const categoryTotals = monthTransactions
-        .filter((t) => t.type === 'expense')
-        .reduce<Record<string, number>>((acc, t) => {
+    for (const t of monthTransactions) {
+        // Amount fields are strictly numbers from DB but parsed as number just in case the generic type isn't enforced at runtime
+        const amt = Number(t.amount);
+        if (t.type === 'income') {
+            monthIncome += amt;
+        } else if (t.type === 'expense') {
+            monthExpense += amt;
             const name = t.categories?.name ?? 'Outros';
-            acc[name] = (acc[name] ?? 0) + Number(t.amount);
-            return acc;
-        }, {});
+            categoryTotals[name] = (categoryTotals[name] ?? 0) + amt;
+        }
+    }
+
     const totalExpense = monthExpense;
     const categoriesWithPercent = Object.entries(categoryTotals)
         .map(([name, total]) => ({ name, total, percentage: totalExpense > 0 ? (total / totalExpense) * 100 : 0 }))
@@ -258,28 +265,31 @@ export default function AccountDetail() {
                                 <svg className='w-full h-full transform -rotate-90' viewBox='0 0 36 36'>
                                     <circle className='stroke-slate-100 dark:stroke-slate-800' cx='18' cy='18' fill='none' r='16' strokeWidth={4} />
                                     {categoriesWithPercent.length > 0 ? (
-                                        categoriesWithPercent.map((cat, i) => {
-                                            const prevOffset = categoriesWithPercent
-                                                .slice(0, i)
-                                                .reduce((s, c) => s + (c.percentage / 100) * 100, 0);
-                                            const dashArray = `${(cat.percentage / 100) * 100}, 100`;
-                                            const dashOffset = -prevOffset;
-                                            const isFirst = i === 0;
-                                            return (
-                                                <circle
-                                                    key={cat.name}
-                                                    className={isFirst ? '' : CHART_COLOR_CLASSES[(i - 1) % CHART_COLOR_CLASSES.length]}
-                                                    cx='18'
-                                                    cy='18'
-                                                    fill='none'
-                                                    r='16'
-                                                    strokeDasharray={dashArray}
-                                                    strokeDashoffset={dashOffset}
-                                                    strokeWidth={4}
-                                                    style={isFirst ? { stroke: bankHex } : undefined}
-                                                />
-                                            );
-                                        })
+                                        // ⚡ O(N) accumulation of SVG dash offsets instead of O(N^2) using slice/reduce
+                                        (() => {
+                                            let currentOffset = 0;
+                                            return categoriesWithPercent.map((cat, i) => {
+                                                const offsetToApply = currentOffset;
+                                                currentOffset += (cat.percentage / 100) * 100;
+                                                const dashArray = `${(cat.percentage / 100) * 100}, 100`;
+                                                const dashOffset = -offsetToApply;
+                                                const isFirst = i === 0;
+                                                return (
+                                                    <circle
+                                                        key={cat.name}
+                                                        className={isFirst ? '' : CHART_COLOR_CLASSES[(i - 1) % CHART_COLOR_CLASSES.length]}
+                                                        cx='18'
+                                                        cy='18'
+                                                        fill='none'
+                                                        r='16'
+                                                        strokeDasharray={dashArray}
+                                                        strokeDashoffset={dashOffset}
+                                                        strokeWidth={4}
+                                                        style={isFirst ? { stroke: bankHex } : undefined}
+                                                    />
+                                                );
+                                            });
+                                        })()
                                     ) : (
                                         <circle cx='18' cy='18' fill='none' r='16' strokeDasharray='100, 100' strokeWidth={4} style={{ stroke: bankHex }} />
                                     )}
@@ -409,7 +419,6 @@ export default function AccountDetail() {
                                 className='block py-6 text-center text-slate-500 dark:text-slate-400 transition-colors font-medium hover:opacity-80'
                                 style={{ color: bankHex } as React.CSSProperties}
                             >
-                                <Plus size={18} />
                                 Adicionar cartão
                             </Link>
                         )}
