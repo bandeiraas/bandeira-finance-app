@@ -7,6 +7,8 @@ import { formatCurrency } from "../shared/utils/formatCurrency";
 import { ACCOUNT_TYPE_LABELS } from "../shared/constants/accounts";
 import { BankIcon } from "../components/BankIcon";
 import { TransactionIcon } from "../components/TransactionIcon";
+import { BalanceSummaryCard } from "../features/accounts/components/BalanceSummaryCard";
+import { cn } from "../lib/utils";
 
 export default function Accounts() {
     const [searchTerm, setSearchTerm] = useState("");
