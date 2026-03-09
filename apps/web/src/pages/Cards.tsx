@@ -72,11 +72,15 @@ export default function Cards() {
                                             {isSelected && (
                                                 <div
                                                     className="absolute bottom-5 right-5 z-20"
-                                                    onClick={(e) => handleDelete(e, card.id)}
                                                 >
-                                                    <div className="p-1.5 bg-red-500/20 hover:bg-red-500 text-red-100 rounded-full transition-colors cursor-pointer">
+                                                    <button
+                                                        type="button"
+                                                        aria-label="Excluir cartão"
+                                                        onClick={(e) => handleDelete(e, card.id)}
+                                                        className="p-1.5 bg-red-500/20 hover:bg-red-500 text-red-100 rounded-full transition-colors cursor-pointer block"
+                                                    >
                                                         <Trash2 size={12} />
-                                                    </div>
+                                                    </button>
                                                 </div>
                                             )}
                                         </CardPreview>
@@ -148,7 +152,7 @@ export default function Cards() {
                             <div className="flex flex-col gap-2">
                                 <div className="glass-card flex items-center justify-between px-4 py-2 rounded-xl w-full md:w-64 border border-white/10 bg-slate-800/50">
                                     <span className="font-mono text-lg font-medium text-white tracking-wider">•••• {selectedCard.last_four}</span>
-                                    <button onClick={() => copyToClipboard(selectedCard.last_four)} className="p-2 text-primary hover:bg-primary/20 rounded-lg transition-colors">
+                                    <button aria-label="Copiar últimos 4 dígitos do cartão" onClick={() => copyToClipboard(selectedCard.last_four)} className="p-2 text-primary hover:bg-primary/20 rounded-lg transition-colors">
                                         <Copy size={16} />
                                     </button>
                                 </div>
@@ -159,7 +163,7 @@ export default function Cards() {
                         <div className="flex flex-col gap-4">
                             <div className="flex items-center justify-between px-2">
                                 <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Últimas Transações</h3>
-                                <button className="text-[10px] font-bold text-primary hover:underline uppercase tracking-wider">VER TUDO</button>
+                                <button aria-label="Ver todas as transações deste cartão" className="text-[10px] font-bold text-primary hover:underline uppercase tracking-wider">VER TUDO</button>
                             </div>
                             <div className="bg-white/5 dark:bg-slate-800/40 border border-white/10 rounded-3xl overflow-hidden backdrop-blur-sm p-8 text-center">
                                 <p className="text-slate-500 text-sm">Transações específicas do cartão em breve.</p>
