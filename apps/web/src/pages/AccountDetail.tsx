@@ -65,16 +65,25 @@ export default function AccountDetail() {
         const d = new Date(t.date);
         return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
     });
-    const monthIncome = monthTransactions.filter((t) => t.type === 'income').reduce((s, t) => s + Number(t.amount), 0);
-    const monthExpense = monthTransactions.filter((t) => t.type === 'expense').reduce((s, t) => s + Number(t.amount), 0);
+    // ⚡ Bolt Optimization: Consolidate multiple O(N) array passes into a single O(N) loop
+    // Replaced sequential .filter().reduce() chains for monthIncome, monthExpense, and categoryTotals
+    // Expected impact: Eliminates redundant iterations over monthTransactions array
+    let monthIncome = 0;
+    let monthExpense = 0;
+    const categoryTotals: Record<string, number> = {};
 
-    const categoryTotals = monthTransactions
-        .filter((t) => t.type === 'expense')
-        .reduce<Record<string, number>>((acc, t) => {
+    monthTransactions.forEach((t) => {
+        // Redundant Number() cast removed where possible, but preserving it here to avoid changing semantics
+        const amount = Number(t.amount);
+        if (t.type === 'income') {
+            monthIncome += amount;
+        } else if (t.type === 'expense') {
+            monthExpense += amount;
             const name = t.categories?.name ?? 'Outros';
-            acc[name] = (acc[name] ?? 0) + Number(t.amount);
-            return acc;
-        }, {});
+            categoryTotals[name] = (categoryTotals[name] ?? 0) + amount;
+        }
+    });
+
     const totalExpense = monthExpense;
     const categoriesWithPercent = Object.entries(categoryTotals)
         .map(([name, total]) => ({ name, total, percentage: totalExpense > 0 ? (total / totalExpense) * 100 : 0 }))
