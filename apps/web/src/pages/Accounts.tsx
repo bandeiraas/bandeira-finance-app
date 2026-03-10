@@ -1,7 +1,9 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Plus, Loader2, Search, Filter, ChevronDown, Download, ChevronLeft, ChevronRight } from "lucide-react";
+import { cn } from "@lib/utils";
 import { useAccounts } from "../features/accounts/hooks/useAccounts";
+import { BalanceSummaryCard } from "../features/accounts/components/BalanceSummaryCard";
 import { useMonthlySummary, useTransactions } from "../features/transactions/hooks/useTransactions";
 import { formatCurrency } from "../shared/utils/formatCurrency";
 import { ACCOUNT_TYPE_LABELS } from "../shared/constants/accounts";
