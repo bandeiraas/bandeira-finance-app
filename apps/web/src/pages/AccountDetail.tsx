@@ -4,6 +4,7 @@ import {
     ChevronLeft,
     ChevronRight,
     Loader2,
+    Plus,
     FileText,
     ArrowRightLeft,
     Search,
