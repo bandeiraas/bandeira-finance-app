@@ -65,16 +65,23 @@ export default function AccountDetail() {
         const d = new Date(t.date);
         return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
     });
-    const monthIncome = monthTransactions.filter((t) => t.type === 'income').reduce((s, t) => s + Number(t.amount), 0);
-    const monthExpense = monthTransactions.filter((t) => t.type === 'expense').reduce((s, t) => s + Number(t.amount), 0);
+    // ⚡ Bolt Optimization: Consolidated multiple .filter().reduce() array passes into a single O(N) loop
+    // Expected impact: ~66% reduction in iterations over monthTransactions.
+    let monthIncome = 0;
+    let monthExpense = 0;
+    const categoryTotals: Record<string, number> = {};
 
-    const categoryTotals = monthTransactions
-        .filter((t) => t.type === 'expense')
-        .reduce<Record<string, number>>((acc, t) => {
+    for (const t of monthTransactions) {
+        const amount = Number(t.amount); // Database returns strings, cast to Number
+        if (t.type === 'income') {
+            monthIncome += amount;
+        } else if (t.type === 'expense') {
+            monthExpense += amount;
             const name = t.categories?.name ?? 'Outros';
-            acc[name] = (acc[name] ?? 0) + Number(t.amount);
-            return acc;
-        }, {});
+            categoryTotals[name] = (categoryTotals[name] ?? 0) + amount;
+        }
+    }
+
     const totalExpense = monthExpense;
     const categoriesWithPercent = Object.entries(categoryTotals)
         .map(([name, total]) => ({ name, total, percentage: totalExpense > 0 ? (total / totalExpense) * 100 : 0 }))
@@ -409,7 +416,7 @@ export default function AccountDetail() {
                                 className='block py-6 text-center text-slate-500 dark:text-slate-400 transition-colors font-medium hover:opacity-80'
                                 style={{ color: bankHex } as React.CSSProperties}
                             >
-                                <Plus size={18} />
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-plus"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
                                 Adicionar cartão
                             </Link>
                         )}
