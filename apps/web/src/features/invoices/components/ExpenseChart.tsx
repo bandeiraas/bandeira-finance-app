@@ -23,6 +23,14 @@ export function ExpenseChart({ summary, isLoading }: ExpenseChartProps) {
 
     const categories = summary?.expensesByCategory ?? [];
 
+    // ⚡ Bolt: Compute conic-gradient string in O(N) using reduce, avoiding O(N^2) slice().reduce() on every render.
+    const gradientString = categories.reduce((acc, c) => {
+        const nextSum = acc.sum + c.percentage;
+        acc.stops.push(`${getCategoryColor(c.categoryColor)} ${acc.sum}% ${nextSum}%`);
+        acc.sum = nextSum;
+        return acc;
+    }, { sum: 0, stops: [] as string[] }).stops.join(", ");
+
     return (
         <div className="glass-card p-5 rounded-2xl flex flex-col">
             <h3 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-4">
@@ -33,14 +41,7 @@ export function ExpenseChart({ summary, isLoading }: ExpenseChartProps) {
                     <div className="flex items-center justify-center flex-1 min-h-[180px]">
                         <div
                             className="relative w-40 h-40 rounded-full"
-                            style={{
-                                background: `conic-gradient(${categories
-                                    .map((c, i, arr) => {
-                                        const prev = arr.slice(0, i).reduce((sum, item) => sum + item.percentage, 0);
-                                        return `${getCategoryColor(c.categoryColor)} ${prev}% ${prev + c.percentage}%`;
-                                    })
-                                    .join(", ")})`,
-                            }}
+                            style={{ background: `conic-gradient(${gradientString})` }}
                         >
                             <div className="absolute inset-0 m-8 bg-slate-50 dark:bg-slate-900 rounded-full flex items-center justify-center shadow-inner">
                                 <div className="text-center">
