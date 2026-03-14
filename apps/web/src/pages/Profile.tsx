@@ -66,7 +66,10 @@ export default function Profile() {
                                 </div>
                             )}
                         </div>
-                        <button className="absolute bottom-2 right-2 p-2 bg-primary rounded-xl text-white shadow-lg hover:scale-110 transition-transform">
+                        <button
+                            className="absolute bottom-2 right-2 p-2 bg-primary rounded-xl text-white shadow-lg hover:scale-110 transition-transform"
+                            aria-label="Alterar foto de perfil"
+                        >
                             <Camera size={16} />
                         </button>
                         <input
