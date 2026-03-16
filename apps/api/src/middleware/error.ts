@@ -32,7 +32,19 @@ export function errorHandler(err: Error, c: Context) {
         const status = Math.min(599, Math.max(400, appErr.statusCode)) as 400 | 401 | 404 | 500 | 503
         return c.json({ error: appErr.code, message: err.message }, { status })
     }
-    console.error('[API Error]', err)
+
+    // Sanitize error object to prevent leaking sensitive credentials or PII in logs
+    const sanitizedError = err instanceof Error
+        ? {
+            name: err.name,
+            message: err.message,
+            stack: err.stack,
+            code: 'code' in err ? err.code : undefined,
+            statusCode: 'statusCode' in err ? err.statusCode : undefined
+        }
+        : { message: String(err) }
+
+    console.error('[API Error]', sanitizedError)
     const isDev = process.env.NODE_ENV !== 'production'
     return c.json(
         { error: 'InternalError', message: isDev ? (err instanceof Error ? err.message : String(err)) : 'Erro interno do servidor' },
