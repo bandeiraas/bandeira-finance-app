@@ -117,7 +117,19 @@ export default function EditProfile() {
                 )}
 
                 <div className="text-center mb-10 relative z-10">
-                    <div className="relative inline-block mb-4 group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
+                    <div
+                        className="relative inline-block mb-4 group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded-full"
+                        onClick={() => fileInputRef.current?.click()}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                fileInputRef.current?.click();
+                            }
+                        }}
+                        role="button"
+                        tabIndex={0}
+                        aria-label="Alterar foto de perfil"
+                    >
                         <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-white dark:border-slate-700 shadow-lg mx-auto bg-slate-200 dark:bg-slate-800">
                             {(profile?.avatar_url || user?.avatarUrl) ? (
                                 <img
