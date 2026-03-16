@@ -1,14 +1,14 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { Plus, Loader2, Eye, EyeOff, Search, Filter, ChevronDown, Download, ChevronLeft, ChevronRight, TrendingUp } from "lucide-react";
+import { Plus, Loader2, Search, Filter, ChevronDown, Download, ChevronLeft, ChevronRight } from "lucide-react";
 import { useAccounts } from "../features/accounts/hooks/useAccounts";
 import { useMonthlySummary, useTransactions } from "../features/transactions/hooks/useTransactions";
 import { formatCurrency } from "../shared/utils/formatCurrency";
 import { ACCOUNT_TYPE_LABELS } from "../shared/constants/accounts";
 import { BankIcon } from "../components/BankIcon";
 import { TransactionIcon } from "../components/TransactionIcon";
-
-const BAR_HEIGHTS = [30, 45, 40, 65, 55, 85, 95];
+import { BalanceSummaryCard } from "../features/accounts/components/BalanceSummaryCard";
+import { cn } from "../shared/utils/cn";
 
 export default function Accounts() {
     const [searchTerm, setSearchTerm] = useState("");
