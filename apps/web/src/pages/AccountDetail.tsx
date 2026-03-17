@@ -17,6 +17,7 @@ import {
     PiggyBank,
     LineChart,
     SmartphoneNfc,
+    Plus,
 } from 'lucide-react';
 import { useAccounts } from '../features/accounts/hooks/useAccounts';
 import { useTransactions } from '../features/transactions/hooks/useTransactions';
@@ -59,22 +60,34 @@ export default function AccountDetail() {
         return list.filter((t) => (t.description ?? '').toLowerCase().includes(q));
     }, [transactions, id, searchTerm]);
 
-    const currentMonth = new Date().getMonth();
-    const currentYear = new Date().getFullYear();
-    const monthTransactions = accountTransactions.filter((t) => {
-        const d = new Date(t.date);
-        return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
-    });
-    const monthIncome = monthTransactions.filter((t) => t.type === 'income').reduce((s, t) => s + Number(t.amount), 0);
-    const monthExpense = monthTransactions.filter((t) => t.type === 'expense').reduce((s, t) => s + Number(t.amount), 0);
+    // ⚡ Bolt: Consolidated multiple sequential filter/reduce array operations
+    // into a single useMemo pass to improve iteration performance from O(k*N) to O(N).
+    // The filter for current month transactions is also combined into the same loop
+    // to avoid inline array creations that would break memoization on every render.
+    // Expected impact: Reduces array iterations to process monthly transaction stats, improving CPU time.
+    const { monthIncome, monthExpense, categoryTotals } = useMemo(() => {
+        const currentMonth = new Date().getMonth();
+        const currentYear = new Date().getFullYear();
 
-    const categoryTotals = monthTransactions
-        .filter((t) => t.type === 'expense')
-        .reduce<Record<string, number>>((acc, t) => {
-            const name = t.categories?.name ?? 'Outros';
-            acc[name] = (acc[name] ?? 0) + Number(t.amount);
-            return acc;
-        }, {});
+        return accountTransactions.reduce(
+            (acc, t) => {
+                const d = new Date(t.date);
+                if (d.getMonth() === currentMonth && d.getFullYear() === currentYear) {
+                    const amount = Number(t.amount);
+                    if (t.type === 'income') {
+                        acc.monthIncome += amount;
+                    } else if (t.type === 'expense') {
+                        acc.monthExpense += amount;
+                        const name = t.categories?.name ?? 'Outros';
+                        acc.categoryTotals[name] = (acc.categoryTotals[name] ?? 0) + amount;
+                    }
+                }
+                return acc;
+            },
+            { monthIncome: 0, monthExpense: 0, categoryTotals: {} as Record<string, number> }
+        );
+    }, [accountTransactions]);
+
     const totalExpense = monthExpense;
     const categoriesWithPercent = Object.entries(categoryTotals)
         .map(([name, total]) => ({ name, total, percentage: totalExpense > 0 ? (total / totalExpense) * 100 : 0 }))
