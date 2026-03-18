@@ -5,8 +5,10 @@ import { useAccounts } from "../features/accounts/hooks/useAccounts";
 import { useMonthlySummary, useTransactions } from "../features/transactions/hooks/useTransactions";
 import { formatCurrency } from "../shared/utils/formatCurrency";
 import { ACCOUNT_TYPE_LABELS } from "../shared/constants/accounts";
-import { BankIcon } from "../components/BankIcon";
-import { TransactionIcon } from "../components/TransactionIcon";
+import { BankIcon } from "../features/accounts/components/BankIcon";
+import { TransactionIcon } from "../features/accounts/components/TransactionIcon";
+import { BalanceSummaryCard } from "../features/accounts/components/BalanceSummaryCard";
+import { cn } from "../shared/utils/cn";
 
 export default function Accounts() {
     const [searchTerm, setSearchTerm] = useState("");
