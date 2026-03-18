@@ -1,0 +1,3 @@
+## 2024-05-28 - ARIA Labels for Icon-Only Buttons
+**Learning:** Icon-only buttons (like pagination controls, download buttons, and copy buttons) are frequently missing `aria-label`s, making them inaccessible to screen readers. It's important to systematically review all buttons that only contain an icon (e.g. `<Download size={20} />`) and ensure they have descriptive `aria-label`s in the application's localized language (Portuguese in this case).
+**Action:** When reviewing or creating new UI components, actively look for interactive elements that lack text content and mandate the inclusion of `aria-label`s or visually hidden text to ensure accessibility compliance.

@@ -95,7 +95,7 @@ export default function EditProfile() {
         <div className="max-w-3xl mx-auto space-y-8 animate-fade-in-up">
             {/* Header / Back Link */}
             <div className="flex items-center gap-4">
-                <Link to="/profile" className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors text-slate-500">
+                <Link to="/profile" aria-label="Voltar para o perfil" className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors text-slate-500">
                     <ChevronLeft />
                 </Link>
                 <div>
