@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Plus, Minus, FileText, ChevronLeft, ChevronRight, Search, Download, Trash2, ArrowDownRight, ShoppingBag, Loader2, TrendingUp, TrendingDown } from "lucide-react";
 import { Link } from "react-router-dom";
 import { cn } from "@lib/utils";
@@ -32,12 +32,15 @@ export default function Transactions() {
     };
 
     // Client-side filtering
-    const filteredTransactions = transactions?.filter(t => {
-        const matchesSearch = (t.description || "").toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesType = selectedType === 'all' || t.type === selectedType;
-        // Optionally filter by month if needed, but for now showing all fetched
-        return matchesSearch && matchesType;
-    });
+    const filteredTransactions = useMemo(() => {
+        if (!transactions) return undefined;
+        const lowerSearchTerm = searchTerm.toLowerCase();
+        return transactions.filter((t) => {
+            const matchesType = selectedType === 'all' || t.type === selectedType;
+            if (!matchesType) return false;
+            return (t.description || "").toLowerCase().includes(lowerSearchTerm);
+        });
+    }, [transactions, searchTerm, selectedType]);
 
     const getIconStyles = (type: string) => {
         if (type === 'income') return "bg-emerald-500/10 text-emerald-500";
