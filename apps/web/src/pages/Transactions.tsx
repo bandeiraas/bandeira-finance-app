@@ -168,6 +168,7 @@ export default function Transactions() {
                                         onClick={() => handleDelete(t.id)}
                                         className="text-slate-300 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
                                         title="Excluir"
+                                        aria-label="Excluir transação"
                                     >
                                         <Trash2 size={18} />
                                     </button>
