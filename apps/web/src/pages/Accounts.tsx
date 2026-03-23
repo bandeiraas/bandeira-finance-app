@@ -1,14 +1,14 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { Plus, Loader2, Eye, EyeOff, Search, Filter, ChevronDown, Download, ChevronLeft, ChevronRight, TrendingUp } from "lucide-react";
+import { Plus, Loader2, Search, Filter, ChevronDown, Download, ChevronLeft, ChevronRight } from "lucide-react";
 import { useAccounts } from "../features/accounts/hooks/useAccounts";
 import { useMonthlySummary, useTransactions } from "../features/transactions/hooks/useTransactions";
 import { formatCurrency } from "../shared/utils/formatCurrency";
 import { ACCOUNT_TYPE_LABELS } from "../shared/constants/accounts";
 import { BankIcon } from "../components/BankIcon";
 import { TransactionIcon } from "../components/TransactionIcon";
-
-const BAR_HEIGHTS = [30, 45, 40, 65, 55, 85, 95];
+import { cn } from "../shared/utils/cn";
+import { BalanceSummaryCard } from "../features/accounts/components/BalanceSummaryCard";
 
 export default function Accounts() {
     const [searchTerm, setSearchTerm] = useState("");
@@ -219,6 +219,7 @@ export default function Accounts() {
                                 <select
                                     value={period}
                                     onChange={(e) => setPeriod(e.target.value)}
+                                    aria-label="Filtrar por período"
                                     className="appearance-none bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium pr-10 pl-4 py-2 text-slate-800 dark:text-white focus:ring-2 focus:ring-primary focus:border-primary shrink-0 shadow-sm cursor-pointer outline-none"
                                 >
                                     <option value="7">Últimos 7 dias</option>
@@ -231,7 +232,7 @@ export default function Accounts() {
                                     size={20}
                                 />
                             </div>
-                            <button className="w-10 h-10 flex items-center justify-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shrink-0 shadow-sm">
+                            <button aria-label="Exportar transações" className="w-10 h-10 flex items-center justify-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shrink-0 shadow-sm">
                                 <Download size={20} />
                             </button>
                         </div>
@@ -309,6 +310,7 @@ export default function Accounts() {
                                 <button
                                     onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                                     disabled={currentPage <= 1}
+                                    aria-label="Página anterior"
                                     className="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 flex items-center justify-center hover:bg-white dark:hover:bg-slate-800 disabled:opacity-50 transition-colors"
                                 >
                                     <ChevronLeft size={16} />
@@ -319,6 +321,7 @@ export default function Accounts() {
                                 <button
                                     onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                                     disabled={currentPage >= totalPages}
+                                    aria-label="Próxima página"
                                     className="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 flex items-center justify-center hover:bg-white dark:hover:bg-slate-800 disabled:opacity-50 transition-colors"
                                 >
                                     <ChevronRight size={16} />

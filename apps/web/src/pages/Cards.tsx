@@ -70,14 +70,16 @@ export default function Cards() {
                                             className="absolute inset-0 w-full h-full"
                                         >
                                             {isSelected && (
-                                                <div
+                                                <button
+                                                    type="button"
+                                                    aria-label="Excluir cartão"
                                                     className="absolute bottom-5 right-5 z-20"
                                                     onClick={(e) => handleDelete(e, card.id)}
                                                 >
                                                     <div className="p-1.5 bg-red-500/20 hover:bg-red-500 text-red-100 rounded-full transition-colors cursor-pointer">
                                                         <Trash2 size={12} />
                                                     </div>
-                                                </div>
+                                                </button>
                                             )}
                                         </CardPreview>
                                     </button>
@@ -148,7 +150,7 @@ export default function Cards() {
                             <div className="flex flex-col gap-2">
                                 <div className="glass-card flex items-center justify-between px-4 py-2 rounded-xl w-full md:w-64 border border-white/10 bg-slate-800/50">
                                     <span className="font-mono text-lg font-medium text-white tracking-wider">•••• {selectedCard.last_four}</span>
-                                    <button onClick={() => copyToClipboard(selectedCard.last_four)} className="p-2 text-primary hover:bg-primary/20 rounded-lg transition-colors">
+                                    <button aria-label="Copiar últimos quatro dígitos do cartão" onClick={() => copyToClipboard(selectedCard.last_four)} className="p-2 text-primary hover:bg-primary/20 rounded-lg transition-colors">
                                         <Copy size={16} />
                                     </button>
                                 </div>
