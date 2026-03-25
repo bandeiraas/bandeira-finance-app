@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import {
-    ChevronLeft,
+    ChevronLeft, Plus,
     ChevronRight,
     Loader2,
     FileText,
