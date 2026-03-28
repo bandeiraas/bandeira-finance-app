@@ -32,7 +32,26 @@ export function errorHandler(err: Error, c: Context) {
         const status = Math.min(599, Math.max(400, appErr.statusCode)) as 400 | 401 | 404 | 500 | 503
         return c.json({ error: appErr.code, message: err.message }, { status })
     }
-    console.error('[API Error]', err)
+
+    // Security: Whitelist error properties to prevent leaking sensitive data or PII
+    const safeError: Record<string, unknown> = {}
+    if (err && typeof err === 'object') {
+        const safeProps = ['name', 'message', 'code', 'statusCode']
+        for (const prop of safeProps) {
+            if (prop in err) {
+                safeError[prop] = (err as unknown as Record<string, unknown>)[prop]
+            }
+        }
+    } else {
+        safeError.message = String(err)
+    }
+
+    if (err && typeof err === 'object' && 'stack' in err) {
+        console.error('[API Error]', safeError, '\nStack:', (err as unknown as Record<string, unknown>).stack)
+    } else {
+        console.error('[API Error]', safeError)
+    }
+
     const isDev = process.env.NODE_ENV !== 'production'
     return c.json(
         { error: 'InternalError', message: isDev ? (err instanceof Error ? err.message : String(err)) : 'Erro interno do servidor' },
