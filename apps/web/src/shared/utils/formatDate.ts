@@ -1,13 +1,21 @@
+// Cache Intl instances to prevent expensive instantiation during loops and renders
+const dateFormatter = new Intl.DateTimeFormat('pt-BR', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+})
+
+const timeFormatter = new Intl.DateTimeFormat('pt-BR', {
+    hour: '2-digit',
+    minute: '2-digit',
+})
+
 /**
  * Format a date string to a localized PT-BR format.
  */
 export function formatDate(dateString: string): string {
     const date = new Date(dateString)
-    return new Intl.DateTimeFormat('pt-BR', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-    }).format(date)
+    return dateFormatter.format(date)
 }
 
 /**
@@ -19,10 +27,7 @@ export function formatRelativeDate(dateString: string): string {
     const diffMs = now.getTime() - date.getTime()
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
 
-    const time = new Intl.DateTimeFormat('pt-BR', {
-        hour: '2-digit',
-        minute: '2-digit',
-    }).format(date)
+    const time = timeFormatter.format(date)
 
     if (diffDays === 0) return `Hoje, ${time}`
     if (diffDays === 1) return `Ontem, ${time}`
