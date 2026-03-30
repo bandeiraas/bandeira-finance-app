@@ -1,4 +1,5 @@
 import { Hono } from 'hono'
+import { bodyLimit } from 'hono/body-limit'
 import type { Env } from '../middleware/auth'
 import { getServices } from '../lib/requestContext'
 import { validate, updateProfileSchema } from '@bandeira/shared'
@@ -24,7 +25,13 @@ profileRoutes.patch('/', async (c) => {
     return c.json(result.data)
 })
 
-profileRoutes.post('/avatar', async (c) => {
+profileRoutes.post(
+    '/avatar',
+    bodyLimit({
+        maxSize: 5 * 1024 * 1024, // 5MB limit
+        onError: (c) => c.json({ error: 'PayloadTooLarge', message: 'O arquivo excede o limite de 5MB.' }, 413),
+    }),
+    async (c) => {
     const { userId, profileService } = getServices(c)
     const formData = await c.req.formData()
     const file = formData.get('file') as File | null
