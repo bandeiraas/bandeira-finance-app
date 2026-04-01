@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import {
+    Plus,
     ChevronLeft,
     ChevronRight,
     Loader2,
@@ -124,6 +125,7 @@ export default function AccountDetail() {
                     onClick={() => navigate(-1)}
                     className='flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-primary transition-colors'
                 >
+    Plus,
                     <ChevronLeft size={20} />
                     Voltar
                 </button>
@@ -149,6 +151,7 @@ export default function AccountDetail() {
                         onClick={() => navigate(-1)}
                         className='w-10 h-10 rounded-full glass-card flex items-center justify-center text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 transition-colors'
                     >
+    Plus,
                         <ChevronLeft size={20} />
                     </button>
                     <BankIcon name={account.bank_name} size='lg' bankHex={bankHex} />

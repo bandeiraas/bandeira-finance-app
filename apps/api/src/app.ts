@@ -1,5 +1,6 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
+import { secureHeaders } from 'hono/secure-headers'
 import { logger } from 'hono/logger'
 import { rateLimiter } from 'hono-rate-limiter'
 import { getConnInfo } from '@hono/node-server/conninfo'
@@ -14,6 +15,7 @@ import { invoicesRoutes } from './routes/invoices'
 import { profileRoutes } from './routes/profile'
 
 export const app = new Hono()
+    .use('*', secureHeaders())
     .use('*', logger())
     .use(
         '/api/*',
