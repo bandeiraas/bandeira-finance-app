@@ -93,7 +93,7 @@ export default function Layout() {
                 {/* Mobile Header (Visible only on small screens) */}
                 <header className="sm:hidden flex items-center justify-between p-4 glassmorphism m-4 rounded-2xl z-20">
                     <Logo size="sm" className="shrink-0" />
-                    <button onClick={toggleTheme} className="text-slate-500 dark:text-slate-400 hover:bg-white/40 dark:hover:bg-slate-800/40 p-2 rounded-lg transition-all">
+                    <button onClick={toggleTheme} aria-label={isDark ? "Mudar para modo claro" : "Mudar para modo escuro"} className="text-slate-500 dark:text-slate-400 hover:bg-white/40 dark:hover:bg-slate-800/40 p-2 rounded-lg transition-all">
                         {isDark ? <Sun size={20} /> : <Moon size={20} />}
                     </button>
                 </header>
