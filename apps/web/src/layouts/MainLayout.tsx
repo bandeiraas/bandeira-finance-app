@@ -73,6 +73,7 @@ export default function Layout() {
                 <div className="mt-auto p-6 border-t border-slate-200 dark:border-white/5 space-y-2">
                     <button
                         onClick={toggleTheme}
+                        aria-label="Mudar Tema"
                         className="flex items-center gap-3 p-3 w-full text-slate-500 dark:text-slate-400 hover:bg-white/40 dark:hover:bg-slate-800/40 rounded-xl transition-all"
                     >
                         {isDark ? <Sun size={22} /> : <Moon size={22} />}
@@ -93,7 +94,7 @@ export default function Layout() {
                 {/* Mobile Header (Visible only on small screens) */}
                 <header className="sm:hidden flex items-center justify-between p-4 glassmorphism m-4 rounded-2xl z-20">
                     <Logo size="sm" className="shrink-0" />
-                    <button onClick={toggleTheme} className="text-slate-500 dark:text-slate-400 hover:bg-white/40 dark:hover:bg-slate-800/40 p-2 rounded-lg transition-all">
+                    <button onClick={toggleTheme} aria-label="Mudar Tema" className="text-slate-500 dark:text-slate-400 hover:bg-white/40 dark:hover:bg-slate-800/40 p-2 rounded-lg transition-all">
                         {isDark ? <Sun size={20} /> : <Moon size={20} />}
                     </button>
                 </header>
