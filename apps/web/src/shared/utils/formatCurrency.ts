@@ -1,23 +1,19 @@
-const currencyFormatter = new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
-})
-
-const currencyCompactFormatter = new Intl.NumberFormat('pt-BR', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-})
-
 /**
  * Format a number as BRL currency.
  */
 export function formatCurrency(value: number): string {
-    return currencyFormatter.format(value)
+    return new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL',
+    }).format(value)
 }
 
 /**
  * Format a number as BRL without the "R$" prefix.
  */
 export function formatCurrencyCompact(value: number): string {
-    return currencyCompactFormatter.format(value)
+    return new Intl.NumberFormat('pt-BR', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    }).format(value)
 }
