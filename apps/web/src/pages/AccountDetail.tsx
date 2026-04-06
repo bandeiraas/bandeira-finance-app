@@ -432,10 +432,10 @@ export default function AccountDetail() {
                                     style={{ ['--tw-ring-color' as string]: bankHex }}
                                 />
                             </div>
-                            <button className='p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors'>
+                            <button className='p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors' aria-label="Filtrar transações">
                                 <Filter size={18} />
                             </button>
-                            <button className='p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors'>
+                            <button className='p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors' aria-label="Exportar transações">
                                 <Download size={18} />
                             </button>
                         </div>
