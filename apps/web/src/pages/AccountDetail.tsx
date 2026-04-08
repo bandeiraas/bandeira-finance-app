@@ -17,6 +17,7 @@ import {
     PiggyBank,
     LineChart,
     SmartphoneNfc,
+    Plus,
 } from 'lucide-react';
 import { useAccounts } from '../features/accounts/hooks/useAccounts';
 import { useTransactions } from '../features/transactions/hooks/useTransactions';
