@@ -231,7 +231,7 @@ export default function Accounts() {
                                     size={20}
                                 />
                             </div>
-                            <button className="w-10 h-10 flex items-center justify-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shrink-0 shadow-sm">
+                            <button aria-label="Baixar relatórios" className="w-10 h-10 flex items-center justify-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shrink-0 shadow-sm">
                                 <Download size={20} />
                             </button>
                         </div>
