@@ -13,6 +13,7 @@ import {
     Droplets,
     Building2,
     Wifi,
+    Plus,
     TrendingUp,
     PiggyBank,
     LineChart,
