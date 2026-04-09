@@ -32,7 +32,13 @@ export class SupabaseProfileRepository implements IProfileRepository {
     }
 
     async uploadAvatar(userId: string, file: File): Promise<string> {
-        const ext = file.name.split('.').pop()
+        // Derive extension from verified MIME type rather than user-supplied file name to prevent path traversal
+        const mimeTypeToExt: Record<string, string> = {
+            'image/jpeg': 'jpeg',
+            'image/png': 'png',
+            'image/webp': 'webp'
+        }
+        const ext = mimeTypeToExt[file.type] || 'bin'
         const path = `avatars/${userId}/${Date.now()}.${ext}`
 
         const { error: uploadError } = await this.client.storage
