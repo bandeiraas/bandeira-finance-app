@@ -10,8 +10,15 @@ const ACCOUNT_TYPE_MAP: Record<string, string> = {
     'Carteira': 'carteira',
 }
 
+const CANONICAL_TYPES = new Set(Object.values(ACCOUNT_TYPE_MAP))
+
 function normalizeAccountType(label: string): string {
-    return ACCOUNT_TYPE_MAP[label] ?? label
+    // Security: Validate against a strict allowlist to prevent unvalidated strings
+    // from entering the system. Rely on Zod schema to reject the empty string later.
+    if (CANONICAL_TYPES.has(label)) {
+        return label
+    }
+    return ACCOUNT_TYPE_MAP[label] ?? ''
 }
 
 export const accountsRoutes = new Hono<Env>()
