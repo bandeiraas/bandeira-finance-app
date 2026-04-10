@@ -10,6 +10,7 @@ import {
     Filter,
     Download,
     Zap,
+    Plus,
     Droplets,
     Building2,
     Wifi,
