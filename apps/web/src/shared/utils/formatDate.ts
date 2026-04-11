@@ -11,12 +11,30 @@ const timeFormatter = new Intl.DateTimeFormat('pt-BR', {
 })
 
 /**
+ * Cache Intl.DateTimeFormat instances for performance.
+ * Instantiating these objects is expensive and causes bottlenecks when called in loops.
+ */
+const dateFormatter = new Intl.DateTimeFormat('pt-BR', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+})
+
+/**
  * Format a date string to a localized PT-BR format.
  */
 export function formatDate(dateString: string): string {
     const date = new Date(dateString)
     return dateFormatter.format(date)
 }
+
+/**
+ * Cache time Intl.DateTimeFormat instance for performance.
+ */
+const timeFormatter = new Intl.DateTimeFormat('pt-BR', {
+    hour: '2-digit',
+    minute: '2-digit',
+})
 
 /**
  * Format a date string as relative time (e.g., "Hoje, 14:20", "Ontem").
