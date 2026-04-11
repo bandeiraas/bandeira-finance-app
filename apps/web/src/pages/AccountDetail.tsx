@@ -1,9 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import {
-    Plus,
     ChevronLeft,
-    Plus,
     ChevronRight,
     Loader2,
     FileText,
@@ -12,7 +10,6 @@ import {
     Filter,
     Download,
     Zap,
-    Plus,
     Droplets,
     Building2,
     Wifi,
@@ -20,7 +17,6 @@ import {
     PiggyBank,
     LineChart,
     SmartphoneNfc,
-    Plus,
 } from 'lucide-react';
 import { useAccounts } from '../features/accounts/hooks/useAccounts';
 import { useTransactions } from '../features/transactions/hooks/useTransactions';

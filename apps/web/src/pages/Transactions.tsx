@@ -53,7 +53,7 @@ export default function Transactions() {
                     <p className="text-slate-500 dark:text-slate-400 text-sm">Gerencie suas entradas e saídas</p>
                 </div>
                 <div className="flex items-center gap-3">
-                    <button className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors" aria-label="Exportar transações">
+                    <button className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
                         <Download size={20} />
                     </button>
                     <Link to="/new-income" className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-bold transition-colors flex items-center gap-2 text-sm shadow-lg shadow-emerald-500/20">
@@ -70,7 +70,7 @@ export default function Transactions() {
             {/* Month Navigation & Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="md:col-span-1 flex items-center justify-between bg-white dark:bg-slate-900/50 p-4 rounded-2xl border border-slate-200 dark:border-slate-800">
-                    <button onClick={handlePrevMonth} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors" aria-label="Mês anterior">
+                    <button onClick={handlePrevMonth} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
                         <ChevronLeft size={20} className="text-slate-400" />
                     </button>
                     <div className="text-center">
@@ -79,7 +79,7 @@ export default function Transactions() {
                             {currentDate.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}
                         </p>
                     </div>
-                    <button onClick={handleNextMonth} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors" aria-label="Próximo mês">
+                    <button onClick={handleNextMonth} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
                         <ChevronRight size={20} className="text-slate-400" />
                     </button>
                 </div>
@@ -168,7 +168,6 @@ export default function Transactions() {
                                         onClick={() => handleDelete(t.id)}
                                         className="text-slate-300 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
                                         title="Excluir"
-                                        aria-label="Excluir transação"
                                     >
                                         <Trash2 size={18} />
                                     </button>
