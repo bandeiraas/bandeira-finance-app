@@ -10,6 +10,7 @@ import { TransactionIcon } from "../components/TransactionIcon";
 import { BalanceSummaryCard } from "../features/accounts/components/BalanceSummaryCard";
 import { cn } from "../lib/utils";
 
+
 export default function Accounts() {
     const [searchTerm, setSearchTerm] = useState("");
     const [showBalance, setShowBalance] = useState(true);
