@@ -3,7 +3,6 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import {
     Plus,
     ChevronLeft,
-    Plus,
     ChevronRight,
     Loader2,
     FileText,
@@ -12,7 +11,6 @@ import {
     Filter,
     Download,
     Zap,
-    Plus,
     Droplets,
     Building2,
     Wifi,
@@ -20,7 +18,6 @@ import {
     PiggyBank,
     LineChart,
     SmartphoneNfc,
-    Plus,
 } from 'lucide-react';
 import { useAccounts } from '../features/accounts/hooks/useAccounts';
 import { useTransactions } from '../features/transactions/hooks/useTransactions';
@@ -151,6 +148,7 @@ export default function AccountDetail() {
                 <div className='flex items-center gap-4'>
                     <button
                         onClick={() => navigate(-1)}
+                        aria-label='Voltar'
                         className='w-10 h-10 rounded-full glass-card flex items-center justify-center text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 transition-colors'
                     >
                         <ChevronLeft size={20} />
@@ -436,10 +434,10 @@ export default function AccountDetail() {
                                     style={{ ['--tw-ring-color' as string]: bankHex }}
                                 />
                             </div>
-                            <button className='p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors'>
+                            <button aria-label='Filtrar transações' className='p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors'>
                                 <Filter size={18} />
                             </button>
-                            <button className='p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors'>
+                            <button aria-label='Baixar transações' className='p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors'>
                                 <Download size={18} />
                             </button>
                         </div>
