@@ -26,9 +26,9 @@ alertsRoutes.post('/mark-all-read', async (c) => {
 })
 
 alertsRoutes.patch('/:id/read', async (c) => {
-    const { alertService } = getServices(c)
+    const { userId, alertService } = getServices(c)
     const id = c.req.param('id')
-    const result = await alertService.markAsRead(id)
+    const result = await alertService.markAsRead(id, userId)
     if (!result.success) throw result.error
     return c.body(null, 204)
 })
