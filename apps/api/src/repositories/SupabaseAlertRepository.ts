@@ -30,11 +30,12 @@ export class SupabaseAlertRepository implements IAlertRepository {
         return count ?? 0
     }
 
-    async markAsRead(id: string): Promise<void> {
+    async markAsRead(id: string, userId: string): Promise<void> {
         const { error } = await this.client
             .from('alerts')
             .update({ is_read: true })
             .eq('id', id)
+            .eq('user_id', userId)
 
         if (error) throw SupabaseErrorMapper.toAppError(error, 'Alert')
     }
