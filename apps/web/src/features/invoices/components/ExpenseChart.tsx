@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { Loader2 } from "lucide-react";
 import { getCategoryColor } from "../utils";
 import type { DashboardSummary } from "@bandeira/shared";
@@ -8,6 +9,24 @@ interface ExpenseChartProps {
 }
 
 export function ExpenseChart({ summary, isLoading }: ExpenseChartProps) {
+    const categories = useMemo(() => summary?.expensesByCategory ?? [], [summary]);
+
+    const gradientBackground = useMemo(() => {
+        if (categories.length === 0) return '';
+
+        const stops: string[] = [];
+        let runningTotal = 0;
+
+        for (const cat of categories) {
+            const start = runningTotal;
+            const end = start + cat.percentage;
+            stops.push(`${getCategoryColor(cat.categoryColor)} ${start}% ${end}%`);
+            runningTotal = end;
+        }
+
+        return `conic-gradient(${stops.join(", ")})`;
+    }, [categories]);
+
     if (isLoading) {
         return (
             <div className="glass-card p-5 rounded-2xl flex flex-col">
@@ -21,8 +40,6 @@ export function ExpenseChart({ summary, isLoading }: ExpenseChartProps) {
         );
     }
 
-    const categories = summary?.expensesByCategory ?? [];
-
     return (
         <div className="glass-card p-5 rounded-2xl flex flex-col">
             <h3 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-4">
@@ -33,14 +50,7 @@ export function ExpenseChart({ summary, isLoading }: ExpenseChartProps) {
                     <div className="flex items-center justify-center flex-1 min-h-[180px]">
                         <div
                             className="relative w-40 h-40 rounded-full"
-                            style={{
-                                background: `conic-gradient(${categories
-                                    .map((c, i, arr) => {
-                                        const prev = arr.slice(0, i).reduce((sum, item) => sum + item.percentage, 0);
-                                        return `${getCategoryColor(c.categoryColor)} ${prev}% ${prev + c.percentage}%`;
-                                    })
-                                    .join(", ")})`,
-                            }}
+                            style={{ background: gradientBackground }}
                         >
                             <div className="absolute inset-0 m-8 bg-slate-50 dark:bg-slate-900 rounded-full flex items-center justify-center shadow-inner">
                                 <div className="text-center">
