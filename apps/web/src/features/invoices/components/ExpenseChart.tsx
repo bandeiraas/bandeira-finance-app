@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { Loader2 } from "lucide-react";
 import { getCategoryColor } from "../utils";
 import type { DashboardSummary } from "@bandeira/shared";
@@ -8,6 +9,22 @@ interface ExpenseChartProps {
 }
 
 export function ExpenseChart({ summary, isLoading }: ExpenseChartProps) {
+    // Memoize the array to ensure stable dependency for useMemo
+    const categories = useMemo(() => summary?.expensesByCategory ?? [], [summary?.expensesByCategory]);
+
+    // Optimize conic gradient generation from O(N^2) to O(N) and memoize it
+    const conicGradientString = useMemo(() => {
+        let currentPercentage = 0;
+        const colorStops: string[] = [];
+        for (const c of categories) {
+            const start = currentPercentage;
+            const end = start + c.percentage;
+            currentPercentage = end;
+            colorStops.push(`${getCategoryColor(c.categoryColor)} ${start}% ${end}%`);
+        }
+        return `conic-gradient(${colorStops.join(", ")})`;
+    }, [categories]);
+
     if (isLoading) {
         return (
             <div className="glass-card p-5 rounded-2xl flex flex-col">
@@ -21,8 +38,6 @@ export function ExpenseChart({ summary, isLoading }: ExpenseChartProps) {
         );
     }
 
-    const categories = summary?.expensesByCategory ?? [];
-
     return (
         <div className="glass-card p-5 rounded-2xl flex flex-col">
             <h3 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-4">
@@ -33,14 +48,7 @@ export function ExpenseChart({ summary, isLoading }: ExpenseChartProps) {
                     <div className="flex items-center justify-center flex-1 min-h-[180px]">
                         <div
                             className="relative w-40 h-40 rounded-full"
-                            style={{
-                                background: `conic-gradient(${categories
-                                    .map((c, i, arr) => {
-                                        const prev = arr.slice(0, i).reduce((sum, item) => sum + item.percentage, 0);
-                                        return `${getCategoryColor(c.categoryColor)} ${prev}% ${prev + c.percentage}%`;
-                                    })
-                                    .join(", ")})`,
-                            }}
+                            style={{ background: conicGradientString }}
                         >
                             <div className="absolute inset-0 m-8 bg-slate-50 dark:bg-slate-900 rounded-full flex items-center justify-center shadow-inner">
                                 <div className="text-center">
