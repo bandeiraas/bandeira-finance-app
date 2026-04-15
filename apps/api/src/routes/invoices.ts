@@ -20,9 +20,9 @@ invoicesRoutes.get('/card/:cardId', async (c) => {
 })
 
 invoicesRoutes.patch('/:id/paid', async (c) => {
-    const { invoiceService } = getServices(c)
+    const { userId, invoiceService } = getServices(c)
     const id = c.req.param('id')
-    const result = await invoiceService.markAsPaid(id)
+    const result = await invoiceService.markAsPaid(id, userId)
     if (!result.success) throw result.error
     return c.json(result.data)
 })

@@ -30,10 +30,11 @@ export class SupabaseInvoiceRepository implements IInvoiceRepository {
         return data
     }
 
-    async updateStatus(id: string, status: string): Promise<Invoice> {
+    async updateStatus(id: string, userId: string, status: string): Promise<Invoice> {
         const { data, error } = await this.client
             .from('invoices')
             .update({ status })
+            .eq('user_id', userId)
             .eq('id', id)
             .select()
             .single()
