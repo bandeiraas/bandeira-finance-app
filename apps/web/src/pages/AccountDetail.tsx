@@ -63,11 +63,10 @@ export default function AccountDetail() {
         return list.filter((t) => (t.description ?? '').toLowerCase().includes(q));
     }, [transactions, id, searchTerm]);
 
-    const { monthTransactions, monthIncome, monthExpense, categoryTotals } = useMemo(() => {
+    const { monthIncome, monthExpense, categoryTotals } = useMemo(() => {
         const currentMonth = new Date().getMonth();
         const currentYear = new Date().getFullYear();
 
-        const transactions = [];
         let income = 0;
         let expense = 0;
         const catTotals: Record<string, number> = {};
@@ -75,7 +74,6 @@ export default function AccountDetail() {
         for (const t of accountTransactions) {
             const d = new Date(t.date);
             if (d.getMonth() === currentMonth && d.getFullYear() === currentYear) {
-                transactions.push(t);
                 const amount = Number(t.amount);
                 if (t.type === 'income') {
                     income += amount;
@@ -88,7 +86,6 @@ export default function AccountDetail() {
         }
 
         return {
-            monthTransactions: transactions,
             monthIncome: income,
             monthExpense: expense,
             categoryTotals: catTotals,
