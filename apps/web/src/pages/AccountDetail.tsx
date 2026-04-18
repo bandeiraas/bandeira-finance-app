@@ -3,7 +3,6 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import {
     Plus,
     ChevronLeft,
-    Plus,
     ChevronRight,
     Loader2,
     FileText,
@@ -12,7 +11,6 @@ import {
     Filter,
     Download,
     Zap,
-    Plus,
     Droplets,
     Building2,
     Wifi,
@@ -20,7 +18,6 @@ import {
     PiggyBank,
     LineChart,
     SmartphoneNfc,
-    Plus,
 } from 'lucide-react';
 import { useAccounts } from '../features/accounts/hooks/useAccounts';
 import { useTransactions } from '../features/transactions/hooks/useTransactions';
@@ -63,27 +60,42 @@ export default function AccountDetail() {
         return list.filter((t) => (t.description ?? '').toLowerCase().includes(q));
     }, [transactions, id, searchTerm]);
 
-    const currentMonth = new Date().getMonth();
-    const currentYear = new Date().getFullYear();
-    const monthTransactions = accountTransactions.filter((t) => {
-        const d = new Date(t.date);
-        return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
-    });
-    const monthIncome = monthTransactions.filter((t) => t.type === 'income').reduce((s, t) => s + Number(t.amount), 0);
-    const monthExpense = monthTransactions.filter((t) => t.type === 'expense').reduce((s, t) => s + Number(t.amount), 0);
+    const { monthIncome, monthExpense, categoryTotals } = useMemo(() => {
+        const currentMonth = new Date().getMonth();
+        const currentYear = new Date().getFullYear();
 
-    const categoryTotals = monthTransactions
-        .filter((t) => t.type === 'expense')
-        .reduce<Record<string, number>>((acc, t) => {
-            const name = t.categories?.name ?? 'Outros';
-            acc[name] = (acc[name] ?? 0) + Number(t.amount);
-            return acc;
-        }, {});
+        let income = 0;
+        let expense = 0;
+        const catTotals: Record<string, number> = {};
+
+        for (const t of accountTransactions) {
+            const d = new Date(t.date);
+            if (d.getMonth() === currentMonth && d.getFullYear() === currentYear) {
+                const amount = Number(t.amount);
+                if (t.type === 'income') {
+                    income += amount;
+                } else if (t.type === 'expense') {
+                    expense += amount;
+                    const name = t.categories?.name ?? 'Outros';
+                    catTotals[name] = (catTotals[name] ?? 0) + amount;
+                }
+            }
+        }
+
+        return {
+            monthIncome: income,
+            monthExpense: expense,
+            categoryTotals: catTotals,
+        };
+    }, [accountTransactions]);
+
     const totalExpense = monthExpense;
-    const categoriesWithPercent = Object.entries(categoryTotals)
-        .map(([name, total]) => ({ name, total, percentage: totalExpense > 0 ? (total / totalExpense) * 100 : 0 }))
-        .sort((a, b) => b.percentage - a.percentage)
-        .slice(0, 3);
+    const categoriesWithPercent = useMemo(() => {
+        return Object.entries(categoryTotals)
+            .map(([name, total]) => ({ name, total, percentage: totalExpense > 0 ? (total / totalExpense) * 100 : 0 }))
+            .sort((a, b) => b.percentage - a.percentage)
+            .slice(0, 3);
+    }, [categoryTotals, totalExpense]);
 
     const primaryCard = cards?.find((c) => c.account_id === id);
 
