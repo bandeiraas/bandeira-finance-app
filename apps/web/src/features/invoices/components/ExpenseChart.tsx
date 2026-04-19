@@ -9,8 +9,11 @@ interface ExpenseChartProps {
 }
 
 export function ExpenseChart({ summary, isLoading }: ExpenseChartProps) {
+    // Bolt: Memoize the categories array to prevent reference changes across renders
     const categories = useMemo(() => summary?.expensesByCategory ?? [], [summary?.expensesByCategory]);
 
+    // Bolt: Memoize the expensive conic-gradient calculation to prevent recalculations on every render.
+    // Consolidates the previous O(N^2) .reduce inside .map into a single O(N) loop for performance.
     const conicGradient = useMemo(() => {
         if (categories.length === 0) return "";
         let prev = 0;
