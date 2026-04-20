@@ -17,3 +17,7 @@
 **Vulnerability:** The `SupabaseProfileRepository.uploadAvatar` method blindly extracted the file extension using `file.name.split('.').pop()`. This allowed an attacker to inject path traversal payloads (e.g., `image.png/../../malicious.txt`) within the file name, potentially writing files outside the intended `avatars/${userId}/` directory within the storage bucket.
 **Learning:** Never trust user-provided file names for constructing file paths. Even if the application validates the MIME type in the service layer, a malicious client can send a valid file with a payload-infused file name that bypasses application routing and exploits the storage mechanism.
 **Prevention:** Always derive file extensions from the verified MIME type (e.g., mapping `image/jpeg` to `.jpeg`) rather than parsing the user-supplied file name string.
+## 2026-04-20 - Fix IDOR in Invoice Status Update
+**Vulnerability:** Insecure Direct Object Reference (IDOR) on marking invoices as paid. Any user could mark any invoice as paid by ID.
+**Learning:** Supabase repository methods performing database mutations do not automatically validate ownership at the repository layer.
+**Prevention:** Repository methods performing database mutations must explicitly require and enforce a `userId` parameter (e.g., `.eq('user_id', userId)`) alongside the resource ID.
