@@ -1,14 +1,3 @@
-// Cache Intl.DateTimeFormat instances for better performance
-const dateFormatter = new Intl.DateTimeFormat('pt-BR', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-})
-
-const timeFormatter = new Intl.DateTimeFormat('pt-BR', {
-    hour: '2-digit',
-    minute: '2-digit',
-})
 
 /**
  * Cache Intl.DateTimeFormat instances for performance.
