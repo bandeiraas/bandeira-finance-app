@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { Loader2 } from "lucide-react";
 import { getCategoryColor } from "../utils";
 import type { DashboardSummary } from "@bandeira/shared";
@@ -8,6 +9,23 @@ interface ExpenseChartProps {
 }
 
 export function ExpenseChart({ summary, isLoading }: ExpenseChartProps) {
+    const categories = useMemo(
+        () => summary?.expensesByCategory ?? [],
+        [summary?.expensesByCategory]
+    );
+
+    const conicGradient = useMemo(() => {
+        if (!categories.length) return "";
+        const parts = [];
+        let currentPercentage = 0;
+        for (const c of categories) {
+            const nextPercentage = currentPercentage + c.percentage;
+            parts.push(`${getCategoryColor(c.categoryColor)} ${currentPercentage}% ${nextPercentage}%`);
+            currentPercentage = nextPercentage;
+        }
+        return `conic-gradient(${parts.join(", ")})`;
+    }, [categories]);
+
     if (isLoading) {
         return (
             <div className="glass-card p-5 rounded-2xl flex flex-col">
@@ -21,8 +39,6 @@ export function ExpenseChart({ summary, isLoading }: ExpenseChartProps) {
         );
     }
 
-    const categories = summary?.expensesByCategory ?? [];
-
     return (
         <div className="glass-card p-5 rounded-2xl flex flex-col">
             <h3 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-4">
@@ -34,12 +50,7 @@ export function ExpenseChart({ summary, isLoading }: ExpenseChartProps) {
                         <div
                             className="relative w-40 h-40 rounded-full"
                             style={{
-                                background: `conic-gradient(${categories
-                                    .map((c, i, arr) => {
-                                        const prev = arr.slice(0, i).reduce((sum, item) => sum + item.percentage, 0);
-                                        return `${getCategoryColor(c.categoryColor)} ${prev}% ${prev + c.percentage}%`;
-                                    })
-                                    .join(", ")})`,
+                                background: conicGradient,
                             }}
                         >
                             <div className="absolute inset-0 m-8 bg-slate-50 dark:bg-slate-900 rounded-full flex items-center justify-center shadow-inner">
