@@ -1,13 +1,3 @@
-// Cache Intl.NumberFormat instances for better performance
-const currencyFormatter = new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
-})
-
-const compactCurrencyFormatter = new Intl.NumberFormat('pt-BR', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-})
 
 /**
  * Cache Intl.NumberFormat instances for performance.
