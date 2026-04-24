@@ -48,6 +48,7 @@ export default function AddCard() {
 
     useEffect(() => {
         if (accounts && accounts.length > 0 && !accountId) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setAccountId(accounts[0].id);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -55,6 +56,7 @@ export default function AddCard() {
 
     useEffect(() => {
         if (selectedAccount) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setColorVariationIndex(2); // base da cor do banco ao trocar conta
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
