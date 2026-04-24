@@ -45,6 +45,9 @@ const MOCK_INVESTMENTS = [
 
 const CHART_COLOR_CLASSES = ['stroke-blue-500', 'stroke-purple-500'];
 
+const dayMonthFormatter = new Intl.DateTimeFormat('pt-BR', { day: 'numeric', month: 'short' });
+const weekdayDayMonthFormatter = new Intl.DateTimeFormat('pt-BR', { weekday: 'long', day: 'numeric', month: 'short' });
+const timeFormatter = new Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-digit' });
 
 export default function AccountDetail() {
     const { id } = useParams<{ id: string }>();
@@ -96,15 +99,11 @@ export default function AccountDetail() {
             yesterday.setDate(yesterday.getDate() - 1);
             let label: string;
             if (d.toDateString() === today.toDateString())
-                label = `Hoje, ${d.toLocaleDateString('pt-BR', { day: 'numeric', month: 'short' })}`;
+                label = `Hoje, ${dayMonthFormatter.format(d)}`;
             else if (d.toDateString() === yesterday.toDateString())
-                label = `Ontem, ${d.toLocaleDateString('pt-BR', { day: 'numeric', month: 'short' })}`;
+                label = `Ontem, ${dayMonthFormatter.format(d)}`;
             else
-                label = d.toLocaleDateString('pt-BR', {
-                    weekday: 'long',
-                    day: 'numeric',
-                    month: 'short',
-                });
+                label = weekdayDayMonthFormatter.format(d);
             if (!groups[label]) groups[label] = [];
             groups[label].push(t);
         });
@@ -462,10 +461,7 @@ export default function AccountDetail() {
                                                     <p className='font-semibold text-slate-800 dark:text-white text-sm'>{t.description ?? 'Transação'}</p>
                                                     <p className='text-xs text-slate-500 dark:text-slate-400'>
                                                         {t.categories?.name ?? '—'} •{' '}
-                                                        {new Date(t.date).toLocaleTimeString('pt-BR', {
-                                                            hour: '2-digit',
-                                                            minute: '2-digit',
-                                                        })}
+                                                        {timeFormatter.format(new Date(t.date))}
                                                     </p>
                                                 </div>
                                             </div>
