@@ -5,3 +5,7 @@
 ## 2025-01-20 - Intl Formatters Performance Bottleneck
 **Learning:** Instantiating Intl.*Format objects (like Intl.NumberFormat and Intl.DateTimeFormat) on each function call or in loops causes severe performance bottlenecks, taking significantly more time than reusing an instance.
 **Action:** Pre-compute or cache Intl.*Format instances at the module level outside of iterative loops or frequently called formatting functions.
+
+## 2024-04-25 - React Loop Performance Bug: Implicit Intl.DateTimeFormat
+**Learning:** Implicit date formatting via `toLocaleDateString()` acts as a hidden `Intl.DateTimeFormat` instantiation, causing significant bottlenecks inside `useMemo` array iterations.
+**Action:** Always extract and export explicitly cached `Intl.DateTimeFormat` instances from utility files and use `.format()` instead when iterating.
