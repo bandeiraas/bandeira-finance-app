@@ -1,15 +1,3 @@
-// Cache Intl.DateTimeFormat instances for better performance
-const dateFormatter = new Intl.DateTimeFormat('pt-BR', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-})
-
-const timeFormatter = new Intl.DateTimeFormat('pt-BR', {
-    hour: '2-digit',
-    minute: '2-digit',
-})
-
 /**
  * Cache Intl.DateTimeFormat instances for performance.
  * Instantiating these objects is expensive and causes bottlenecks when called in loops.
@@ -31,9 +19,20 @@ export function formatDate(dateString: string): string {
 /**
  * Cache time Intl.DateTimeFormat instance for performance.
  */
-const timeFormatter = new Intl.DateTimeFormat('pt-BR', {
+export const timeFormatter = new Intl.DateTimeFormat('pt-BR', {
     hour: '2-digit',
     minute: '2-digit',
+})
+
+export const dateFormatterDayMonthLong = new Intl.DateTimeFormat('pt-BR', {
+    day: 'numeric',
+    month: 'long',
+})
+
+export const dateFormatterWeekdayDayMonthLong = new Intl.DateTimeFormat('pt-BR', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
 })
 
 /**

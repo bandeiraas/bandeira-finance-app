@@ -5,12 +5,12 @@ import { useAccounts } from "../features/accounts/hooks/useAccounts";
 import { BalanceSummaryCard } from "../features/accounts/components/BalanceSummaryCard";
 import { useMonthlySummary, useTransactions } from "../features/transactions/hooks/useTransactions";
 import { formatCurrency } from "../shared/utils/formatCurrency";
+import { dateFormatterDayMonthLong, dateFormatterWeekdayDayMonthLong, timeFormatter } from "../shared/utils/formatDate";
 import { cn } from "../shared/utils/cn";
 import { ACCOUNT_TYPE_LABELS } from "../shared/constants/accounts";
 import { BankIcon } from "../components/BankIcon";
 import { TransactionIcon } from "../components/TransactionIcon";
-import { cn } from "../shared/utils/cn";
-import { BalanceSummaryCard } from "../features/accounts/components/BalanceSummaryCard";
+
 
 export default function Accounts() {
     const [searchTerm, setSearchTerm] = useState("");
@@ -48,15 +48,11 @@ export default function Accounts() {
             yesterday.setDate(yesterday.getDate() - 1);
             let label: string;
             if (d.toDateString() === today.toDateString())
-                label = `Hoje, ${d.toLocaleDateString("pt-BR", { day: "numeric", month: "long" })}`;
+                label = `Hoje, ${dateFormatterDayMonthLong.format(d)}`;
             else if (d.toDateString() === yesterday.toDateString())
-                label = `Ontem, ${d.toLocaleDateString("pt-BR", { day: "numeric", month: "long" })}`;
+                label = `Ontem, ${dateFormatterDayMonthLong.format(d)}`;
             else
-                label = d.toLocaleDateString("pt-BR", {
-                    weekday: "long",
-                    day: "numeric",
-                    month: "long",
-                });
+                label = dateFormatterWeekdayDayMonthLong.format(d);
             return { ...t, _groupLabel: label };
         });
     }, [filteredTransactions]);
@@ -255,10 +251,7 @@ export default function Accounts() {
                                             {items.map((t) => {
                                                 const accountName =
                                                     accountById[t.account_id]?.bank_name ?? "Conta";
-                                                const time = new Date(t.date).toLocaleTimeString("pt-BR", {
-                                                    hour: "2-digit",
-                                                    minute: "2-digit",
-                                                });
+                                                const time = timeFormatter.format(new Date(t.date));
                                                 return (
                                                     <div
                                                         key={t.id}
