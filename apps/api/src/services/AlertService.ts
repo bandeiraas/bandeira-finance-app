@@ -25,9 +25,9 @@ export class AlertService {
         }
     }
 
-    async markAsRead(id: string): Promise<Result<void>> {
+    async markAsRead(id: string, userId: string): Promise<Result<void>> {
         try {
-            await this.repository.markAsRead(id)
+            await this.repository.markAsRead(id, userId)
             return R.ok(undefined)
         } catch (err) {
             return R.fail(AppError.fromUnknown(err))
