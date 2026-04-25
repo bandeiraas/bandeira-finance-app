@@ -17,3 +17,8 @@
 **Vulnerability:** The `SupabaseProfileRepository.uploadAvatar` method blindly extracted the file extension using `file.name.split('.').pop()`. This allowed an attacker to inject path traversal payloads (e.g., `image.png/../../malicious.txt`) within the file name, potentially writing files outside the intended `avatars/${userId}/` directory within the storage bucket.
 **Learning:** Never trust user-provided file names for constructing file paths. Even if the application validates the MIME type in the service layer, a malicious client can send a valid file with a payload-infused file name that bypasses application routing and exploits the storage mechanism.
 **Prevention:** Always derive file extensions from the verified MIME type (e.g., mapping `image/jpeg` to `.jpeg`) rather than parsing the user-supplied file name string.
+
+## 2026-04-25 - [CRITICAL] Fix IDOR in Alert Read Status
+**Vulnerability:** The API had an Insecure Direct Object Reference (IDOR) vulnerability on the `PATCH /api/alerts/:id/read` endpoint. The `SupabaseAlertRepository` was marking alerts as read using only the provided `id`, without verifying if the alert belonged to the currently authenticated user. This allowed an attacker to mark another user's alert as read by guessing its ID.
+**Learning:** Even simple endpoints like "mark as read" that only change a boolean state can be vulnerable to IDOR if they lack ownership validation at the repository layer.
+**Prevention:** All database mutation methods (including updates to boolean flags) must require and enforce a `userId` parameter alongside the resource ID in their where clauses (e.g., `.eq('user_id', userId)`).
