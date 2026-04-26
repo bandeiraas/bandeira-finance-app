@@ -1,0 +1,6 @@
+## 2024-04-26 - Add aria-label to icon-only buttons
+**Learning:** Found an icon-only button without an `aria-label` attribute in the cards section (copy to clipboard button). This is a common accessibility violation. Adding an `aria-label` ensures screen readers can announce the purpose of the button correctly to users with visual impairments.
+**Action:** Consistently review new and existing icon-only buttons (`<button><Icon/></button>`) across the application to ensure they all possess a descriptive `aria-label`.
+## 2024-04-26 - CI Fixes for out of scope errors
+**Learning:** During the process of making UX changes, be very careful with syntax and duplicate imports/declarations in existing files. While the focus is UX, sometimes existing compilation errors need to be addressed if they block the CI pipeline. In this case, `lucide-react` had multiple `Plus` imports, and `formatCurrency` and `formatDate` had duplicate `Intl.NumberFormat`/`Intl.DateTimeFormat` variable declarations causing build failures.
+**Action:** When presented with CI check failures that are outside of the immediate UX change, follow the explicit instruction `Priority: GitHub CI Check Suite Failure Detected` and apply fixes. Ensure that variables used lower down are not completely removed but only the redundant declarations are removed.
