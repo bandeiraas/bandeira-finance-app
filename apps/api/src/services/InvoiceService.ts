@@ -25,9 +25,9 @@ export class InvoiceService {
         }
     }
 
-    async markAsPaid(id: string): Promise<Result<Invoice>> {
+    async markAsPaid(id: string, userId: string): Promise<Result<Invoice>> {
         try {
-            const invoice = await this.repository.updateStatus(id, 'paid')
+            const invoice = await this.repository.updateStatus(id, userId, 'paid')
             return R.ok(invoice)
         } catch (err) {
             return R.fail(AppError.fromUnknown(err))
