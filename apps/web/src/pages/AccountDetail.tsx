@@ -69,16 +69,23 @@ export default function AccountDetail() {
         const d = new Date(t.date);
         return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
     });
-    const monthIncome = monthTransactions.filter((t) => t.type === 'income').reduce((s, t) => s + Number(t.amount), 0);
-    const monthExpense = monthTransactions.filter((t) => t.type === 'expense').reduce((s, t) => s + Number(t.amount), 0);
+    const { monthIncome, monthExpense, categoryTotals } = useMemo(() => {
+        let income = 0;
+        let expense = 0;
+        const catTotals: Record<string, number> = {};
 
-    const categoryTotals = monthTransactions
-        .filter((t) => t.type === 'expense')
-        .reduce<Record<string, number>>((acc, t) => {
-            const name = t.categories?.name ?? 'Outros';
-            acc[name] = (acc[name] ?? 0) + Number(t.amount);
-            return acc;
-        }, {});
+        for (const t of monthTransactions) {
+            const amount = Number(t.amount);
+            if (t.type === 'income') {
+                income += amount;
+            } else if (t.type === 'expense') {
+                expense += amount;
+                const name = t.categories?.name ?? 'Outros';
+                catTotals[name] = (catTotals[name] ?? 0) + amount;
+            }
+        }
+        return { monthIncome: income, monthExpense: expense, categoryTotals: catTotals };
+    }, [monthTransactions]);
     const totalExpense = monthExpense;
     const categoriesWithPercent = Object.entries(categoryTotals)
         .map(([name, total]) => ({ name, total, percentage: totalExpense > 0 ? (total / totalExpense) * 100 : 0 }))
